@@ -1,5 +1,5 @@
 {
-  "name": "headersfooters",
+  "name": "tinymce-plugin-headersfooters",
   "version": "0.1.0",
   "description": "A plugin for tinymce WYSIWYG HTML editor that allow to insert headers and footers - requires tinymce-plugin-paginate",
   "main": "plugin.js",
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com:rbecheras/headersfooters.git"
+    "url": "git+https://github.com:rbecheras/tinymce-plugin-headersfooters.git"
   },
   "keywords": [
     "tinymce",
@@ -26,7 +26,7 @@
   "author": "Rémi Becheras <rbecheras@sirap.fr>",
   "license": "LGPL-2.1",
   "bugs": {
-    "url": "https://github.com/rbecheras/headersfooters/issues"
+    "url": "https://github.com/rbecheras/tinymce-plugin-headersfooters/issues"
   },
-  "homepage": "https://github.com/rbecheras/headersfooters#readme"
+  "homepage": "https://github.com/rbecheras/tinymce-plugin-headersfooters#readme"
 }
