@@ -1,32 +1,39 @@
 {
-  "name": "headersfooters",
+  "name": "tinymce-plugin-headersfooters",
   "version": "0.1.0",
   "description": "A plugin for tinymce WYSIWYG HTML editor that allow to insert headers and footers - requires tinymce-plugin-paginate",
   "main": "plugin.js",
   "devDependencies": {
     "grunt": "^0.4.5",
+    "grunt-browserify": "^4.0.1",
     "grunt-bump": "^0.6.0",
     "grunt-contrib-jshint": "^0.11.3",
     "grunt-contrib-uglify": "^0.10.0",
-    "load-grunt-tasks": "^3.3.0"
+    "ink-docstrap": "^1.1.2",
+    "load-grunt-tasks": "^3.3.0",
+    "shelljs": "^0.6.0"
   },
   "scripts": {
     "build": "grunt",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "jsdoc": "jsdoc -p -d jsdoc -c jsdoc.json -t ./node_modules/ink-docstrap/template  src/*"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com:rbecheras/headersfooters.git"
+    "url": "git+https://github.com:rbecheras/tinymce-plugin-headersfooters.git"
   },
   "keywords": [
     "tinymce",
     "plugin",
-    "tinymce","plugin","headers","footers"
+    "tinymce",
+    "plugin",
+    "headers",
+    "footers"
   ],
   "author": "Rémi Becheras <rbecheras@sirap.fr>",
   "license": "LGPL-2.1",
   "bugs": {
-    "url": "https://github.com/rbecheras/headersfooters/issues"
+    "url": "https://github.com/rbecheras/tinymce-plugin-headersfooters/issues"
   },
-  "homepage": "https://github.com/rbecheras/headersfooters#readme"
+  "homepage": "https://github.com/rbecheras/tinymce-plugin-headersfooters#readme"
 }
