@@ -1,0 +1,22 @@
+{
+  "name": "headersfooters",
+  "version": "0.1.0",
+  "authors": [
+    "Rémi Becheras <rbecheras@sirap.fr>"
+  ],
+  "description": "A plugin for tinymce WYSIWYG HTML editor that allow to insert headers and footers - requires tinymce-plugin-paginate",
+  "main": "plugin.js",
+  "keywords": [
+    "tinymce",
+    "plugin",
+    "tinymce","plugin","headers","footers"
+  ],
+  "license": "LGPL-2.1",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
