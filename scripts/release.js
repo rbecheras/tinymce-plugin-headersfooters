@@ -78,22 +78,18 @@ cli.arguments('<semverLevel>').action(function(semverLevel){
             // if there is nothing to commit, the child_process will end with error code at 1
             // but we want to continue, its not really an error, but a warning.
             // We will ask to confirm for continuing.
-            confirmPromptMessage = 'WARNING: It seems there is nothing to commit. Do you want to continue ?';
-            return confirmPrompt(confirmPromptMessage);
+            return true;
           })
-          .then(function(confirmation){
-            if (!confirmation) throw new Error('Aborted by user because there is nothing to commit for this release.');
-            else return true;
-          });
         })(semverLevel))
         .then((function(level){
           return deferizeExec('grunt bump:'+level)();
         })(semverLevel))
         .then(deferizeExec('git push origin master'))
+        .then(deferizeExec('git push gh-sirap-group master'))
         .then(deferizeExec('git push gl-open-source master'))
         .then(deferizeExec('git push origin --tags'))
-        .then(deferizeExec('git push gl-open-source --tags'))
         .then(deferizeExec('git push gh-sirap-group --tags'))
+        .then(deferizeExec('git push gl-open-source --tags'))
       ;
     } else {
       console.log('Aborted by user');
