@@ -81,6 +81,9 @@ cli.arguments('<semverLevel>').action(function(semverLevel){
             return true;
           });
         })(semverLevel))
+        .then(deferizeExec('git push origin master'))
+        .then(deferizeExec('git push gh-sirap-group master'))
+        .then(deferizeExec('git push gl-open-source master'))
         .then((function(level){
           return deferizeExec('grunt bump:'+level)();
         })(semverLevel))
