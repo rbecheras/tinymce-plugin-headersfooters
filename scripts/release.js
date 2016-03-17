@@ -79,7 +79,7 @@ cli.arguments('<semverLevel>').action(function(semverLevel){
             // but we want to continue, its not really an error, but a warning.
             // We will ask to confirm for continuing.
             return true;
-          })
+          });
         })(semverLevel))
         .then((function(level){
           return deferizeExec('grunt bump:'+level)();
