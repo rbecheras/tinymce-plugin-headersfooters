@@ -67,8 +67,7 @@ cli.arguments('<semverLevel>').action(function(semverLevel){
   confirmPrompt(confirmPromptMessage) // if -c or --continue is not defined in the command line.
   .then(function(confirmation){
     if (confirmation) {
-      return deferizeExec('git stash')()
-        .then(deferizeExec('git checkout master'))
+      return deferizeExec('git checkout master')()
         .then(deferizeExec('git pull gh-sirap-group master'))
         .then(deferizeExec('grunt build'))
         .then(deferizeExec('git add . --all'))
