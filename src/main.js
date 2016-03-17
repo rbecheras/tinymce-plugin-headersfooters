@@ -38,6 +38,9 @@
  */
 /*global jquery:true */
 
+var ui = require('./utils/ui');
+var HeaderFooterFactory = require('./classes/HeaderFooterFactory');
+
 /**
  * Tinymce plugin headers/footers
  * @function
@@ -47,10 +50,22 @@
  */
 function tinymcePluginHeadersFooters(editor) {
 
-  /**
-   * @TODO
-   * Write the plugin code here
-   */
+  var headerFooterFactory;
+
+  editor.on('init',function(){
+    headerFooterFactory = new HeaderFooterFactory(editor);
+
+    ui.menuItems.insertHeader.onclick = function(){
+      headerFooterFactory.insertHeader();
+    };
+    ui.menuItems.insertFooter.onclick = function(){
+      headerFooterFactory.insertFooter();
+    };
+
+  });
+
+  editor.addMenuItem('insertHeader', ui.menuItems.insertHeader);
+  editor.addMenuItem('insertFooter', ui.menuItems.insertFooter);
 
 }
 
