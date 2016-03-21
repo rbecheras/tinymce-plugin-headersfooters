@@ -38,6 +38,9 @@
  */
 /*global jquery:true */
 
+var HeaderFooterFactory = require('classes/HeaderFooterFactory');
+var ui = require('utils/ui');
+
 /**
  * Tinymce plugin headers/footers
  * @function
