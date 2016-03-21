@@ -47,12 +47,27 @@
  */
 function tinymcePluginHeadersFooters(editor) {
 
-  /**
-   * @TODO
-   * Write the plugin code here
-   */
+  function onInitHandler(){
+    headerFooterFactory = new HeaderFooterFactory(editor);
+
+    ui.menuItems.insertHeader.onclick = function(){
+      headerFooterFactory.insertHeader();
+    };
+    ui.menuItems.insertFooter.onclick = function(){
+      headerFooterFactory.insertFooter();
+    };
+  }
+
+  window.alert('tinymcePluginHeadersFooters');
+
+  var headerFooterFactory;
+
+  editor.on('init',onInitHandler);
+
+  editor.addMenuItem('insertHeader', ui.menuItems.insertHeader);
+  editor.addMenuItem('insertFooter', ui.menuItems.insertFooter);
 
 }
 
 // Add the plugin to the tinymce PluginManager
-tinymce.PluginManager.add('paginate', tinymcePluginHeadersFooters);
+tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters);
