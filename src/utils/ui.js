@@ -48,7 +48,6 @@ menuItems.insertFooter = {
 exports.menuItems = menuItems;
 
 exports.lockNode = function(){
-  console.log('lockNode this',this);
   $(this).attr('contenteditable',false);
 };
 exports.unlockNode = function(){

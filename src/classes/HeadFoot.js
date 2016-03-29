@@ -27,6 +27,7 @@ HeadFoot.prototype._createNode = function(){
 HeadFoot.prototype.enter = function(){
   ui.unlockNode.call(this.node);
 };
+
 HeadFoot.prototype.live = function(){ console.log('live');
   ui.lockNode.call(this.node);
 };

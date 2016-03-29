@@ -67,10 +67,7 @@ cli.arguments('<semverLevel>').action(function(semverLevel){
   confirmPrompt(confirmPromptMessage) // if -c or --continue is not defined in the command line.
   .then(function(confirmation){
     if (confirmation) {
-      return deferizeExec('git stash')()
-        .then(deferizeExec('git checkout master'))
-        .then(deferizeExec('git pull gh-sirap-group master'))
-        .then(deferizeExec('grunt build'))
+      return deferizeExec('grunt build')()
         .then(deferizeExec('git add . --all'))
         .then((function(level){
           return deferizeExec('git commit -m "build dist and docs to release '+level+'"')()
@@ -78,22 +75,21 @@ cli.arguments('<semverLevel>').action(function(semverLevel){
             // if there is nothing to commit, the child_process will end with error code at 1
             // but we want to continue, its not really an error, but a warning.
             // We will ask to confirm for continuing.
-            confirmPromptMessage = 'WARNING: It seems there is nothing to commit. Do you want to continue ?';
-            return confirmPrompt(confirmPromptMessage);
-          })
-          .then(function(confirmation){
-            if (!confirmation) throw new Error('Aborted by user because there is nothing to commit for this release.');
-            else return true;
+            return true;
           });
         })(semverLevel))
+        .then(deferizeExec('git push origin master'))
+        .then(deferizeExec('git push gh-sirap-group master'))
+        .then(deferizeExec('git push gl-open-source master'))
         .then((function(level){
           return deferizeExec('grunt bump:'+level)();
         })(semverLevel))
         .then(deferizeExec('git push origin master'))
+        .then(deferizeExec('git push gh-sirap-group master'))
         .then(deferizeExec('git push gl-open-source master'))
         .then(deferizeExec('git push origin --tags'))
-        .then(deferizeExec('git push gl-open-source --tags'))
         .then(deferizeExec('git push gh-sirap-group --tags'))
+        .then(deferizeExec('git push gl-open-source --tags'))
       ;
     } else {
       console.log('Aborted by user');
