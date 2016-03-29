@@ -48,7 +48,7 @@ var ui = require('./utils/ui');
  * @param {tinymce.Editor} editor - The injected tinymce editor.
  * @returns void
  */
-function tinymcePluginHeadersFooters(editor) {
+function tinymcePluginHeadersFooters(editor,url) {
 
   function onInitHandler(){
     headerFooterFactory = new HeaderFooterFactory(editor);
