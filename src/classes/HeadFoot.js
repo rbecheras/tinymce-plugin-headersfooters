@@ -6,7 +6,9 @@ var ui = require('../utils/ui');
  * Abstract class to inherit Header and Footer sub classes from.
  * @constructor
  */
-function HeadFoot(documentBody){
+function HeadFoot(editor,documentBody){
+  var that=this;
+  this._editor = editor;
   this._documentBody = documentBody;
   this._createNode();
   this.live();

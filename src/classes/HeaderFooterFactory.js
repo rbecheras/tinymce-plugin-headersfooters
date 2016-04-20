@@ -7,17 +7,15 @@ var Footer = require('./Footer');
  * HeaderFactory class
  * @constructor
  */
-function HeaderFooterFactory(_editor){
-  editor = _editor;
+function HeaderFooterFactory(editor){
+  this._editor = editor;
 }
 
-var editor;
-
 HeaderFooterFactory.prototype.insertHeader = function(){
-  this.header = new Header(editor.getBody());
+  this.header = new Header(this._editor,this._editor.getBody());
 };
 HeaderFooterFactory.prototype.insertFooter = function(){
-  this.footer = new Footer(editor.getBody());
+  this.footer = new Footer(this._editor,this._editor.getBody());
 };
 
 module.exports = HeaderFooterFactory;

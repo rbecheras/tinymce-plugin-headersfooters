@@ -6,8 +6,8 @@ var HeadFoot = require('./HeadFoot');
  * Header class
  * @constructor
  */
-function Header(_documentBody){
-  HeadFoot.call(this,_documentBody);
+function Header(editor,_documentBody){
+  HeadFoot.call(this,editor,_documentBody);
   $(this.node).prependTo(this._documentBody);
 }
 
