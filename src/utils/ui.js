@@ -52,4 +52,5 @@ exports.lockNode = function(){
 };
 exports.unlockNode = function(){
   $(this).attr('contenteditable',true);
+  $(this).focus();
 };
