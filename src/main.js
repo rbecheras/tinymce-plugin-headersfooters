@@ -61,8 +61,6 @@ function tinymcePluginHeadersFooters(editor,url) {
     };
   }
 
-  window.alert('tinymcePluginHeadersFooters');
-
   var headerFooterFactory;
 
   editor.on('init',onInitHandler);
