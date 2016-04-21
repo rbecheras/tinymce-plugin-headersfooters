@@ -13,18 +13,9 @@ function HeadFoot(editor,documentBody){
   this._createNode();
   this.liveNode();
   $(this.node).dblclick(function(){
-    that._onNodeDblclick();
+    that.enterNode();
   });
 }
-
-/**
-* On node double-click event handler
-* @private
-* @method
- */
-HeadFoot.prototype._onNodeDblclick = function(){
-  this.enterNode();
-};
 
 /**
  * Create a new node for an header or a footer.
