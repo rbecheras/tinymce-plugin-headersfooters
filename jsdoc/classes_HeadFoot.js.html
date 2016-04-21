@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>tinycmce-plugin-headersfooters Global</title>
+	<title>tinycmce-plugin-headersfooters Source: classes/HeadFoot.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,246 +79,83 @@
 <div class="row">
 
 	
-	<div class="col-md-8">
+	<div class="col-md-12">
 	
 		<div id="main">
 			
 
-	<h1 class="page-title">Global</h1>
+		<h1 class="page-title">Source: classes/HeadFoot.js</h1>
+    
 <section>
-
-<header>
-    
-        <h2>
-        
-        </h2>
-        
-    
-</header>
-
-
-<article>
-    <div class="container-overview">
-    
-        
-
-        
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        <dl>
-            
-<hr>
-<dt>
-    <h4 class="name" id="tinymcePluginHeadersFooters"><span class="type-signature"></span>tinymcePluginHeadersFooters(editor)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Tinymce plugin headers/footers
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>editor</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">tinymce.Editor</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The injected tinymce editor.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-51">line 51</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    void
-</div>
-
-
-
-
-        
-
-    
-</dd>
-
-        </dl>
-    
-
-    
-
-    
-</article>
-
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">'use strict';
+
+var ui = require('../utils/ui');
+
+/**
+ * Abstract class to inherit Header and Footer sub classes from.
+ * @constructor
+ */
+function HeadFoot(editor,documentBody){
+  var that=this;
+  this._editor = editor;
+  this._documentBody = documentBody;
+  this._createNode();
+  this.liveNode();
+  $(this.node).dblclick(function(){
+    that.enterNode();
+  });
+}
+
+/**
+ * Create a new node for an header or a footer.
+ * @private
+ * @method
+ */
+HeadFoot.prototype._createNode = function(){
+  this.node = $('&lt;section>')
+    .attr('data-headfoot',true)
+    .attr('data-headfoot-pristine',true)
+    .html('Double-click to edit this content')[0]
+  ;
+};
+
+
+HeadFoot.prototype.enterNode = function(){
+  var that = this;
+  this._editor.plugins.paginate.disableWatchPage();
+  ui.lockNode.call(this._editor.plugins.paginate.getCurrentPage().content());
+  ui.unlockNode.call(this.node);
+
+  var headfootContent = this.node.firstChild;
+  if (!headfootContent) {
+    throw new Error('no child is not allowed in a headfoot');
+  }
+  this._editor.selection.select(headfootContent);
+  if ($(this.node).attr('data-headfoot-pristine')) {
+    // this._editor.selection.setContent('');
+    $(this.node).removeAttr('data-headfoot-pristine');
+  } else {
+    this._editor.selection.collapse(true);
+  }
+
+  $(this._editor.plugins.paginate.getCurrentPage().content()).click(function(){
+    that.liveNode();
+  });
+};
+
+HeadFoot.prototype.liveNode = function(){
+  this._editor.plugins.paginate.enableWatchPage();
+  ui.lockNode.call(this.node);
+  ui.unlockNode.call(this._editor.plugins.paginate.getCurrentPage().content());
+};
+
+module.exports = HeadFoot;
+</pre>
+    </article>
 </section>
+
 
 
 
@@ -328,10 +165,6 @@
 
 	<div class="clearfix"></div>
 
-	
-		<div class="col-md-3">
-			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
-		</div>
 	
 
 </div>

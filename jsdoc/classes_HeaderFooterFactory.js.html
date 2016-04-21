@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>tinycmce-plugin-headersfooters Global</title>
+	<title>tinycmce-plugin-headersfooters Source: classes/HeaderFooterFactory.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,246 +79,41 @@
 <div class="row">
 
 	
-	<div class="col-md-8">
+	<div class="col-md-12">
 	
 		<div id="main">
 			
 
-	<h1 class="page-title">Global</h1>
+		<h1 class="page-title">Source: classes/HeaderFooterFactory.js</h1>
+    
 <section>
-
-<header>
-    
-        <h2>
-        
-        </h2>
-        
-    
-</header>
-
-
-<article>
-    <div class="container-overview">
-    
-        
-
-        
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        <dl>
-            
-<hr>
-<dt>
-    <h4 class="name" id="tinymcePluginHeadersFooters"><span class="type-signature"></span>tinymcePluginHeadersFooters(editor)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Tinymce plugin headers/footers
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>editor</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">tinymce.Editor</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The injected tinymce editor.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-51">line 51</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    void
-</div>
-
-
-
-
-        
-
-    
-</dd>
-
-        </dl>
-    
-
-    
-
-    
-</article>
-
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">'use strict';
+
+var Header = require('./Header');
+var Footer = require('./Footer');
+
+/**
+ * HeaderFactory class
+ * @constructor
+ */
+function HeaderFooterFactory(editor){
+  this._editor = editor;
+}
+
+HeaderFooterFactory.prototype.insertHeader = function(){
+  this.header = new Header(this._editor,this._editor.getBody());
+};
+HeaderFooterFactory.prototype.insertFooter = function(){
+  this.footer = new Footer(this._editor,this._editor.getBody());
+};
+
+module.exports = HeaderFooterFactory;
+</pre>
+    </article>
 </section>
+
 
 
 
@@ -328,10 +123,6 @@
 
 	<div class="clearfix"></div>
 
-	
-		<div class="col-md-3">
-			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
-		</div>
 	
 
 </div>
