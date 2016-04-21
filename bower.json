@@ -1,6 +1,6 @@
 {
   "name": "tinymce-plugin-headersfooters",
-  "version": "0.2.0",
+  "version": "0.2.7",
   "authors": [
     "Rémi Becheras <rbecheras@sirap.fr>"
   ],
@@ -9,7 +9,10 @@
   "keywords": [
     "tinymce",
     "plugin",
-    "tinymce","plugin","headers","footers"
+    "tinymce",
+    "plugin",
+    "headers",
+    "footers"
   ],
   "license": "LGPL-2.1",
   "ignore": [
@@ -18,5 +21,9 @@
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "tinymce": "~4.3.8",
+    "tinymce-plugin-paginate": "~0.9.0"
+  }
 }
