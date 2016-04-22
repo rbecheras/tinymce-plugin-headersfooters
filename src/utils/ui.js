@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * User interface module
  * @module
