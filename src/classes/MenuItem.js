@@ -17,7 +17,7 @@
 function MenuItem(name,options){
   this.name = name;
   if (!this.id) {
-    this.id = name.camel2Dash();
+    this.id =  'mce-plugin-headersfooters-' + name.camel2Dash();
   }
   for (var key in options) {
     this[key] = options[key];
