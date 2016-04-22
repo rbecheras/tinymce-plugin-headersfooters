@@ -31,7 +31,7 @@ var menuItems = exports.menuItems = {};
  * @type {MenuItem}
  * @memberof menuItems
  */
-menuItems.insertHeader = new menuItem('insertHeader',{
+menuItems.insertHeader = new MenuItem('insertHeader',{
   text: 'Insérer une entête',
   icon: 'abc',
   id: 'plugin-headersfooters-menuitem-insert-header',
