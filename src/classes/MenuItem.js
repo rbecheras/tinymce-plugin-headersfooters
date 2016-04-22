@@ -103,3 +103,5 @@ MenuItem.prototype.enable = function(){
   this.getUIControl().removeClass('mce-disabled');
   return this;
 };
+
+module.exports = MenuItem;
