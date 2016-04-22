@@ -8,6 +8,8 @@
   tinymce.activeEditor.addMenuItem(new MenuItem('myAction',{
     icon: 'text',
     text: 'My Action',
+    visible: true,
+    disabled: true,
     onclick: function(){
      window.alert('overiden default onclick action');
     }
@@ -16,12 +18,16 @@
  */
 function MenuItem(name,options){
   this.name = name;
-  if (!this.id) {
+  for (var key in options) {
+    if (key !== 'visible' && key !== 'disabled') {
+      this[key] = options[key];
+    }
+  }
+  if (!options.id) {
     this.id =  'mce-plugin-headersfooters-' + name.camel2Dash();
   }
-  for (var key in options) {
-    this[key] = options[key];
-  }
+  if (options.visible === false) this.hide();
+  if (options.disabled) this.disable(); 
 }
 
 /**
