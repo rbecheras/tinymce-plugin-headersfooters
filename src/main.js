@@ -55,9 +55,14 @@ function tinymcePluginHeadersFooters(editor,url) {
 
     ui.menuItems.insertHeader.onclick = function(){
       headerFooterFactory.insertHeader();
+      ui.menuItems.insertHeader.disable().hide();
+      ui.menuItems.removeHeader.show().enable();
+
     };
     ui.menuItems.insertFooter.onclick = function(){
       headerFooterFactory.insertFooter();
+      ui.menuItems.insertFooter.disable().hide();
+      ui.menuItems.removeFooter.show().enable();
     };
   }
 
@@ -66,7 +71,11 @@ function tinymcePluginHeadersFooters(editor,url) {
   editor.on('init',onInitHandler);
 
   editor.addMenuItem('insertHeader', ui.menuItems.insertHeader);
+  editor.addMenuItem('removeHeader', ui.menuItems.removeHeader);
+  ui.menuItems.removeHeader.hide();
   editor.addMenuItem('insertFooter', ui.menuItems.insertFooter);
+  editor.addMenuItem('removeFooter', ui.menuItems.removeFooter);
+  ui.menuItems.removeFooter.hide();
 
 }
 
