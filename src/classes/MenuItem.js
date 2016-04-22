@@ -72,6 +72,7 @@ MenuItem.prototype.onclick = function(){
  */
 MenuItem.prototype.show = function(){
   this.getUIControl().show();
+  return this;
 };
 
 /**
