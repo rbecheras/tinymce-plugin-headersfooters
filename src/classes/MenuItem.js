@@ -27,7 +27,7 @@ function MenuItem(name,options){
     this.id =  'mce-plugin-headersfooters-' + name.camel2Dash();
   }
   if (options.visible === false) this.hide();
-  if (options.disabled) this.disable(); 
+  if (options.disabled) this.disable();
 }
 
 /**

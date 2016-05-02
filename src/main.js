@@ -51,31 +51,39 @@ var ui = require('./utils/ui');
 function tinymcePluginHeadersFooters(editor,url) {
 
   function onInitHandler(){
+
+
+    // instanciate the factory
     headerFooterFactory = new HeaderFooterFactory(editor);
 
+    // hide remove buttons
+    ui.menuItems.removeHeader.show().disable();
+    ui.menuItems.removeFooter.show().disable();
+
+    // override insertHeader onclick handler
     ui.menuItems.insertHeader.onclick = function(){
       headerFooterFactory.insertHeader();
-      ui.menuItems.insertHeader.disable().hide();
-      ui.menuItems.removeHeader.show().enable();
-
+      ui.menuItems.insertHeader.disable();
+      ui.menuItems.removeHeader.enable();
     };
+
+    // overrides insertFooter onclick handler
     ui.menuItems.insertFooter.onclick = function(){
       headerFooterFactory.insertFooter();
-      ui.menuItems.insertFooter.disable().hide();
-      ui.menuItems.removeFooter.show().enable();
+      ui.menuItems.insertFooter.disable();
+      ui.menuItems.removeFooter.enable();
     };
   }
 
   var headerFooterFactory;
 
-  editor.on('init',onInitHandler);
-
+  // add menu items
   editor.addMenuItem('insertHeader', ui.menuItems.insertHeader);
   editor.addMenuItem('removeHeader', ui.menuItems.removeHeader);
-  ui.menuItems.removeHeader.hide();
   editor.addMenuItem('insertFooter', ui.menuItems.insertFooter);
   editor.addMenuItem('removeFooter', ui.menuItems.removeFooter);
-  ui.menuItems.removeFooter.hide();
+
+  editor.on('init',onInitHandler);
 
 }
 
