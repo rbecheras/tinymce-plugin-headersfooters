@@ -73,6 +73,16 @@ function tinymcePluginHeadersFooters(editor,url) {
       ui.menuItems.insertFooter.disable();
       ui.menuItems.removeFooter.enable();
     };
+
+    editor.on('SetContent',onSetContent);
+  }
+
+  function onSetContent(evt){
+    var $bodyElmt = $('body',editor.getDoc());
+    var $headFootElmts = $('*[data-headfoot]',editor.getDoc());
+    $headFootElmts.each(function(i, el){
+      headerFooterFactory.loadElement(el);
+    });
   }
 
   var headerFooterFactory;
