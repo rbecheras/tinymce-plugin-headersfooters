@@ -21,7 +21,7 @@ Header.prototype = Object.create(HeadFoot.prototype);
  */
 Header.prototype._createNode = function(){
   HeadFoot.prototype._createNode.call(this);
-  $(this.node).attr('data-header',true);
+  $(this.node).attr('data-headfoot-header',true);
 };
 
 module.exports = Header;

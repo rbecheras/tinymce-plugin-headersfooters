@@ -21,7 +21,7 @@ Footer.prototype = Object.create(HeadFoot.prototype);
  */
 Footer.prototype._createNode = function(){
   HeadFoot.prototype._createNode.call(this);
-  $(this.node).attr('data-footer',true);
+  $(this.node).attr('data-headfoot-footer',true);
 };
 
 module.exports = Footer;
