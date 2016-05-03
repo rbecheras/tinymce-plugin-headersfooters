@@ -4,7 +4,7 @@ var Header = require('./Header');
 var Footer = require('./Footer');
 
 /**
- * HeaderFactory class
+ * HeaderFactory class. The aim of this class is to manage the document header and footer.
  * @constructor
  */
 function HeaderFooterFactory(editor){
@@ -12,6 +12,23 @@ function HeaderFooterFactory(editor){
   this._hasHeader = false;
   this._hasFooter = false;
 }
+
+/**
+ * Load an existing header or footer depending of its nature, from its DOM element.
+ * @method
+ * @param {DOMElement} element
+ * @returns void
+ */
+HeaderFooterFactory.prototype.loadElement = function(element){
+  var $el = $(element);
+  if ($el.attr('data-headfoot-header')) {
+    this._hasHeader = true;
+    this.header = new Header(this._editor, this._editor.getBody(), element);
+  } else if ($el.attr('data-headfoot-footer')) {
+    this._hasFooter = true;
+    this.footer = new Footer(this._editor, this._editor.getBody(), element);
+  } else throw new Error('This element is not a header neither a footer element.');
+};
 
 /**
  * Insert a new header

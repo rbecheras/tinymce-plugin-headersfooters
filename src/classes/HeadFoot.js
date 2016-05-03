@@ -6,13 +6,23 @@ var ui = require('../utils/ui');
  * Abstract class to inherit Header and Footer sub classes from.
  * @constructor
  */
-function HeadFoot(editor,documentBody){
+function HeadFoot(editor, documentBody, existingElement){
+  // bind useful vars
   var that=this;
   this._editor = editor;
   this._documentBody = documentBody;
-  this._createNode();
+
+  // load the existing element if it exists or create a new one.
+  if (existingElement) {
+    this.node = existingElement;
+  } else {
+    this._createNode();
+  }
+
+  // live the node and implements the double click handler to switch the contentEditable mode.
   this.liveNode();
   $(this.node).dblclick(function(){
+    console.log('double click on node',that.node);
     that.enterNode();
   });
 }
@@ -48,13 +58,13 @@ HeadFoot.prototype.enterNode = function(){
   } else {
     this._editor.selection.collapse(true);
   }
-
-  $(this._editor.plugins.paginate.getCurrentPage().content()).click(function(){
+console.log('configure livenode',this._editor.plugins.paginate.getCurrentPage().content());
+  $(this._editor.plugins.paginate.getCurrentPage().content()).click(function(){ console.log('paginate.getCurrentPage().content() clicked');
     that.liveNode();
   });
 };
 
-HeadFoot.prototype.liveNode = function(){
+HeadFoot.prototype.liveNode = function(){ console.info('living node'); console.log(this.node);
   this._editor.plugins.paginate.enableWatchPage();
   ui.lockNode.call(this.node);
   ui.unlockNode.call(this._editor.plugins.paginate.getCurrentPage().content());
