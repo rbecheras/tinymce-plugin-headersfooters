@@ -1,8 +1,14 @@
 'use strict'
 
+var $ = window.jquery
+
+module.exports = MenuItem
+
 /**
  * MenuItem Class
  * @class
+ * @param {String} name The item name
+ * @param {object} options The menu item options
  * @example
   <code>
   tinymce.activeEditor.addMenuItem(new MenuItem('myAction',{
@@ -24,25 +30,10 @@ function MenuItem (name, options) {
     }
   }
   if (!options.id) {
-    this.id = 'mce-plugin-headersfooters-' + name.camel2Dash()
+    this.id = 'mce-plugin-headersfooters-' + camel2Dash(name)
   }
   if (options.visible === false) this.hide()
   if (options.disabled) this.disable()
-}
-
-/**
- * Converts a camel cased string to a dashed string
- * @method
- * @extends String
- * @example
- * <code>
-    var s = 'camelCase'
-    s.camel2Dash()
-    // -> camel-case
-    </code>
- */
-String.prototype.camel2Dash = function () {
-  return this.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
 }
 
 /**
@@ -111,4 +102,19 @@ MenuItem.prototype.enable = function () {
   return this
 }
 
-module.exports = MenuItem
+/**
+ * Converts a camel cased string to a dashed string
+ * @function
+ * @inner
+ * @param {String} inputStr The input string to dasherize
+ * @example
+ * <code>
+    var s = 'helloWorld'
+    camel2Dash(s)
+    // -> hello-world
+    </code>
+ */
+function camel2Dash (inputStr) {
+  if (!inputStr.replace) throw new Error('The replace() method is not available.')
+  return inputStr.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
+}
