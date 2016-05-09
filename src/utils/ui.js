@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 /**
  * User interface module
@@ -13,7 +13,7 @@
  * @name MenuItem
  * @type class
  */
-var MenuItem = require('../classes/MenuItem');
+var MenuItem = require('../classes/MenuItem')
 
 /**
  * A hash of menu items options
@@ -22,7 +22,7 @@ var MenuItem = require('../classes/MenuItem');
  * @type  {object}
  *
  */
-var menuItems = exports.menuItems = {};
+var menuItems = exports.menuItems = {}
 
 /**
  * Insert header menu item
@@ -31,15 +31,15 @@ var menuItems = exports.menuItems = {};
  * @type {MenuItem}
  * @memberof menuItems
  */
-menuItems.insertHeader = new MenuItem('insertHeader',{
+menuItems.insertHeader = new MenuItem('insertHeader', {
   text: 'Insérer une entête',
   icon: 'abc',
   id: 'plugin-headersfooters-menuitem-insert-header',
   context: 'insert',
-  onclick: function(){
-    window.alert('insert header');
+  onclick: function () {
+    window.alert('insert header')
   }
-});
+})
 
 /**
  * Remove header menu item
@@ -48,14 +48,14 @@ menuItems.insertHeader = new MenuItem('insertHeader',{
  * @type {MenuItem}
  * @memberof menuItems
  */
-menuItems.removeHeader = new MenuItem('removeHeader',{
-  text: 'Supprimer l\'entête',
+menuItems.removeHeader = new MenuItem('removeHeader', {
+  text: "Supprimer l'entête",
   icon: 'text',
   context: 'insert',
-  onclick: function(){
-    window.alert('remove header');
+  onclick: function () {
+    window.alert('remove header')
   }
-});
+})
 
 /**
  * Insert footer menu item
@@ -64,14 +64,14 @@ menuItems.removeHeader = new MenuItem('removeHeader',{
  * @type {MenuItem}
  * @memberof menuItems
  */
-menuItems.insertFooter = new MenuItem('insertFooter',{
+menuItems.insertFooter = new MenuItem('insertFooter', {
   text: 'Insérer un pied de page',
   icon: 'abc',
   context: 'insert',
-  onclick: function(){
-    window.alert('insert footer');
+  onclick: function () {
+    window.alert('insert footer')
   }
-});
+})
 
 /**
  * Remove footer menu item
@@ -80,20 +80,19 @@ menuItems.insertFooter = new MenuItem('insertFooter',{
  * @type {MenuItem}
  * @memberof menuItems
  */
-menuItems.removeFooter = new MenuItem('removeFooter',{
+menuItems.removeFooter = new MenuItem('removeFooter', {
   text: 'Supprimer le pied de page',
   icon: 'text',
   context: 'insert',
-  onclick: function(){
-    window.alert('remove footer');
+  onclick: function () {
+    window.alert('remove footer')
   }
-});
+})
 
-
-exports.lockNode = function(){
-  $(this).attr('contenteditable',false);
-};
-exports.unlockNode = function(){
-  $(this).attr('contenteditable',true);
-  $(this).focus();
-};
+exports.lockNode = function () {
+  $(this).attr('contenteditable', false)
+}
+exports.unlockNode = function () {
+  $(this).attr('contenteditable', true)
+  $(this).focus()
+}

@@ -1,16 +1,16 @@
-'use strict';
+'use strict'
 
-var Header = require('./Header');
-var Footer = require('./Footer');
+var Header = require('./Header')
+var Footer = require('./Footer')
 
 /**
  * HeaderFactory class. The aim of this class is to manage the document header and footer.
  * @constructor
  */
-function HeaderFooterFactory(editor){
-  this._editor = editor;
-  this._hasHeader = false;
-  this._hasFooter = false;
+function HeaderFooterFactory (editor) {
+  this._editor = editor
+  this._hasHeader = false
+  this._hasFooter = false
 }
 
 /**
@@ -19,54 +19,53 @@ function HeaderFooterFactory(editor){
  * @param {DOMElement} element
  * @returns void
  */
-HeaderFooterFactory.prototype.loadElement = function(element){
-  var $el = $(element);
+HeaderFooterFactory.prototype.loadElement = function (element) {
+  var $el = $(element)
   if ($el.attr('data-headfoot-header')) {
-    this._hasHeader = true;
-    this.header = new Header(this._editor, this._editor.getBody(), element);
+    this._hasHeader = true
+    this.header = new Header(this._editor, this._editor.getBody(), element)
   } else if ($el.attr('data-headfoot-footer')) {
-    this._hasFooter = true;
-    this.footer = new Footer(this._editor, this._editor.getBody(), element);
-  } else throw new Error('This element is not a header neither a footer element.');
-};
+    this._hasFooter = true
+    this.footer = new Footer(this._editor, this._editor.getBody(), element)
+  } else throw new Error('This element is not a header neither a footer element.')
+}
 
 /**
  * Insert a new header
  * @method
  * @returns void
  */
-HeaderFooterFactory.prototype.insertHeader = function(){
-  this.header = new Header(this._editor,this._editor.getBody());
-  this._hasHeader = true;
-};
+HeaderFooterFactory.prototype.insertHeader = function () {
+  this.header = new Header(this._editor, this._editor.getBody())
+  this._hasHeader = true
+}
 
 /**
  * Insert a new footer
  * @method
  * @returns void
  */
-HeaderFooterFactory.prototype.insertFooter = function(){
-  this.footer = new Footer(this._editor,this._editor.getBody());
-  this._hasFooter = true;
-};
+HeaderFooterFactory.prototype.insertFooter = function () {
+  this.footer = new Footer(this._editor, this._editor.getBody())
+  this._hasFooter = true
+}
 
 /**
  * Check if the document has a header or not
  * @method
  * @returns {Boolean} true if the document has a header, false if not
  */
-HeaderFooterFactory.prototype.hasHeader = function(){
-  return this._hasHeader;
-};
+HeaderFooterFactory.prototype.hasHeader = function () {
+  return this._hasHeader
+}
 
 /**
  * Check if the document has a footer or not
  * @method
  * @returns {Boolean} true if the document has a footer, false if not
  */
-HeaderFooterFactory.prototype.hasFooter = function(){
-  return this._hasFooter;
-};
+HeaderFooterFactory.prototype.hasFooter = function () {
+  return this._hasFooter
+}
 
-
-module.exports = HeaderFooterFactory;
+module.exports = HeaderFooterFactory

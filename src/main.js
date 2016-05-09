@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 /**
  * plugin.js
@@ -23,7 +23,6 @@
  * @version 1.0.0
  */
 
-
 /**
  * Tinymce library - injected by the plugin loader.
  * @external tinymce
@@ -38,8 +37,8 @@
  */
 /*global jquery:true */
 
-var HeaderFooterFactory = require('./classes/HeaderFooterFactory');
-var ui = require('./utils/ui');
+var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
+var ui = require('./utils/ui')
 
 /**
  * Tinymce plugin headers/footers
@@ -48,54 +47,51 @@ var ui = require('./utils/ui');
  * @param {tinymce.Editor} editor - The injected tinymce editor.
  * @returns void
  */
-function tinymcePluginHeadersFooters(editor,url) {
-
-  function onInitHandler(){
-
-
+function tinymcePluginHeadersFooters (editor, url) {
+  function onInitHandler () {
     // instanciate the factory
-    headerFooterFactory = new HeaderFooterFactory(editor);
+    headerFooterFactory = new HeaderFooterFactory(editor)
 
     // hide remove buttons
-    ui.menuItems.removeHeader.show().disable();
-    ui.menuItems.removeFooter.show().disable();
+    ui.menuItems.removeHeader.show().disable()
+    ui.menuItems.removeFooter.show().disable()
 
     // override insertHeader onclick handler
-    ui.menuItems.insertHeader.onclick = function(){
-      headerFooterFactory.insertHeader();
-      ui.menuItems.insertHeader.disable();
-      ui.menuItems.removeHeader.enable();
-    };
+    ui.menuItems.insertHeader.onclick = function () {
+      headerFooterFactory.insertHeader()
+      ui.menuItems.insertHeader.disable()
+      ui.menuItems.removeHeader.enable()
+    }
 
     // overrides insertFooter onclick handler
-    ui.menuItems.insertFooter.onclick = function(){
-      headerFooterFactory.insertFooter();
-      ui.menuItems.insertFooter.disable();
-      ui.menuItems.removeFooter.enable();
-    };
+    ui.menuItems.insertFooter.onclick = function () {
+      headerFooterFactory.insertFooter()
+      ui.menuItems.insertFooter.disable()
+      ui.menuItems.removeFooter.enable()
+    }
 
-    editor.on('SetContent',onSetContent);
+    editor.on('SetContent', onSetContent)
   }
 
-  function onSetContent(evt){
-    var $bodyElmt = $('body',editor.getDoc());
-    var $headFootElmts = $('*[data-headfoot]',editor.getDoc());
-    $headFootElmts.each(function(i, el){
-      headerFooterFactory.loadElement(el);
-    });
+  function onSetContent (evt) {
+    var $bodyElmt = $('body', editor.getDoc())
+    var $headFootElmts = $('*[data-headfoot]', editor.getDoc())
+    $headFootElmts.each(function (i, el) {
+      headerFooterFactory.loadElement(el)
+    })
   }
 
-  var headerFooterFactory;
+  var headerFooterFactory
 
   // add menu items
-  editor.addMenuItem('insertHeader', ui.menuItems.insertHeader);
-  editor.addMenuItem('removeHeader', ui.menuItems.removeHeader);
-  editor.addMenuItem('insertFooter', ui.menuItems.insertFooter);
-  editor.addMenuItem('removeFooter', ui.menuItems.removeFooter);
+  editor.addMenuItem('insertHeader', ui.menuItems.insertHeader)
+  editor.addMenuItem('removeHeader', ui.menuItems.removeHeader)
+  editor.addMenuItem('insertFooter', ui.menuItems.insertFooter)
+  editor.addMenuItem('removeFooter', ui.menuItems.removeFooter)
 
-  editor.on('init',onInitHandler);
+  editor.on('init', onInitHandler)
 
 }
 
 // Add the plugin to the tinymce PluginManager
-tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters);
+tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)

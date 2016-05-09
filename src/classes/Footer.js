@@ -1,17 +1,17 @@
-'use strict';
+'use strict'
 
-var HeadFoot = require('./HeadFoot');
+var HeadFoot = require('./HeadFoot')
 
 /**
  * Footer class
  * @constructor
  */
-function Footer(editor,_documentBody, existingElement){
-  HeadFoot.call(this, editor, _documentBody, existingElement);
-  $(this.node).appendTo(this._documentBody);
+function Footer (editor, _documentBody, existingElement) {
+  HeadFoot.call(this, editor, _documentBody, existingElement)
+  $(this.node).appendTo(this._documentBody)
 }
 
-Footer.prototype = Object.create(HeadFoot.prototype);
+Footer.prototype = Object.create(HeadFoot.prototype)
 
 /**
  * Create a new node for the footer.
@@ -19,9 +19,9 @@ Footer.prototype = Object.create(HeadFoot.prototype);
  * @method
  * @override HeadFoot.prototype._createNode()
  */
-Footer.prototype._createNode = function(){
-  HeadFoot.prototype._createNode.call(this);
-  $(this.node).attr('data-headfoot-footer',true);
-};
+Footer.prototype._createNode = function () {
+  HeadFoot.prototype._createNode.call(this)
+  $(this.node).attr('data-headfoot-footer', true)
+}
 
-module.exports = Footer;
+module.exports = Footer
