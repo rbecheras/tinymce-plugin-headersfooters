@@ -2,9 +2,16 @@
 
 var ui = require('../utils/ui')
 
+var $ = window.jquery
+
+module.exports = HeadFoot
+
 /**
  * Abstract class to inherit Header and Footer sub classes from.
  * @constructor
+ * @param {Editor} editor The current editor
+ * @param {DOMElement} documentBody The document body for this documentBody
+ * @param {DOMNode} [existingElement] The optional existing element that constitute a header of a footer and should be loaded from it
  */
 function HeadFoot (editor, documentBody, existingElement) {
   // bind useful vars
@@ -37,16 +44,23 @@ HeadFoot.prototype._createNode = function () {
     .attr('data-headfoot', true)
     .attr('data-headfoot-pristine', true)
     .html('Double-click to edit this content')[0]
-
 }
 
+/**
+ * Disable the page edition and enable the edition for the header or the footers
+ * @method
+ * @returns void
+ */
 HeadFoot.prototype.enterNode = function () {
   var that = this
+  var headfootContent
+  var currentPageContent
+
   this._editor.plugins.paginate.disableWatchPage()
   ui.lockNode.call(this._editor.plugins.paginate.getCurrentPage().content())
   ui.unlockNode.call(this.node)
 
-  var headfootContent = this.node.firstChild
+  headfootContent = this.node.firstChild
   if (!headfootContent) {
     throw new Error('no child is not allowed in a headfoot')
   }
@@ -58,15 +72,21 @@ HeadFoot.prototype.enterNode = function () {
     this._editor.selection.collapse(true)
   }
   console.log('configure livenode', this._editor.plugins.paginate.getCurrentPage().content())
-  $(this._editor.plugins.paginate.getCurrentPage().content()).click(function () { console.log('paginate.getCurrentPage().content() clicked')
+  currentPageContent = this._editor.plugins.paginate.getCurrentPage().content()
+  $(currentPageContent).click(function () {
+    console.log('paginate.getCurrentPage().content() clicked')
     that.liveNode()
   })
 }
 
-HeadFoot.prototype.liveNode = function () { console.info('living node'); console.log(this.node)
+/**
+ * Do the inverse of .enterNode(). Disable edition for the header or footer, and re-enable it for the current page.
+ * @method
+ * @returns void
+ */
+HeadFoot.prototype.liveNode = function () {
+  console.info('living node'); console.log(this.node)
   this._editor.plugins.paginate.enableWatchPage()
   ui.lockNode.call(this.node)
   ui.unlockNode.call(this._editor.plugins.paginate.getCurrentPage().content())
 }
-
-module.exports = HeadFoot
