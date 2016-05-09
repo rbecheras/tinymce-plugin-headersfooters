@@ -28,17 +28,20 @@
  * @external tinymce
  * @see {@link https://www.tinymce.com/docs/api/class/tinymce/|Tinymce API Reference}
  */
-/*global tinymce:true */
+var tinymce = window.tinymce
 
 /**
  * The jQuery plugin namespace - plugin dependency.
  * @external "jQuery.fn"
  * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
  */
-/*global jquery:true */
+var $ = window.jquery
 
 var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
 var ui = require('./utils/ui')
+
+// Add the plugin to the tinymce PluginManager
+tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
 
 /**
  * Tinymce plugin headers/footers
@@ -48,6 +51,16 @@ var ui = require('./utils/ui')
  * @returns void
  */
 function tinymcePluginHeadersFooters (editor, url) {
+  var headerFooterFactory
+
+  // add menu items
+  editor.addMenuItem('insertHeader', ui.menuItems.insertHeader)
+  editor.addMenuItem('removeHeader', ui.menuItems.removeHeader)
+  editor.addMenuItem('insertFooter', ui.menuItems.insertFooter)
+  editor.addMenuItem('removeFooter', ui.menuItems.removeFooter)
+
+  editor.on('init', onInitHandler)
+
   function onInitHandler () {
     // instanciate the factory
     headerFooterFactory = new HeaderFooterFactory(editor)
@@ -74,24 +87,10 @@ function tinymcePluginHeadersFooters (editor, url) {
   }
 
   function onSetContent (evt) {
-    var $bodyElmt = $('body', editor.getDoc())
+    // var $bodyElmt = $('body', editor.getDoc())
     var $headFootElmts = $('*[data-headfoot]', editor.getDoc())
     $headFootElmts.each(function (i, el) {
       headerFooterFactory.loadElement(el)
     })
   }
-
-  var headerFooterFactory
-
-  // add menu items
-  editor.addMenuItem('insertHeader', ui.menuItems.insertHeader)
-  editor.addMenuItem('removeHeader', ui.menuItems.removeHeader)
-  editor.addMenuItem('insertFooter', ui.menuItems.insertFooter)
-  editor.addMenuItem('removeFooter', ui.menuItems.removeFooter)
-
-  editor.on('init', onInitHandler)
-
 }
-
-// Add the plugin to the tinymce PluginManager
-tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
