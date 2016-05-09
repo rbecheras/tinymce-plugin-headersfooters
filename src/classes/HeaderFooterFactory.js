@@ -3,9 +3,14 @@
 var Header = require('./Header')
 var Footer = require('./Footer')
 
+var $ = window.jquery
+
+module.exports = HeaderFooterFactory
+
 /**
  * HeaderFactory class. The aim of this class is to manage the document header and footer.
  * @constructor
+ * @param {Editor} editor The current editor
  */
 function HeaderFooterFactory (editor) {
   this._editor = editor
@@ -67,5 +72,3 @@ HeaderFooterFactory.prototype.hasHeader = function () {
 HeaderFooterFactory.prototype.hasFooter = function () {
   return this._hasFooter
 }
-
-module.exports = HeaderFooterFactory
