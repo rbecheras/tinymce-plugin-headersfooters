@@ -2,7 +2,7 @@
 
 var ui = require('../utils/ui')
 
-var $ = window.jquery
+var $ = window.jQuery
 
 module.exports = HeadFoot
 

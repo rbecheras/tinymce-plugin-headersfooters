@@ -10,12 +10,23 @@ var HeadFoot = require('./HeadFoot');
  * Footer class
  * @constructor
  */
-function Footer(editor,_documentBody){
-  HeadFoot.call(this,editor,_documentBody);
+function Footer(editor,_documentBody, existingElement){
+  HeadFoot.call(this, editor, _documentBody, existingElement);
   $(this.node).appendTo(this._documentBody);
 }
 
 Footer.prototype = Object.create(HeadFoot.prototype);
+
+/**
+ * Create a new node for the footer.
+ * @private
+ * @method
+ * @override HeadFoot.prototype._createNode()
+ */
+Footer.prototype._createNode = function(){
+  HeadFoot.prototype._createNode.call(this);
+  $(this.node).attr('data-headfoot-footer',true);
+};
 
 module.exports = Footer;
 
@@ -28,13 +39,23 @@ var ui = require('../utils/ui');
  * Abstract class to inherit Header and Footer sub classes from.
  * @constructor
  */
-function HeadFoot(editor,documentBody){
+function HeadFoot(editor, documentBody, existingElement){
+  // bind useful vars
   var that=this;
   this._editor = editor;
   this._documentBody = documentBody;
-  this._createNode();
+
+  // load the existing element if it exists or create a new one.
+  if (existingElement) {
+    this.node = existingElement;
+  } else {
+    this._createNode();
+  }
+
+  // live the node and implements the double click handler to switch the contentEditable mode.
   this.liveNode();
   $(this.node).dblclick(function(){
+    console.log('double click on node',that.node);
     that.enterNode();
   });
 }
@@ -70,13 +91,13 @@ HeadFoot.prototype.enterNode = function(){
   } else {
     this._editor.selection.collapse(true);
   }
-
-  $(this._editor.plugins.paginate.getCurrentPage().content()).click(function(){
+console.log('configure livenode',this._editor.plugins.paginate.getCurrentPage().content());
+  $(this._editor.plugins.paginate.getCurrentPage().content()).click(function(){ console.log('paginate.getCurrentPage().content() clicked');
     that.liveNode();
   });
 };
 
-HeadFoot.prototype.liveNode = function(){
+HeadFoot.prototype.liveNode = function(){ console.info('living node'); console.log(this.node);
   this._editor.plugins.paginate.enableWatchPage();
   ui.lockNode.call(this.node);
   ui.unlockNode.call(this._editor.plugins.paginate.getCurrentPage().content());
@@ -93,12 +114,23 @@ var HeadFoot = require('./HeadFoot');
  * Header class
  * @constructor
  */
-function Header(editor,_documentBody){
-  HeadFoot.call(this,editor,_documentBody);
+function Header(editor, _documentBody, existingElement){
+  HeadFoot.call(this, editor, _documentBody, existingElement);
   $(this.node).prependTo(this._documentBody);
 }
 
 Header.prototype = Object.create(HeadFoot.prototype);
+
+/**
+ * Create a new node for the header.
+ * @private
+ * @method
+ * @override HeadFoot.prototype._createNode()
+ */
+Header.prototype._createNode = function(){
+  HeadFoot.prototype._createNode.call(this);
+  $(this.node).attr('data-headfoot-header',true);
+};
 
 module.exports = Header;
 
@@ -109,19 +141,70 @@ var Header = require('./Header');
 var Footer = require('./Footer');
 
 /**
- * HeaderFactory class
+ * HeaderFactory class. The aim of this class is to manage the document header and footer.
  * @constructor
  */
 function HeaderFooterFactory(editor){
   this._editor = editor;
+  this._hasHeader = false;
+  this._hasFooter = false;
 }
 
+/**
+ * Load an existing header or footer depending of its nature, from its DOM element.
+ * @method
+ * @param {DOMElement} element
+ * @returns void
+ */
+HeaderFooterFactory.prototype.loadElement = function(element){
+  var $el = $(element);
+  if ($el.attr('data-headfoot-header')) {
+    this._hasHeader = true;
+    this.header = new Header(this._editor, this._editor.getBody(), element);
+  } else if ($el.attr('data-headfoot-footer')) {
+    this._hasFooter = true;
+    this.footer = new Footer(this._editor, this._editor.getBody(), element);
+  } else throw new Error('This element is not a header neither a footer element.');
+};
+
+/**
+ * Insert a new header
+ * @method
+ * @returns void
+ */
 HeaderFooterFactory.prototype.insertHeader = function(){
   this.header = new Header(this._editor,this._editor.getBody());
+  this._hasHeader = true;
 };
+
+/**
+ * Insert a new footer
+ * @method
+ * @returns void
+ */
 HeaderFooterFactory.prototype.insertFooter = function(){
   this.footer = new Footer(this._editor,this._editor.getBody());
+  this._hasFooter = true;
 };
+
+/**
+ * Check if the document has a header or not
+ * @method
+ * @returns {Boolean} true if the document has a header, false if not
+ */
+HeaderFooterFactory.prototype.hasHeader = function(){
+  return this._hasHeader;
+};
+
+/**
+ * Check if the document has a footer or not
+ * @method
+ * @returns {Boolean} true if the document has a footer, false if not
+ */
+HeaderFooterFactory.prototype.hasFooter = function(){
+  return this._hasFooter;
+};
+
 
 module.exports = HeaderFooterFactory;
 
@@ -317,6 +400,16 @@ function tinymcePluginHeadersFooters(editor,url) {
       ui.menuItems.insertFooter.disable();
       ui.menuItems.removeFooter.enable();
     };
+
+    editor.on('SetContent',onSetContent);
+  }
+
+  function onSetContent(evt){
+    var $bodyElmt = $('body',editor.getDoc());
+    var $headFootElmts = $('*[data-headfoot]',editor.getDoc());
+    $headFootElmts.each(function(i, el){
+      headerFooterFactory.loadElement(el);
+    });
   }
 
   var headerFooterFactory;

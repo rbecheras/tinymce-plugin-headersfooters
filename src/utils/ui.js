@@ -1,6 +1,6 @@
 'use strict'
 
-var $ = window.jquery
+var $ = window.jQuery
 
 /**
  * User interface module

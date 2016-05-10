@@ -3,7 +3,7 @@
 var Header = require('./Header')
 var Footer = require('./Footer')
 
-var $ = window.jquery
+var $ = window.jQuery
 
 module.exports = HeaderFooterFactory
 

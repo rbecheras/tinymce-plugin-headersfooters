@@ -2,7 +2,7 @@
 
 var HeadFoot = require('./HeadFoot')
 
-var $ = window.jquery
+var $ = window.jQuery
 
 module.exports = Footer
 

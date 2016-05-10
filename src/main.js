@@ -35,7 +35,7 @@ var tinymce = window.tinymce
  * @external "jQuery.fn"
  * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
  */
-var $ = window.jquery
+var $ = window.jQuery
 
 var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
 var ui = require('./utils/ui')
