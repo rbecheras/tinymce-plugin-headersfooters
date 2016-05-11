@@ -1,5 +1,6 @@
 'use strict'
 
+var q = require('q')
 var $ = window.jQuery
 
 module.exports = MenuItem
@@ -10,7 +11,6 @@ module.exports = MenuItem
  * @param {String} name The item name
  * @param {object} options The menu item options
  * @example
-  <code>
   tinymce.activeEditor.addMenuItem(new MenuItem('myAction',{
     icon: 'text',
     text: 'My Action',
@@ -20,10 +20,10 @@ module.exports = MenuItem
      window.alert('overiden default onclick action')
     }
   }))
-  </code>
  */
 function MenuItem (name, options) {
   this.name = name
+  _setUIControlPromise(this)
   for (var key in options) {
     if (key !== 'visible' && key !== 'disabled') {
       this[key] = options[key]
@@ -39,7 +39,7 @@ function MenuItem (name, options) {
 /**
  * Returns the menu item UI control as a jquery object
  * @method
- * @returns {Array} the jquery object wrapped in jquery array of lenght 1
+ * @returns {Promise} A promise resolved by the jquery wrapper of the menu item's node element
  * @example
   <code>
     var menuElement = ui.menuItems.insertHeader.getUIControl()
@@ -47,7 +47,10 @@ function MenuItem (name, options) {
   </code>
  */
 MenuItem.prototype.getUIControl = function () {
-  return $('#' + this.id)
+  var that = this
+  return this._renderingPromise.then(function () {
+    return $('#' + that.id)
+  })
 }
 
 /**
@@ -65,41 +68,71 @@ MenuItem.prototype.onclick = function () {
 /**
  * Show the menu item UI control and returns it to allow chainable behavior.
  * @method
- * @returns {MenuItem} the menu item
+ * @returns {Promise} A promise resolved by the menu item
  */
 MenuItem.prototype.show = function () {
-  this.getUIControl().show()
-  return this
+  return this.getUIControl().then(function (uiControl) {
+    uiControl.show()
+    return uiControl
+  })
 }
 
 /**
  * Hide the menu item UI control and returns it to allow chainable behavior.
  * @method
- * @returns {MenuItem} the menu item
+ * @returns {Promise} A promise resolved by the menu item
  */
 MenuItem.prototype.hide = function () {
-  this.getUIControl().hide()
-  return this
+  return this.getUIControl().then(function (uiControl) {
+    uiControl.hide()
+    return uiControl
+  })
 }
 
 /**
  * Disable the menu item and returns it to allow chainable behavior.
  * @method
- * @returns {MenuItem} the menu item.
+ * @returns {Promise} A promise resolved by the menu item
  */
 MenuItem.prototype.disable = function () {
-  this.getUIControl().addClass('mce-disabled')
-  return this
+  return this.getUIControl().then(function (uiControl) {
+    uiControl.addClass('mce-disabled')
+    return uiControl
+  })
 }
 
 /**
  * Enable the menu item and returns it to allow chainable behavior.
  * @method
- * @returns {MenuItem} the menu item
+ * @returns {Promise} A promise resolved by the menu item
  */
 MenuItem.prototype.enable = function () {
-  this.getUIControl().removeClass('mce-disabled')
-  return this
+  return this.getUIControl().then(function (uiControl) {
+    uiControl.removeClass('mce-disabled')
+    return uiControl
+  })
+}
+
+/**
+ * Create a promise that will be resolved when the menu item will be rendered the first time.
+ * This promise will be used by all methods needing to get the UI control (node element)
+ * It returns nothing and it must be called on top of the MenuItem constructor
+ * @method
+ * @memberof MenuItem
+ * @private
+ * @param {MenuItem} that The context for the private method
+ * @returns void
+ */
+function _setUIControlPromise (that) {
+  var d = q.defer()
+  var $body = $('body')
+  console.log('$body', $body)
+  $body.on('menusController:mceMenuRendered', function (evt, menuLabel) {
+    $body.on('menusController:mceMenuItemRendered', function (evt, itemID) {
+      if (itemID === that.id) d.resolve()
+    })
+  })
+  that._renderingPromise = d.promise
 }
 
 /**
