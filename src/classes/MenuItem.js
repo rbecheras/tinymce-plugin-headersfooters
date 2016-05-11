@@ -126,7 +126,6 @@ MenuItem.prototype.enable = function () {
 function _setUIControlPromise (that) {
   var d = q.defer()
   var $body = $('body')
-  console.log('$body', $body)
   $body.on('menusController:mceMenuRendered', function (evt, menuLabel) {
     $body.on('menusController:mceMenuItemRendered', function (evt, itemID) {
       if (itemID === that.id) d.resolve()
