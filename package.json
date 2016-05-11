@@ -42,5 +42,8 @@
   "bugs": {
     "url": "https://github.com/rbecheras/tinymce-plugin-headersfooters/issues"
   },
-  "homepage": "https://github.com/rbecheras/tinymce-plugin-headersfooters#readme"
+  "homepage": "https://github.com/rbecheras/tinymce-plugin-headersfooters#readme",
+  "dependencies": {
+    "q": "^1.4.1"
+  }
 }
