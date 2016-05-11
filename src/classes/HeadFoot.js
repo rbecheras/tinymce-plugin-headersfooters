@@ -88,7 +88,6 @@ HeadFoot.prototype.enterNode = function () {
  * @returns void
  */
 HeadFoot.prototype.liveNode = function () {
-  console.info('living node'); console.log(this.node)
   this._editor.plugins.paginate.enableWatchPage()
   ui.lockNode.call(this.node)
   ui.unlockNode.call(this._editor.plugins.paginate.getCurrentPage().content())
