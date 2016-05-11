@@ -18,12 +18,13 @@ module.exports = function (grunt) {
     },
     watch: {
       gruntfile: {
+        options: {reload: true},
         files: 'Gruntfile.js',
         tasks: ['standard:gruntfile']
       },
       js: {
         files: ['src/**/*.js'],
-        tasks: ['standard:js', 'browserify', 'watch']
+        tasks: ['standard:js', 'browserify', 'jsdoc']
       }
     },
     bump: {

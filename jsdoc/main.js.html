@@ -156,39 +156,10 @@ function tinymcePluginHeadersFooters (editor, url) {
     // instanciate the factory
     headerFooterFactory = new HeaderFooterFactory(editor)
 
-    // on startup, hide remove buttons
-    ui.menuItems.removeHeader.hide()
-    ui.menuItems.removeFooter.hide()
-
-    // override insertHeader and insertFooter onclick handler
-    ui.menuItems.insertHeader.onclick = function () {
-      headerFooterFactory.insertHeader()
-      ui.menuItems.insertHeader.hide()
-      ui.menuItems.removeHeader.show()
-    }
-    ui.menuItems.insertFooter.onclick = function () {
-      headerFooterFactory.insertFooter()
-      ui.menuItems.insertFooter.hide()
-      ui.menuItems.removeFooter.show()
-    }
-
-    // override removeHeader and removeFooter onclick handler
-    ui.menuItems.removeHeader.onclick = function () {
-      headerFooterFactory.removeHeader()
-      ui.menuItems.insertHeader.show()
-      ui.menuItems.removeHeader.hide()
-    }
-
-    ui.menuItems.removeFooter.onclick = function () {
-      headerFooterFactory.removeFooter()
-      ui.menuItems.insertFooter.show()
-      ui.menuItems.removeFooter.hide()
-    }
+    // initialize menu items states
+    initMenuItems(headerFooterFactory, ui.menuItems)
 
     editor.on('SetContent', onSetContent)
-
-    var insertMenu = editor.plugins.menuscontroller.getMenuByName('Insert')
-    console.log('insertMenu', insertMenu)
   }
 
   function onSetContent (evt) {
@@ -197,6 +168,42 @@ function tinymcePluginHeadersFooters (editor, url) {
     $headFootElmts.each(function (i, el) {
       headerFooterFactory.loadElement(el)
     })
+  }
+}
+
+/**
+ * Initialize menu items states (show, hide, ...) and implements onclick handlers
+ * @function
+ * @inner
+ * @param {HeaderFooterFactory} factory The header and footer factory
+ * @param {object} menuItems The set of plugin's menu items
+ * @returns undefined
+ */
+function initMenuItems (factory, menuItems) {
+  // on startup, hide remove buttons
+  menuItems.removeHeader.hide()
+  menuItems.removeFooter.hide()
+
+  // override insertHeader, insertFooter, removeHeader and removeFooter onclick handlers
+  menuItems.insertHeader.onclick = function () {
+    factory.insertHeader()
+    menuItems.insertHeader.hide()
+    menuItems.removeHeader.show()
+  }
+  menuItems.insertFooter.onclick = function () {
+    factory.insertFooter()
+    menuItems.insertFooter.hide()
+    menuItems.removeFooter.show()
+  }
+  menuItems.removeHeader.onclick = function () {
+    factory.removeHeader()
+    menuItems.insertHeader.show()
+    menuItems.removeHeader.hide()
+  }
+  menuItems.removeFooter.onclick = function () {
+    factory.removeFooter()
+    menuItems.insertFooter.show()
+    menuItems.removeFooter.hide()
   }
 }
 </pre>
