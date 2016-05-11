@@ -47,7 +47,7 @@
 			<li class="dropdown">
 				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="global.html#camel2Dash">camel2Dash</a></li><li><a href="global.html#tinymcePluginHeadersFooters">tinymcePluginHeadersFooters</a></li>
+					<li><a href="global.html#tinymcePluginHeadersFooters">tinymcePluginHeadersFooters</a></li>
 				</ul>
 			</li>
 			
@@ -262,14 +262,14 @@
         <h5>Example</h5>
         
     <pre class="sunlight-highlight-javascript">tinymce.activeEditor.addMenuItem(new MenuItem(&#x27;myAction&#x27;,{
-    icon: &#x27;text&#x27;,
-    text: &#x27;My Action&#x27;,
-    visible: true,
-    disabled: true,
-    onclick: function(){
-     window.alert(&#x27;overiden default onclick action&#x27;)
-    }
-  }))</pre>
+  icon: &#x27;text&#x27;,
+  text: &#x27;My Action&#x27;,
+  visible: true,
+  disabled: true,
+  onclick: function(){
+   window.alert(&#x27;overiden default onclick action&#x27;)
+  }
+}))</pre>
 
 
     
@@ -404,7 +404,7 @@ It returns nothing and it must be called on top of the MenuItem constructor
 		<ul class="dummy">
 			<li>
 				<a href="classes_MenuItem.js.html">classes/MenuItem.js</a>,
-				 <a href="classes_MenuItem.js.html#sunlight-1-line-126">line 126</a>
+				 <a href="classes_MenuItem.js.html#sunlight-1-line-159">line 159</a>
 			</li>
 		</ul>
 	</dd>
@@ -440,6 +440,163 @@ It returns nothing and it must be called on top of the MenuItem constructor
 
 
         
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">function MenuItem (name, options) {
+  this.name = name
+  _setUIControlPromise(this) // this step must be done more earlier as possible to get access to the DOMNode when it will be rendered
+  // continue to build the instance
+}</pre>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id=".camel2Dash"><span class="type-signature">&lt;private, static> </span>camel2Dash(inputStr)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Converts a camel cased string to a dashed string
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>inputStr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The input string to dasherize</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="classes_MenuItem.js.html">classes/MenuItem.js</a>,
+				 <a href="classes_MenuItem.js.html#sunlight-1-line-182">line 182</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var camelCasedString = &#x27;helloWorld&#x27;
+var dashedString = camel2Dash(s)
+console.log(dashedString)
+// -&gt; hello-world</pre>
+
 
     
 </dd>
@@ -503,7 +660,7 @@ It returns nothing and it must be called on top of the MenuItem constructor
 		<ul class="dummy">
 			<li>
 				<a href="classes_MenuItem.js.html">classes/MenuItem.js</a>,
-				 <a href="classes_MenuItem.js.html#sunlight-1-line-97">line 97</a>
+				 <a href="classes_MenuItem.js.html#sunlight-1-line-117">line 117</a>
 			</li>
 		</ul>
 	</dd>
@@ -552,6 +709,22 @@ It returns nothing and it must be called on top of the MenuItem constructor
 
 
         
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var menuItem = new MenuItem(&#x27;my menu item&#x27;, options)
+menuItem.show().then(function (menuItem) {
+  // the menuItem is given as first argument
+  menuItem.disable().then(function (menuItem) {
+    // now the menu item is shown but disabled
+    // the menuItem is again given as first argument
+    setTimeout(function () {
+      menuItem.enable() // enable the menu item 2sec after it has been disabled
+    },2000)
+  })
+})</pre>
+
 
     
 </dd>
@@ -615,7 +788,7 @@ It returns nothing and it must be called on top of the MenuItem constructor
 		<ul class="dummy">
 			<li>
 				<a href="classes_MenuItem.js.html">classes/MenuItem.js</a>,
-				 <a href="classes_MenuItem.js.html#sunlight-1-line-109">line 109</a>
+				 <a href="classes_MenuItem.js.html#sunlight-1-line-136">line 136</a>
 			</li>
 		</ul>
 	</dd>
@@ -664,6 +837,17 @@ It returns nothing and it must be called on top of the MenuItem constructor
 
 
         
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var menuItem = new MenuItem(&#x27;my menu item&#x27;, options)
+menuItem.enable().then(function (menuItem) {
+  setTimeout(function () {
+    menuItem.disable() // disable the menu item 2sec after it has been enabled
+  },2000)
+})</pre>
+
 
     
 </dd>
@@ -727,7 +911,7 @@ It returns nothing and it must be called on top of the MenuItem constructor
 		<ul class="dummy">
 			<li>
 				<a href="classes_MenuItem.js.html">classes/MenuItem.js</a>,
-				 <a href="classes_MenuItem.js.html#sunlight-1-line-49">line 49</a>
+				 <a href="classes_MenuItem.js.html#sunlight-1-line-47">line 47</a>
 			</li>
 		</ul>
 	</dd>
@@ -780,10 +964,8 @@ It returns nothing and it must be called on top of the MenuItem constructor
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">&lt;code&gt;
-    var menuElement = ui.menuItems.insertHeader.getUIControl()
-    menuElement.css(&#x27;color&#x27;,&#x27;red&#x27;)
-  &lt;/code&gt;</pre>
+    <pre class="sunlight-highlight-javascript">var menuElement = ui.menuItems.insertHeader.getUIControl()
+menuElement.css(&#x27;color&#x27;,&#x27;red&#x27;)</pre>
 
 
     
@@ -848,7 +1030,7 @@ It returns nothing and it must be called on top of the MenuItem constructor
 		<ul class="dummy">
 			<li>
 				<a href="classes_MenuItem.js.html">classes/MenuItem.js</a>,
-				 <a href="classes_MenuItem.js.html#sunlight-1-line-85">line 85</a>
+				 <a href="classes_MenuItem.js.html#sunlight-1-line-93">line 93</a>
 			</li>
 		</ul>
 	</dd>
@@ -914,8 +1096,7 @@ It returns nothing and it must be called on top of the MenuItem constructor
     
     <div class="description">
         By default on click, the menu item logs on console it has been clicked and returns it to allow chainable behavior.
-This method should be overriden after instanciation.
-Be caution when ovveriding, please returns the menu item in the method to not break the chainable behavior allowed by the default implementation.
+This method should be overriden after instanciation (see example).
     </div>
     
 
@@ -962,7 +1143,7 @@ Be caution when ovveriding, please returns the menu item in the method to not br
 		<ul class="dummy">
 			<li>
 				<a href="classes_MenuItem.js.html">classes/MenuItem.js</a>,
-				 <a href="classes_MenuItem.js.html#sunlight-1-line-63">line 63</a>
+				 <a href="classes_MenuItem.js.html#sunlight-1-line-66">line 66</a>
 			</li>
 		</ul>
 	</dd>
@@ -998,6 +1179,16 @@ Be caution when ovveriding, please returns the menu item in the method to not br
 
 
         
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">// to override this placehoder callback, juste assign a new one
+var menuItem = new MenuItem(&#x27;my menu item&#x27;, options)
+menuItem.onclick = function () {
+	// implement your own
+}</pre>
+
 
     
 </dd>
@@ -1061,7 +1252,7 @@ Be caution when ovveriding, please returns the menu item in the method to not br
 		<ul class="dummy">
 			<li>
 				<a href="classes_MenuItem.js.html">classes/MenuItem.js</a>,
-				 <a href="classes_MenuItem.js.html#sunlight-1-line-73">line 73</a>
+				 <a href="classes_MenuItem.js.html#sunlight-1-line-81">line 81</a>
 			</li>
 		</ul>
 	</dd>
@@ -1110,6 +1301,16 @@ Be caution when ovveriding, please returns the menu item in the method to not br
 
 
         
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var menuItem = new MenuItem(&#x27;my menu item&#x27;, options)
+menuItem.show().then(function (menuItem) {
+  // the menuItem is given as first argument
+  menuItem.disable() // now the menu item is shown but disabled
+})</pre>
+
 
     
 </dd>
