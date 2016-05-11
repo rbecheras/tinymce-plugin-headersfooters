@@ -8,7 +8,8 @@ module.exports = Header
 
 /**
  * Header class
- * @constructor
+ * @class
+ * @augments HeadFoot
  * @param {Editor} editor The current editor
  * @param {DOMElement} documentBody The document body for this documentBody
  * @param {DOMNode} [existingElement] The optional existing element that constitute a header of a footer and should be loaded from it
