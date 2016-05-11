@@ -56,6 +56,34 @@ HeaderFooterFactory.prototype.insertFooter = function () {
 }
 
 /**
+ * Remove the current header
+ * @method
+ * @returns void
+ */
+HeaderFooterFactory.prototype.removeHeader = function () {
+  // the header can be removed only if it exists
+  if (!this.hasHeader()) throw new Error('No header available to remove')
+
+  $(this.header.node).remove()
+  this.header = null
+  this._hasHeader = false
+}
+
+/**
+ * Insert a new footer
+ * @method
+ * @returns void
+ */
+HeaderFooterFactory.prototype.removeFooter = function () {
+  // the footer can be removed only if it exists
+  if (!this.hasFooter()) throw new Error('No footer available to remove')
+
+  $(this.footer.node).remove()
+  this.footer = null
+  this._hasFooter = false
+}
+
+/**
  * Check if the document has a header or not
  * @method
  * @returns {Boolean} true if the document has a header, false if not
