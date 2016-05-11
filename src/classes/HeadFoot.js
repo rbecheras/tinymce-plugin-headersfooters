@@ -12,6 +12,9 @@ module.exports = HeadFoot
  * @param {Editor} editor The current editor
  * @param {DOMElement} documentBody The document body for this documentBody
  * @param {DOMNode} [existingElement] The optional existing element that constitute a header of a footer and should be loaded from it
+ * @property {Editor} _editor The current editor
+ * @property {DOMElement}  _documentBody The body element of the current document
+ * @property {DOMNode} node The header/footer's node element
  */
 function HeadFoot (editor, documentBody, existingElement) {
   // bind useful vars
@@ -85,7 +88,6 @@ HeadFoot.prototype.enterNode = function () {
  * @returns void
  */
 HeadFoot.prototype.liveNode = function () {
-  console.info('living node'); console.log(this.node)
   this._editor.plugins.paginate.enableWatchPage()
   ui.lockNode.call(this.node)
   ui.unlockNode.call(this._editor.plugins.paginate.getCurrentPage().content())

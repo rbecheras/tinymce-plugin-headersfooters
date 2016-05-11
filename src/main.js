@@ -65,23 +65,8 @@ function tinymcePluginHeadersFooters (editor, url) {
     // instanciate the factory
     headerFooterFactory = new HeaderFooterFactory(editor)
 
-    // hide remove buttons
-    ui.menuItems.removeHeader.show().disable()
-    ui.menuItems.removeFooter.show().disable()
-
-    // override insertHeader onclick handler
-    ui.menuItems.insertHeader.onclick = function () {
-      headerFooterFactory.insertHeader()
-      ui.menuItems.insertHeader.disable()
-      ui.menuItems.removeHeader.enable()
-    }
-
-    // overrides insertFooter onclick handler
-    ui.menuItems.insertFooter.onclick = function () {
-      headerFooterFactory.insertFooter()
-      ui.menuItems.insertFooter.disable()
-      ui.menuItems.removeFooter.enable()
-    }
+    // initialize menu items states
+    initMenuItems(headerFooterFactory, ui.menuItems)
 
     editor.on('SetContent', onSetContent)
   }
@@ -92,5 +77,41 @@ function tinymcePluginHeadersFooters (editor, url) {
     $headFootElmts.each(function (i, el) {
       headerFooterFactory.loadElement(el)
     })
+  }
+}
+
+/**
+ * Initialize menu items states (show, hide, ...) and implements onclick handlers
+ * @function
+ * @inner
+ * @param {HeaderFooterFactory} factory The header and footer factory
+ * @param {object} menuItems The set of plugin's menu items
+ * @returns undefined
+ */
+function initMenuItems (factory, menuItems) {
+  // on startup, hide remove buttons
+  menuItems.removeHeader.hide()
+  menuItems.removeFooter.hide()
+
+  // override insertHeader, insertFooter, removeHeader and removeFooter onclick handlers
+  menuItems.insertHeader.onclick = function () {
+    factory.insertHeader()
+    menuItems.insertHeader.hide()
+    menuItems.removeHeader.show()
+  }
+  menuItems.insertFooter.onclick = function () {
+    factory.insertFooter()
+    menuItems.insertFooter.hide()
+    menuItems.removeFooter.show()
+  }
+  menuItems.removeHeader.onclick = function () {
+    factory.removeHeader()
+    menuItems.insertHeader.show()
+    menuItems.removeHeader.hide()
+  }
+  menuItems.removeFooter.onclick = function () {
+    factory.removeFooter()
+    menuItems.insertFooter.show()
+    menuItems.removeFooter.hide()
   }
 }
