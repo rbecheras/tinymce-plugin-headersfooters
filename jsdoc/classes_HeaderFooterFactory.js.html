@@ -102,6 +102,11 @@ module.exports = HeaderFooterFactory
  * HeaderFactory class. The aim of this class is to manage the document header and footer.
  * @constructor
  * @param {Editor} editor The current editor
+ * @property {Editor} _editor The current editor
+ * @property {Boolean} _hasHeader Tell if the document has a header or not
+ * @property {Boolean} _hasFooter Tell if the document has a fooer or not
+ * @property {Header} header The current header if exists
+ * @property {Footer} footer The current footer if exists
  */
 function HeaderFooterFactory (editor) {
   this._editor = editor
@@ -144,6 +149,34 @@ HeaderFooterFactory.prototype.insertHeader = function () {
 HeaderFooterFactory.prototype.insertFooter = function () {
   this.footer = new Footer(this._editor, this._editor.getBody())
   this._hasFooter = true
+}
+
+/**
+ * Remove the current header
+ * @method
+ * @returns void
+ */
+HeaderFooterFactory.prototype.removeHeader = function () {
+  // the header can be removed only if it exists
+  if (!this.hasHeader()) throw new Error('No header available to remove')
+
+  $(this.header.node).remove()
+  this.header = null
+  this._hasHeader = false
+}
+
+/**
+ * Insert a new footer
+ * @method
+ * @returns void
+ */
+HeaderFooterFactory.prototype.removeFooter = function () {
+  // the footer can be removed only if it exists
+  if (!this.hasFooter()) throw new Error('No footer available to remove')
+
+  $(this.footer.node).remove()
+  this.footer = null
+  this._hasFooter = false
 }
 
 /**
