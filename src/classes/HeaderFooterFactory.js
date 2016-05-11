@@ -11,6 +11,11 @@ module.exports = HeaderFooterFactory
  * HeaderFactory class. The aim of this class is to manage the document header and footer.
  * @constructor
  * @param {Editor} editor The current editor
+ * @property {Editor} _editor The current editor
+ * @property {Boolean} _hasHeader Tell if the document has a header or not
+ * @property {Boolean} _hasFooter Tell if the document has a fooer or not
+ * @property {Header} header The current header if exists
+ * @property {Footer} footer The current footer if exists
  */
 function HeaderFooterFactory (editor) {
   this._editor = editor
