@@ -40,14 +40,14 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="Footer.html">Footer</a></li><li><a href="Header.html">Header</a></li><li><a href="HeaderFooterFactory.html">HeaderFooterFactory</a></li><li><a href="HeadFoot.html">HeadFoot</a></li>
+					<li><a href="Footer.html">Footer</a></li><li><a href="Header.html">Header</a></li><li><a href="HeaderFooterFactory.html">HeaderFooterFactory</a></li><li><a href="HeadFoot.html">HeadFoot</a></li><li><a href="MenuItem.html">MenuItem</a></li>
 				</ul>
 			</li>
 			
 			<li class="dropdown">
 				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="global.html#tinymcePluginHeadersFooters">tinymcePluginHeadersFooters</a></li>
+					<li><a href="global.html#camel2Dash">camel2Dash</a></li><li><a href="global.html#tinymcePluginHeadersFooters">tinymcePluginHeadersFooters</a></li>
 				</ul>
 			</li>
 			
@@ -103,7 +103,7 @@
         
 <hr>
 <dt>
-    <h4 class="name" id="HeaderFooterFactory"><span class="type-signature"></span>new HeaderFooterFactory()</h4>
+    <h4 class="name" id="HeaderFooterFactory"><span class="type-signature"></span>new HeaderFooterFactory(editor)</h4>
     
     
 </dt>
@@ -111,7 +111,163 @@
 
     
     <div class="description">
-        HeaderFactory class
+        HeaderFactory class. The aim of this class is to manage the document header and footer.
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>editor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Editor</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The current editor</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="classes_HeaderFooterFactory.js.html">classes/HeaderFooterFactory.js</a>,
+				 <a href="classes_HeaderFooterFactory.js.html#sunlight-1-line-15">line 15</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
+<hr>
+<dt>
+    <h4 class="name" id="hasFooter"><span class="type-signature"></span>hasFooter()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Check if the document has a footer or not
     </div>
     
 
@@ -158,7 +314,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="classes_HeaderFooterFactory.js.html">classes/HeaderFooterFactory.js</a>,
-				 <a href="classes_HeaderFooterFactory.js.html#sunlight-1-line-10">line 10</a>
+				 <a href="classes_HeaderFooterFactory.js.html#sunlight-1-line-72">line 72</a>
 			</li>
 		</ul>
 	</dd>
@@ -183,12 +339,106 @@
     
 
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    true if the document has a footer, false if not
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
 
     
 </dd>
 
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="hasHeader"><span class="type-signature"></span>hasHeader()</h4>
     
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Check if the document has a header or not
     </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="classes_HeaderFooterFactory.js.html">classes/HeaderFooterFactory.js</a>,
+				 <a href="classes_HeaderFooterFactory.js.html#sunlight-1-line-63">line 63</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
 
     
 
@@ -201,7 +451,382 @@
     
 
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    true if the document has a header, false if not
+</div>
 
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="insertFooter"><span class="type-signature"></span>insertFooter()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Insert a new footer
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="classes_HeaderFooterFactory.js.html">classes/HeaderFooterFactory.js</a>,
+				 <a href="classes_HeaderFooterFactory.js.html#sunlight-1-line-53">line 53</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    void
+</div>
+
+
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="insertHeader"><span class="type-signature"></span>insertHeader()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Insert a new header
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="classes_HeaderFooterFactory.js.html">classes/HeaderFooterFactory.js</a>,
+				 <a href="classes_HeaderFooterFactory.js.html#sunlight-1-line-43">line 43</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    void
+</div>
+
+
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="loadElement"><span class="type-signature"></span>loadElement(element)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Load an existing header or footer depending of its nature, from its DOM element.
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>element</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">DOMElement</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="classes_HeaderFooterFactory.js.html">classes/HeaderFooterFactory.js</a>,
+				 <a href="classes_HeaderFooterFactory.js.html#sunlight-1-line-27">line 27</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    void
+</div>
+
+
+
+
+        
+
+    
+</dd>
+
+        </dl>
     
 
     
@@ -255,7 +880,7 @@
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
 	
-		on 21/04/2016
+		on 11/05/2016
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

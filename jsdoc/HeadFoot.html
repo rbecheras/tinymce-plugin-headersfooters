@@ -40,14 +40,14 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="Footer.html">Footer</a></li><li><a href="Header.html">Header</a></li><li><a href="HeaderFooterFactory.html">HeaderFooterFactory</a></li><li><a href="HeadFoot.html">HeadFoot</a></li>
+					<li><a href="Footer.html">Footer</a></li><li><a href="Header.html">Header</a></li><li><a href="HeaderFooterFactory.html">HeaderFooterFactory</a></li><li><a href="HeadFoot.html">HeadFoot</a></li><li><a href="MenuItem.html">MenuItem</a></li>
 				</ul>
 			</li>
 			
 			<li class="dropdown">
 				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="global.html#tinymcePluginHeadersFooters">tinymcePluginHeadersFooters</a></li>
+					<li><a href="global.html#camel2Dash">camel2Dash</a></li><li><a href="global.html#tinymcePluginHeadersFooters">tinymcePluginHeadersFooters</a></li>
 				</ul>
 			</li>
 			
@@ -103,7 +103,7 @@
         
 <hr>
 <dt>
-    <h4 class="name" id="HeadFoot"><span class="type-signature"></span>new HeadFoot()</h4>
+    <h4 class="name" id="HeadFoot"><span class="type-signature"></span>new HeadFoot(editor, documentBody, <span class="optional">existingElement</span>)</h4>
     
     
 </dt>
@@ -120,6 +120,132 @@
     
 
     
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>editor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Editor</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The current editor</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>documentBody</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">DOMElement</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The document body for this documentBody</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>existingElement</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">DOMNode</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The optional existing element that constitute a header of a footer and should be loaded from it</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
     
 
     
@@ -158,7 +284,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="classes_HeadFoot.js.html">classes/HeadFoot.js</a>,
-				 <a href="classes_HeadFoot.js.html#sunlight-1-line-9">line 9</a>
+				 <a href="classes_HeadFoot.js.html#sunlight-1-line-16">line 16</a>
 			</li>
 		</ul>
 	</dd>
@@ -264,7 +390,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="classes_HeadFoot.js.html">classes/HeadFoot.js</a>,
-				 <a href="classes_HeadFoot.js.html#sunlight-1-line-25">line 25</a>
+				 <a href="classes_HeadFoot.js.html#sunlight-1-line-42">line 42</a>
 			</li>
 		</ul>
 	</dd>
@@ -289,6 +415,204 @@
     
 
     
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="enterNode"><span class="type-signature"></span>enterNode()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Disable the page edition and enable the edition for the header or the footers
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="classes_HeadFoot.js.html">classes/HeadFoot.js</a>,
+				 <a href="classes_HeadFoot.js.html#sunlight-1-line-54">line 54</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    void
+</div>
+
+
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="liveNode"><span class="type-signature"></span>liveNode()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Do the inverse of .enterNode(). Disable edition for the header or footer, and re-enable it for the current page.
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="classes_HeadFoot.js.html">classes/HeadFoot.js</a>,
+				 <a href="classes_HeadFoot.js.html#sunlight-1-line-87">line 87</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    void
+</div>
+
+
+
+
+        
 
     
 </dd>
@@ -347,7 +671,7 @@
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
 	
-		on 21/04/2016
+		on 11/05/2016
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

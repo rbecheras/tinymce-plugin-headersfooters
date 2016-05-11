@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>tinycmce-plugin-headersfooters Global</title>
+	<title>tinycmce-plugin-headersfooters Source: classes/MenuItem.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,394 +79,172 @@
 <div class="row">
 
 	
-	<div class="col-md-8">
+	<div class="col-md-12">
 	
 		<div id="main">
 			
 
-	<h1 class="page-title">Global</h1>
+		<h1 class="page-title">Source: classes/MenuItem.js</h1>
+    
 <section>
-
-<header>
-    
-        <h2>
-        
-        </h2>
-        
-    
-</header>
-
-
-<article>
-    <div class="container-overview">
-    
-        
-
-        
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        <dl>
-            
-<hr>
-<dt>
-    <h4 class="name" id="camel2Dash"><span class="type-signature"></span>camel2Dash(inputStr)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Converts a camel cased string to a dashed string
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>inputStr</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The input string to dasherize</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="classes_MenuItem.js.html">classes/MenuItem.js</a>,
-				 <a href="classes_MenuItem.js.html#sunlight-1-line-149">line 149</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">&lt;code&gt;
-    var s = &#x27;helloWorld&#x27;
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">'use strict'
+
+var q = require('q')
+var $ = window.jQuery
+
+module.exports = MenuItem
+
+/**
+ * MenuItem Class
+ * @class
+ * @param {String} name The item name
+ * @param {object} options The menu item options
+ * @example
+  tinymce.activeEditor.addMenuItem(new MenuItem('myAction',{
+    icon: 'text',
+    text: 'My Action',
+    visible: true,
+    disabled: true,
+    onclick: function(){
+     window.alert('overiden default onclick action')
+    }
+  }))
+ */
+function MenuItem (name, options) {
+  this.name = name
+  _setUIControlPromise(this)
+  for (var key in options) {
+    if (key !== 'visible' &amp;&amp; key !== 'disabled') {
+      this[key] = options[key]
+    }
+  }
+  if (!options.id) {
+    this.id = 'mce-plugin-headersfooters-' + camel2Dash(name)
+  }
+  if (options.visible === false) this.hide()
+  if (options.disabled) this.disable()
+}
+
+/**
+ * Returns the menu item UI control as a jquery object
+ * @method
+ * @returns {Promise} A promise resolved by the jquery wrapper of the menu item's node element
+ * @example
+  &lt;code>
+    var menuElement = ui.menuItems.insertHeader.getUIControl()
+    menuElement.css('color','red')
+  &lt;/code>
+ */
+MenuItem.prototype.getUIControl = function () {
+  var that = this
+  return this._renderingPromise.then(function () {
+    return $('#' + that.id)
+  })
+}
+
+/**
+ * By default on click, the menu item logs on console it has been clicked and returns it to allow chainable behavior.
+ * This method should be overriden after instanciation.
+ * Be caution when ovveriding, please returns the menu item in the method to not break the chainable behavior allowed by the default implementation.
+ * @method
+ * @returns void
+ */
+MenuItem.prototype.onclick = function () {
+  console.info('%s menu item has been clicked', this.name)
+  return this
+}
+
+/**
+ * Show the menu item UI control and returns it to allow chainable behavior.
+ * @method
+ * @returns {Promise} A promise resolved by the menu item
+ */
+MenuItem.prototype.show = function () {
+  return this.getUIControl().then(function (uiControl) {
+    uiControl.show()
+    return uiControl
+  })
+}
+
+/**
+ * Hide the menu item UI control and returns it to allow chainable behavior.
+ * @method
+ * @returns {Promise} A promise resolved by the menu item
+ */
+MenuItem.prototype.hide = function () {
+  return this.getUIControl().then(function (uiControl) {
+    uiControl.hide()
+    return uiControl
+  })
+}
+
+/**
+ * Disable the menu item and returns it to allow chainable behavior.
+ * @method
+ * @returns {Promise} A promise resolved by the menu item
+ */
+MenuItem.prototype.disable = function () {
+  return this.getUIControl().then(function (uiControl) {
+    uiControl.addClass('mce-disabled')
+    return uiControl
+  })
+}
+
+/**
+ * Enable the menu item and returns it to allow chainable behavior.
+ * @method
+ * @returns {Promise} A promise resolved by the menu item
+ */
+MenuItem.prototype.enable = function () {
+  return this.getUIControl().then(function (uiControl) {
+    uiControl.removeClass('mce-disabled')
+    return uiControl
+  })
+}
+
+/**
+ * Create a promise that will be resolved when the menu item will be rendered the first time.
+ * This promise will be used by all methods needing to get the UI control (node element)
+ * It returns nothing and it must be called on top of the MenuItem constructor
+ * @method
+ * @memberof MenuItem
+ * @private
+ * @param {MenuItem} that The context for the private method
+ * @returns void
+ */
+function _setUIControlPromise (that) {
+  var d = q.defer()
+  var $body = $('body')
+  $body.on('menusController:mceMenuRendered', function (evt, menuLabel) {
+    $body.on('menusController:mceMenuItemRendered', function (evt, itemID) {
+      if (itemID === that.id) d.resolve()
+    })
+  })
+  that._renderingPromise = d.promise
+}
+
+/**
+ * Converts a camel cased string to a dashed string
+ * @function
+ * @inner
+ * @param {String} inputStr The input string to dasherize
+ * @example
+ * &lt;code>
+    var s = 'helloWorld'
     camel2Dash(s)
-    // -&gt; hello-world
-    &lt;/code&gt;</pre>
-
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="tinymcePluginHeadersFooters"><span class="type-signature"></span>tinymcePluginHeadersFooters(editor)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Tinymce plugin headers/footers
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>editor</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">tinymce.Editor</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The injected tinymce editor.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-53">line 53</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    void
-</div>
-
-
-
-
-        
-
-    
-</dd>
-
-        </dl>
-    
-
-    
-
-    
-</article>
-
+    // -> hello-world
+    &lt;/code>
+ */
+function camel2Dash (inputStr) {
+  if (!inputStr.replace) throw new Error('The replace() method is not available.')
+  return inputStr.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
+}
+</pre>
+    </article>
 </section>
+
 
 
 
@@ -476,10 +254,6 @@
 
 	<div class="clearfix"></div>
 
-	
-		<div class="col-md-3">
-			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
-		</div>
 	
 
 </div>
