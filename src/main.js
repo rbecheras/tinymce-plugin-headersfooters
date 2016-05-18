@@ -100,7 +100,23 @@ function tinymcePluginHeadersFooters (editor, url) {
    */
   function reloadHeadFoots () {
     var $headFootElmts = $('*[data-headfoot]', editor.getDoc())
+
+    // init starting states
+    ui.menuItems.insertHeader.show()
+    ui.menuItems.insertFooter.show()
+    ui.menuItems.removeHeader.hide()
+    ui.menuItems.removeFooter.hide()
+
+    // set another state and load elements if a header or a footer exists
     $headFootElmts.each(function (i, el) {
+      var $el = $(el)
+      if ($el.attr('data-headfoot-header')) {
+        ui.menuItems.insertHeader.hide()
+        ui.menuItems.removeHeader.show()
+      } else if ($el.attr('data-headfoot-footer')) {
+        ui.menuItems.insertFooter.hide()
+        ui.menuItems.removeFooter.show()
+      }
       headerFooterFactory.loadElement(el)
     })
   }
