@@ -75,10 +75,9 @@ HeadFoot.prototype.enterNode = function () {
     throw new Error('no child is not allowed in a headfoot')
   }
   this._editor.selection.select(headfootContent)
+  this._editor.selection.collapse(true)
   if ($thisNode.attr('data-headfoot-pristine')) {
     $thisNode.removeAttr('data-headfoot-pristine')
-  } else {
-    this._editor.selection.collapse(true)
   }
 
   // bind a click handler to the current page to toggle contentEditable state between header/footer and the page
