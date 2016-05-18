@@ -60,7 +60,9 @@ HeadFoot.prototype.enterNode = function () {
   var currentPageContent
 
   this._editor.plugins.paginate.disableWatchPage()
-  ui.lockNode.call(this._editor.plugins.paginate.getCurrentPage().content())
+  $.each(this._editor.plugins.paginate.paginator.getPages(), function () {
+    ui.lockNode.call(this)
+  })
   ui.unlockNode.call(this.node)
 
   headfootContent = this.node.firstChild
@@ -90,5 +92,7 @@ HeadFoot.prototype.enterNode = function () {
 HeadFoot.prototype.liveNode = function () {
   this._editor.plugins.paginate.enableWatchPage()
   ui.lockNode.call(this.node)
-  ui.unlockNode.call(this._editor.plugins.paginate.getCurrentPage().content())
+  $.each(this._editor.plugins.paginate.paginator.getPages(), function () {
+    ui.unlockNode.call(this)
+  })
 }
