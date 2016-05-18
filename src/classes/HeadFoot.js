@@ -18,7 +18,6 @@ module.exports = HeadFoot
  */
 function HeadFoot (editor, documentBody, existingElement) {
   // bind useful vars
-  var that = this
   this._editor = editor
   this._documentBody = documentBody
 
@@ -31,10 +30,7 @@ function HeadFoot (editor, documentBody, existingElement) {
 
   // live the node and implements the double click handler to switch the contentEditable mode.
   this.liveNode()
-  $(this.node).dblclick(function () {
-    console.log('double click on node', that.node)
-    that.enterNode()
-  })
+  $(this.node).dblclick(this.enterNode.bind(this))
 }
 
 /**
@@ -58,30 +54,32 @@ HeadFoot.prototype.enterNode = function () {
   var that = this
   var headfootContent
   var currentPageContent
+  var $thisNode = $(this.node)
 
+  // disable paginator watching
   this._editor.plugins.paginate.disableWatchPage()
+
+  // toggle elements states (contentEditable or not)
   $.each(this._editor.plugins.paginate.paginator.getPages(), function () {
     ui.lockNode.call(this)
   })
   ui.unlockNode.call(this.node)
 
+  // select the unlocked node content or not
   headfootContent = this.node.firstChild
   if (!headfootContent) {
     throw new Error('no child is not allowed in a headfoot')
   }
   this._editor.selection.select(headfootContent)
-  if ($(this.node).attr('data-headfoot-pristine')) {
-    // this._editor.selection.setContent('')
-    $(this.node).removeAttr('data-headfoot-pristine')
+  if ($thisNode.attr('data-headfoot-pristine')) {
+    $thisNode.removeAttr('data-headfoot-pristine')
   } else {
     this._editor.selection.collapse(true)
   }
-  console.log('configure livenode', this._editor.plugins.paginate.getCurrentPage().content())
+
+  // bind a click handler to the current page to toggle contentEditable state between header/footer and the page
   currentPageContent = this._editor.plugins.paginate.getCurrentPage().content()
-  $(currentPageContent).click(function () {
-    console.log('paginate.getCurrentPage().content() clicked')
-    that.liveNode()
-  })
+  $(currentPageContent).click(that.liveNode.bind(that))
 }
 
 /**

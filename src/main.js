@@ -60,19 +60,45 @@ function tinymcePluginHeadersFooters (editor, url) {
   editor.addMenuItem('removeFooter', ui.menuItems.removeFooter)
 
   editor.on('init', onInitHandler)
+  editor.on('SetContent', onSetContent)
 
+  /**
+   * On init event handler. Instanciate the factory and initialize menu items states
+   * @function
+   * @inner
+   * @returns void
+   */
   function onInitHandler () {
-    // instanciate the factory
     headerFooterFactory = new HeaderFooterFactory(editor)
-
-    // initialize menu items states
     initMenuItems(headerFooterFactory, ui.menuItems)
-
-    editor.on('SetContent', onSetContent)
   }
 
+  /**
+   * On SetContent event handler. Load or reload headers and footers from existing elements if it should do.
+   * @function
+   * @inner
+   * @returns void
+   */
   function onSetContent (evt) {
     // var $bodyElmt = $('body', editor.getDoc())
+    var content = $(editor.getBody()).html()
+    var emptyContent = '<p><br data-mce-bogus="1"></p>'
+    if (content && content !== emptyContent) {
+      if (headerFooterFactory) {
+        reloadHeadFoots()
+      } else {
+        setTimeout(reloadHeadFoots, 100)
+      }
+    }
+  }
+
+  /**
+   * Helper function. Do the reload of headers and footers
+   * @function
+   * @inner
+   * @returns void
+   */
+  function reloadHeadFoots () {
     var $headFootElmts = $('*[data-headfoot]', editor.getDoc())
     $headFootElmts.each(function (i, el) {
       headerFooterFactory.loadElement(el)
