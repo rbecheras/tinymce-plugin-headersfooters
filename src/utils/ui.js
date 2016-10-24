@@ -24,80 +24,88 @@ var MenuItem = require('../classes/MenuItem')
  * @type  {object}
  *
  */
-exports.menuItems = {
+module.exports = {
+  createInsertHeaderMenuItem: createInsertHeaderMenuItem,
+  createRemoveHeaderMenuItem: createRemoveHeaderMenuItem,
+  createInsertFooterMenuItem: createInsertFooterMenuItem,
+  createRemoveFooterMenuItem: createRemoveFooterMenuItem,
   lockNode: lockNode,
   unlockNode: unlockNode
 }
 
 /**
- * Insert header menu item
- * @var
- * @name insertHeader
- * @type {MenuItem}
- * @memberof menuItems
+ * Create a menu item to insert a header
+ * @function
+ * @static
+ * @returns {MenuItem}
  */
-exports.insertHeader = new MenuItem('insertHeader', {
-  text: 'Insérer une entête',
-  icon: 'abc',
-  id: 'plugin-headersfooters-menuitem-insert-header',
-  context: 'insert',
-  onclick: function () {
-    window.alert('insert header')
-  }
-})
+function createInsertHeaderMenuItem () {
+  return new MenuItem('insertHeader', {
+    text: 'Insérer une entête',
+    icon: 'abc',
+    id: 'plugin-headersfooters-menuitem-insert-header',
+    context: 'insert',
+    onclick: function () {
+      window.alert('insert header')
+    }
+  })
+}
 
 /**
- * Remove header menu item
- * @var
- * @name removeHeader
- * @type {MenuItem}
- * @memberof menuItems
+ * Create a menu item to remove a header
+ * @function
+ * @static
+ * @returns {MenuItem}
  */
-exports.removeHeader = new MenuItem('removeHeader', {
-  text: "Supprimer l'entête",
-  icon: 'text',
-  context: 'insert',
-  onclick: function () {
-    window.alert('remove header')
-  }
-})
+function createRemoveHeaderMenuItem () {
+  return new MenuItem('removeHeader', {
+    text: "Supprimer l'entête",
+    icon: 'text',
+    context: 'insert',
+    onclick: function () {
+      window.alert('remove header')
+    }
+  })
+}
 
 /**
- * Insert footer menu item
- * @var
- * @name insertFooter
- * @type {MenuItem}
- * @memberof menuItems
+ * Create a menu item to insert a footer
+ * @function
+ * @static
+ * @returns {MenuItem}
  */
-exports.insertFooter = new MenuItem('insertFooter', {
-  text: 'Insérer un pied de page',
-  icon: 'abc',
-  context: 'insert',
-  onclick: function () {
-    window.alert('insert footer')
-  }
-})
+function createInsertFooterMenuItem () {
+  return new MenuItem('insertFooter', {
+    text: 'Insérer un pied de page',
+    icon: 'abc',
+    context: 'insert',
+    onclick: function () {
+      window.alert('insert footer')
+    }
+  })
+}
 
 /**
- * Remove footer menu item
- * @var
- * @name removeFooter
- * @type {MenuItem}
- * @memberof menuItems
+ * Create a menu item to remove a footer
+ * @function
+ * @static
+ * @returns {MenuItem}
  */
-exports.removeFooter = new MenuItem('removeFooter', {
-  text: 'Supprimer le pied de page',
-  icon: 'text',
-  context: 'insert',
-  onclick: function () {
-    window.alert('remove footer')
-  }
-})
+function createRemoveFooterMenuItem () {
+  return new MenuItem('removeFooter', {
+    text: 'Supprimer le pied de page',
+    icon: 'text',
+    context: 'insert',
+    onclick: function () {
+      window.alert('remove footer')
+    }
+  })
+}
 
 /**
  * Lock a node
  * @method
- * @static
+ * @memberof ::callerFunction
  */
 function lockNode () {
   $(this).attr('contenteditable', false)
@@ -106,7 +114,7 @@ function lockNode () {
 /**
  * Unlock a node
  * @method
- * @static
+ * @memberof ::callerFunction
  */
 function unlockNode () {
   $(this).attr('contenteditable', true)

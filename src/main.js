@@ -39,8 +39,8 @@ var tinymce = window.tinymce
  */
 var $ = window.jQuery
 
-var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
 var ui = require('./utils/ui')
+var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
 
 // Add the plugin to the tinymce PluginManager
 tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
@@ -55,11 +55,18 @@ tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
 function tinymcePluginHeadersFooters (editor, url) {
   var headerFooterFactory
 
+  var menuItems = {
+    insertHeader: ui.createInsertHeaderMenuItem(),
+    insertFooter: ui.createInsertFooterMenuItem(),
+    removeHeader: ui.createRemoveHeaderMenuItem(),
+    removeFooter: ui.createRemoveFooterMenuItem()
+  }
+
   // add menu items
-  editor.addMenuItem('insertHeader', ui.menuItems.insertHeader)
-  editor.addMenuItem('removeHeader', ui.menuItems.removeHeader)
-  editor.addMenuItem('insertFooter', ui.menuItems.insertFooter)
-  editor.addMenuItem('removeFooter', ui.menuItems.removeFooter)
+  editor.addMenuItem('insertHeader', menuItems.insertHeader)
+  editor.addMenuItem('removeHeader', menuItems.removeHeader)
+  editor.addMenuItem('insertFooter', menuItems.insertFooter)
+  editor.addMenuItem('removeFooter', menuItems.removeFooter)
 
   editor.on('init', onInitHandler)
   editor.on('SetContent', onSetContent)
@@ -72,7 +79,7 @@ function tinymcePluginHeadersFooters (editor, url) {
    */
   function onInitHandler () {
     headerFooterFactory = new HeaderFooterFactory(editor)
-    initMenuItems(headerFooterFactory, ui.menuItems)
+    initMenuItems(headerFooterFactory, menuItems)
   }
 
   /**
@@ -87,9 +94,9 @@ function tinymcePluginHeadersFooters (editor, url) {
     var emptyContent = '<p><br data-mce-bogus="1"></p>'
     if (content && content !== emptyContent) {
       if (headerFooterFactory) {
-        reloadHeadFoots()
+        reloadHeadFoots(menuItems)
       } else {
-        setTimeout(reloadHeadFoots, 100)
+        setTimeout(reloadHeadFoots.bind(null, menuItems), 100)
       }
     }
   }
@@ -100,24 +107,24 @@ function tinymcePluginHeadersFooters (editor, url) {
    * @inner
    * @returns void
    */
-  function reloadHeadFoots () {
+  function reloadHeadFoots (menuItems) {
     var $headFootElmts = $('*[data-headfoot]', editor.getDoc())
 
     // init starting states
-    ui.menuItems.insertHeader.show()
-    ui.menuItems.insertFooter.show()
-    ui.menuItems.removeHeader.hide()
-    ui.menuItems.removeFooter.hide()
+    menuItems.insertHeader.show()
+    menuItems.insertFooter.show()
+    menuItems.removeHeader.hide()
+    menuItems.removeFooter.hide()
 
     // set another state and load elements if a header or a footer exists
     $headFootElmts.each(function (i, el) {
       var $el = $(el)
       if ($el.attr('data-headfoot-header')) {
-        ui.menuItems.insertHeader.hide()
-        ui.menuItems.removeHeader.show()
+        menuItems.insertHeader.hide()
+        menuItems.removeHeader.show()
       } else if ($el.attr('data-headfoot-footer')) {
-        ui.menuItems.insertFooter.hide()
-        ui.menuItems.removeFooter.show()
+        menuItems.insertFooter.hide()
+        menuItems.removeFooter.show()
       }
       headerFooterFactory.loadElement(el)
     })
