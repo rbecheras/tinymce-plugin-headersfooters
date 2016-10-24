@@ -15,7 +15,9 @@
  * @file plugin.js
  * @module
  * @name tinycmce-plugin-headersfooters
- * @description A plugin for tinymce WYSIWYG HTML editor that allow to insert headers and footers - requires tinymce-plugin-paginate.
+ * @description
+ * A plugin for tinymce WYSIWYG HTML editor that allow to insert headers and footers
+ * It will may be used with requires tinymce-plugin-paginate the a near future, but not for now.
  * @link https://github.com/sirap-group/tinymce-plugin-headersfooters
  * @author Rémi Becheras
  * @author Groupe SIRAP
