@@ -24,7 +24,10 @@ var MenuItem = require('../classes/MenuItem')
  * @type  {object}
  *
  */
-var menuItems = exports.menuItems = {}
+exports.menuItems = {
+  lockNode: lockNode,
+  unlockNode: unlockNode
+}
 
 /**
  * Insert header menu item
@@ -33,7 +36,7 @@ var menuItems = exports.menuItems = {}
  * @type {MenuItem}
  * @memberof menuItems
  */
-menuItems.insertHeader = new MenuItem('insertHeader', {
+exports.insertHeader = new MenuItem('insertHeader', {
   text: 'Insérer une entête',
   icon: 'abc',
   id: 'plugin-headersfooters-menuitem-insert-header',
@@ -50,7 +53,7 @@ menuItems.insertHeader = new MenuItem('insertHeader', {
  * @type {MenuItem}
  * @memberof menuItems
  */
-menuItems.removeHeader = new MenuItem('removeHeader', {
+exports.removeHeader = new MenuItem('removeHeader', {
   text: "Supprimer l'entête",
   icon: 'text',
   context: 'insert',
@@ -66,7 +69,7 @@ menuItems.removeHeader = new MenuItem('removeHeader', {
  * @type {MenuItem}
  * @memberof menuItems
  */
-menuItems.insertFooter = new MenuItem('insertFooter', {
+exports.insertFooter = new MenuItem('insertFooter', {
   text: 'Insérer un pied de page',
   icon: 'abc',
   context: 'insert',
@@ -82,7 +85,7 @@ menuItems.insertFooter = new MenuItem('insertFooter', {
  * @type {MenuItem}
  * @memberof menuItems
  */
-menuItems.removeFooter = new MenuItem('removeFooter', {
+exports.removeFooter = new MenuItem('removeFooter', {
   text: 'Supprimer le pied de page',
   icon: 'text',
   context: 'insert',
@@ -91,10 +94,21 @@ menuItems.removeFooter = new MenuItem('removeFooter', {
   }
 })
 
-exports.lockNode = function () {
+/**
+ * Lock a node
+ * @method
+ * @static
+ */
+function lockNode () {
   $(this).attr('contenteditable', false)
 }
-exports.unlockNode = function () {
+
+/**
+ * Unlock a node
+ * @method
+ * @static
+ */
+function unlockNode () {
   $(this).attr('contenteditable', true)
   $(this).focus()
 }
