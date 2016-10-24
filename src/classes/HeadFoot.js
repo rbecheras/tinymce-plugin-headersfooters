@@ -20,6 +20,7 @@ function HeadFoot (editor, documentBody, existingElement) {
   // bind useful vars
   this._editor = editor
   this._documentBody = documentBody
+  this.pluginPaginate = editor.plugins.paginate
 
   // load the existing element if it exists or create a new one.
   if (existingElement) {
@@ -61,12 +62,15 @@ HeadFoot.prototype.enterNode = function () {
   var $thisNode = $(this.node)
 
   // disable paginator watching
-  this._editor.plugins.paginate.disableWatchPage()
+  if (this.pluginPaginate) {
+    this.pluginPaginate.disableWatchPage()
 
-  // toggle elements states (contentEditable or not)
-  $.each(this._editor.plugins.paginate.paginator.getPages(), function () {
-    ui.lockNode.call(this)
-  })
+    // toggle elements states (contentEditable or not)
+    $.each(this.pluginPaginate.paginator.getPages(), function () {
+      ui.lockNode.call(this)
+    })
+  }
+
   ui.unlockNode.call(this.node)
 
   // select the unlocked node content or not
@@ -80,9 +84,11 @@ HeadFoot.prototype.enterNode = function () {
     $thisNode.removeAttr('data-headfoot-pristine')
   }
 
-  // bind a click handler to the current page to toggle contentEditable state between header/footer and the page
-  currentPageContent = this._editor.plugins.paginate.getCurrentPage().content()
-  $(currentPageContent).click(that.liveNode.bind(that))
+  if (this.pluginPaginate) {
+    // bind a click handler to the current page to toggle contentEditable state between header/footer and the page
+    currentPageContent = this.pluginPaginate.getCurrentPage().content()
+    $(currentPageContent).click(that.liveNode.bind(that))
+  }
 }
 
 /**
@@ -91,9 +97,11 @@ HeadFoot.prototype.enterNode = function () {
  * @returns void
  */
 HeadFoot.prototype.liveNode = function () {
-  this._editor.plugins.paginate.enableWatchPage()
+  if (this.pluginPaginate) {
+    this.pluginPaginate.enableWatchPage()
+    $.each(this.pluginPaginate.paginator.getPages(), function () {
+      ui.unlockNode.call(this)
+    })
+  }
   ui.lockNode.call(this.node)
-  $.each(this._editor.plugins.paginate.paginator.getPages(), function () {
-    ui.unlockNode.call(this)
-  })
 }
