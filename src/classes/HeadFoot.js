@@ -102,6 +102,7 @@ HeadFoot.prototype.enterNode = function () {
  */
 HeadFoot.prototype.liveNode = function () {
   this.isActive = false
+  $(this.node).trigger('LiveNode', this.node)
   if (this.pluginPaginate) {
     this.pluginPaginate.enableWatchPage()
     $.each(this.pluginPaginate.paginator.getPages(), function () {
