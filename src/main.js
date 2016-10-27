@@ -89,6 +89,7 @@ function tinymcePluginHeadersFooters (editor, url) {
   function onInitHandler () {
     headerFooterFactory = new HeaderFooterFactory(editor)
     initMenuItems(headerFooterFactory, menuItems)
+    ui.addUnselectableCSSClass(editor)
   }
 
   /**
