@@ -26,9 +26,11 @@ function Body (editor, _documentBody, existingElement, hasHeader, hasFooter, hea
   var hasJustFooter = !hasHeader && hasFooter
 
   if (hasBoth || hasJustHeader) {
-    $(this.node).insertAfter(header)
+    $(this.node).insertAfter(header.node)
   } else if (hasNoOne || hasJustFooter) {
     $(this.node).prependTo(this._documentBody)
+  } else {
+    throw new Error('Unexpected context to insert the body section')
   }
 }
 

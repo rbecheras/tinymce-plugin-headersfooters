@@ -42,7 +42,7 @@ HeaderFooterFactory.prototype.loadElement = function (element) {
     this.footer = new Footer(this._editor, this._editor.getBody(), element)
   } else if ($el.attr('data-headfoot-body')) {
     this._hasBody = true
-    this.body = new Body(this._editor, this._editor.getBody(), element)
+    this.body = new Body(this._editor, this._editor.getBody(), element, this.hasHeader(), this.hasFooter(), this.header)
   } else throw new Error('This element is not a header, footer neither a body element.')
 }
 
