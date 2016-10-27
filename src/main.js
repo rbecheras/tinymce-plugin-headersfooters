@@ -80,6 +80,7 @@ function tinymcePluginHeadersFooters (editor, url) {
   function onInitHandler () {
     headerFooterFactory = new HeaderFooterFactory(editor)
     initMenuItems(headerFooterFactory, menuItems)
+    headerFooterFactory.insertBody()
   }
 
   /**
@@ -98,6 +99,8 @@ function tinymcePluginHeadersFooters (editor, url) {
       } else {
         setTimeout(reloadHeadFoots.bind(null, menuItems), 100)
       }
+    } else {
+      // evt.content = '<section data-headfoot="true" data-headfoot-body="true">' + evt.content + '</section>'
     }
   }
 
@@ -122,6 +125,8 @@ function tinymcePluginHeadersFooters (editor, url) {
       if ($el.attr('data-headfoot-header')) {
         menuItems.insertHeader.hide()
         menuItems.removeHeader.show()
+      } else if ($el.attr('data-headfoot-body')) {
+        // @TODO something ?
       } else if ($el.attr('data-headfoot-footer')) {
         menuItems.insertFooter.hide()
         menuItems.removeFooter.show()

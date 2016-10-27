@@ -2,6 +2,7 @@
 
 var Header = require('./Header')
 var Footer = require('./Footer')
+var Body = require('./Body')
 
 var $ = window.jQuery
 
@@ -13,6 +14,7 @@ module.exports = HeaderFooterFactory
  * @param {Editor} editor The current editor
  * @property {Editor} _editor The current editor
  * @property {Boolean} _hasHeader Tell if the document has a header or not
+ * @property {Boolean} _hasBody Tell if the document has a body or not
  * @property {Boolean} _hasFooter Tell if the document has a fooer or not
  * @property {Header} header The current header if exists
  * @property {Footer} footer The current footer if exists
@@ -20,6 +22,7 @@ module.exports = HeaderFooterFactory
 function HeaderFooterFactory (editor) {
   this._editor = editor
   this._hasHeader = false
+  this._hasBody = false
   this._hasFooter = false
 }
 
@@ -37,7 +40,10 @@ HeaderFooterFactory.prototype.loadElement = function (element) {
   } else if ($el.attr('data-headfoot-footer')) {
     this._hasFooter = true
     this.footer = new Footer(this._editor, this._editor.getBody(), element)
-  } else throw new Error('This element is not a header neither a footer element.')
+  } else if ($el.attr('data-headfoot-body')) {
+    this._hasBody = true
+    this.body = new Body(this._editor, this._editor.getBody(), element)
+  } else throw new Error('This element is not a header, footer neither a body element.')
 }
 
 /**
@@ -48,6 +54,16 @@ HeaderFooterFactory.prototype.loadElement = function (element) {
 HeaderFooterFactory.prototype.insertHeader = function () {
   this.header = new Header(this._editor, this._editor.getBody())
   this._hasHeader = true
+}
+
+/**
+ * Insert a new body
+ * @method
+ * @returns void
+ */
+HeaderFooterFactory.prototype.insertBody = function () {
+  this.body = new Body(this._editor, this._editor.getBody(), this._hasHeader, this._hasFooter, this.header)
+  this._hasBody = true
 }
 
 /**
@@ -95,6 +111,15 @@ HeaderFooterFactory.prototype.removeFooter = function () {
  */
 HeaderFooterFactory.prototype.hasHeader = function () {
   return this._hasHeader
+}
+
+/**
+ * Check if the document has a body or not
+ * @method
+ * @returns {Boolean} true if the document has a body, false if not
+ */
+HeaderFooterFactory.prototype.hasBody = function () {
+  return this._hasBody
 }
 
 /**
