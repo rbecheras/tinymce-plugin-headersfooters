@@ -30,7 +30,8 @@ module.exports = {
   createInsertFooterMenuItem: createInsertFooterMenuItem,
   createRemoveFooterMenuItem: createRemoveFooterMenuItem,
   lockNode: lockNode,
-  unlockNode: unlockNode
+  unlockNode: unlockNode,
+  addUnselectableCSSClass: addUnselectableCSSClass
 }
 
 /**
@@ -119,4 +120,11 @@ function lockNode () {
 function unlockNode () {
   $(this).attr('contenteditable', true)
   $(this).focus()
+}
+
+function addUnselectableCSSClass (editor) {
+  var head = $('head', editor.getDoc())
+  var unselectableCSSRules = '.unselectable { -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }'
+  var style = $('<style>').attr('type', 'text/css').html(unselectableCSSRules)
+  style.appendTo(head)
 }
