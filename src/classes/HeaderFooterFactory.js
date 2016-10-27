@@ -161,3 +161,16 @@ HeaderFooterFactory.prototype.forceCursorToAllowedLocation = function (node, par
     }
   }
 }
+
+HeaderFooterFactory.prototype.getActiveSection = function () {
+  return [this.header, this.body, this.footer]
+  .reduce(function (prev, section) {
+    if (prev) {
+      return prev
+    } else {
+      if (section.isActive()) {
+        return section
+      }
+    }
+  }, null)
+}
