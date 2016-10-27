@@ -137,3 +137,27 @@ HeaderFooterFactory.prototype.focusToEndOfBody = function () {
   this.body.enterNode()
   this._editor.selection.setCursorLocation(lastBodyChild, lastBodyChild.childNodes.length)
 }
+
+HeaderFooterFactory.prototype.forceCursorToAllowedLocation = function (node, parents) {
+  if (this.hasBody()) {
+    if (!parents) {
+      var $node = $(node)
+      var allparents = $node.parents()
+      parents = allparents.slice(0, -2)
+    }
+
+    var lastParent = parents[parents.length - 1]
+    var allowedLocations = [this.body.node]
+
+    if (this.hasHeader()) {
+      allowedLocations.push(this.header.node)
+    }
+    if (this.hasFooter()) {
+      allowedLocations.push(this.footer.node)
+    }
+
+    if (!~allowedLocations.indexOf(lastParent)) {
+      this.focusToEndOfBody()
+    }
+  }
+}

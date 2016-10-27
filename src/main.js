@@ -104,22 +104,8 @@ function tinymcePluginHeadersFooters (editor, url) {
     }
   }
 
-  function onNodeChange (evt, b, c) {
-    if (headerFooterFactory.hasBody()) {
-      var lastParent = evt.parents[evt.parents.length - 1]
-      var allowedLocations = [headerFooterFactory.body.node]
-
-      if (headerFooterFactory.hasHeader()) {
-        allowedLocations.push(headerFooterFactory.header.node)
-      }
-      if (headerFooterFactory.hasFooter()) {
-        allowedLocations.push(headerFooterFactory.footer.node)
-      }
-
-      if (!~allowedLocations.indexOf(lastParent)) {
-        headerFooterFactory.focusToEndOfBody()
-      }
-    }
+  function onNodeChange (evt) {
+    headerFooterFactory.forceCursorToAllowedLocation(evt.element)
   }
 
   /**
