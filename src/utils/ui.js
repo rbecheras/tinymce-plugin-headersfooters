@@ -109,7 +109,9 @@ function createRemoveFooterMenuItem () {
  * @memberof ::callerFunction
  */
 function lockNode () {
-  $(this).attr('contenteditable', false)
+  var $this = $(this)
+  $this.attr('contenteditable', false)
+  $this.addClass('unselectable')
 }
 
 /**
@@ -118,8 +120,10 @@ function lockNode () {
  * @memberof ::callerFunction
  */
 function unlockNode () {
-  $(this).attr('contenteditable', true)
-  $(this).focus()
+  var $this = $(this)
+  $this.attr('contenteditable', true)
+  $this.removeClass('unselectable')
+  $this.focus()
 }
 
 function addUnselectableCSSClass (editor) {
