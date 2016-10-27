@@ -80,7 +80,6 @@ function tinymcePluginHeadersFooters (editor, url) {
   function onInitHandler () {
     headerFooterFactory = new HeaderFooterFactory(editor)
     initMenuItems(headerFooterFactory, menuItems)
-    headerFooterFactory.insertBody()
   }
 
   /**
@@ -112,6 +111,9 @@ function tinymcePluginHeadersFooters (editor, url) {
    */
   function reloadHeadFoots (menuItems) {
     var $headFootElmts = $('*[data-headfoot]', editor.getDoc())
+    var $bodyElmt = $('*[data-headfoot-body]', editor.getDoc())
+    var hasBody = !!$bodyElmt.length
+    var $allElmts = null
 
     // init starting states
     menuItems.insertHeader.show()
@@ -133,6 +135,19 @@ function tinymcePluginHeadersFooters (editor, url) {
       }
       headerFooterFactory.loadElement(el)
     })
+
+    if (!hasBody) {
+      $allElmts = $(editor.getBody()).children()
+      headerFooterFactory.insertBody()
+      var $body = $(headerFooterFactory.body.node)
+      $body.empty()
+      $allElmts.each(function (i, el) {
+        var $el = $(el)
+        if (!$el.attr('data-headfoot')) {
+          $body.append($el)
+        }
+      })
+    }
   }
 }
 
