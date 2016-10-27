@@ -70,6 +70,7 @@ function tinymcePluginHeadersFooters (editor, url) {
 
   editor.on('init', onInitHandler)
   editor.on('SetContent', onSetContent)
+  editor.on('NodeChange', onNodeChange)
 
   /**
    * On init event handler. Instanciate the factory and initialize menu items states
@@ -100,6 +101,24 @@ function tinymcePluginHeadersFooters (editor, url) {
       }
     } else {
       // evt.content = '<section data-headfoot="true" data-headfoot-body="true">' + evt.content + '</section>'
+    }
+  }
+
+  function onNodeChange (evt, b, c) {
+    if (headerFooterFactory.hasBody()) {
+      var lastParent = evt.parents[evt.parents.length - 1]
+      var allowedLocations = [headerFooterFactory.body.node]
+
+      if (headerFooterFactory.hasHeader()) {
+        allowedLocations.push(headerFooterFactory.header.node)
+      }
+      if (headerFooterFactory.hasFooter()) {
+        allowedLocations.push(headerFooterFactory.footer.node)
+      }
+
+      if (!~allowedLocations.indexOf(lastParent)) {
+        headerFooterFactory.focusToEndOfBody()
+      }
     }
   }
 
