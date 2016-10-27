@@ -156,7 +156,7 @@ HeaderFooterFactory.prototype.forceCursorToAllowedLocation = function (node, par
       allowedLocations.push(this.footer.node)
     }
 
-    if (!~allowedLocations.indexOf(lastParent)) {
+    if (!~allowedLocations.indexOf(lastParent) && !~allowedLocations.indexOf(node)) {
       this.focusToEndOfBody()
     }
   }
