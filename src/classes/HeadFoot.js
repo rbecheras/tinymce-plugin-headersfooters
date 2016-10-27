@@ -30,6 +30,7 @@ function HeadFoot (editor, documentBody, existingElement) {
   }
 
   // live the node and implements the double click handler to switch the contentEditable mode.
+  this.isActive = false
   this.liveNode()
   $(this.node).dblclick(this.enterNode.bind(this))
 }
@@ -60,6 +61,8 @@ HeadFoot.prototype.enterNode = function () {
   var headfootContent
   var currentPageContent
   var $thisNode = $(this.node)
+
+  this.isActive = true
 
   // disable paginator watching
   if (this.pluginPaginate) {
@@ -97,6 +100,7 @@ HeadFoot.prototype.enterNode = function () {
  * @returns void
  */
 HeadFoot.prototype.liveNode = function () {
+  this.isActive = false
   if (this.pluginPaginate) {
     this.pluginPaginate.enableWatchPage()
     $.each(this.pluginPaginate.paginator.getPages(), function () {
