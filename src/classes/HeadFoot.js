@@ -18,6 +18,7 @@ module.exports = HeadFoot
  */
 function HeadFoot (editor, documentBody, existingElement) {
   // bind useful vars
+  var that = this
   this._editor = editor
   this._documentBody = documentBody
   this.pluginPaginate = editor.plugins.paginate
@@ -29,10 +30,16 @@ function HeadFoot (editor, documentBody, existingElement) {
     this._createNode()
   }
 
+  var $thisNode = $(this.node)
   // live the node and implements the double click handler to switch the contentEditable mode.
   this.isActive = false
   this.liveNode()
-  $(this.node).dblclick(this.enterNode.bind(this))
+  $thisNode.dblclick(this.enterNode.bind(this))
+  $(this._documentBody).on('EnterNode', function (evt) {
+    if (that.node !== evt.target) {
+      that.liveNode()
+    }
+  })
 }
 
 /**
