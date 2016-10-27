@@ -130,3 +130,10 @@ HeaderFooterFactory.prototype.hasBody = function () {
 HeaderFooterFactory.prototype.hasFooter = function () {
   return this._hasFooter
 }
+
+HeaderFooterFactory.prototype.focusToEndOfBody = function () {
+  var $body = $(this.body.node)
+  var lastBodyChild = $body.children().last()[0]
+  this.body.enterNode()
+  this._editor.selection.setCursorLocation(lastBodyChild, lastBodyChild.childNodes.length)
+}
