@@ -63,6 +63,7 @@ HeadFoot.prototype.enterNode = function () {
   var $thisNode = $(this.node)
 
   this.isActive = true
+  $thisNode.trigger('EnterNode', this.node)
 
   // disable paginator watching
   if (this.pluginPaginate) {
