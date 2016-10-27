@@ -71,6 +71,14 @@ function tinymcePluginHeadersFooters (editor, url) {
   editor.on('init', onInitHandler)
   editor.on('SetContent', onSetContent)
   editor.on('NodeChange', onNodeChange)
+  editor.on('NodeChange', function (evt) {
+    // if (!editor.selection.isCollapsed()) {
+    //   if (editor.selection.getNode() === editor.getBody()) {
+    //     console.info('Select ALL')
+    //     editor.selection.select(headerFooterFactory.getActiveSection())
+    //   }
+    // }
+  })
 
   /**
    * On init event handler. Instanciate the factory and initialize menu items states
