@@ -54,6 +54,7 @@ HeaderFooterFactory.prototype.loadElement = function (element) {
 HeaderFooterFactory.prototype.insertHeader = function () {
   this.header = new Header(this._editor, this._editor.getBody())
   this._hasHeader = true
+  this.header.enterNode()
 }
 
 /**
@@ -64,6 +65,7 @@ HeaderFooterFactory.prototype.insertHeader = function () {
 HeaderFooterFactory.prototype.insertBody = function () {
   this.body = new Body(this._editor, this._editor.getBody(), this._hasHeader, this._hasFooter, this.header)
   this._hasBody = true
+  this.body.enterNode()
 }
 
 /**
@@ -74,6 +76,7 @@ HeaderFooterFactory.prototype.insertBody = function () {
 HeaderFooterFactory.prototype.insertFooter = function () {
   this.footer = new Footer(this._editor, this._editor.getBody())
   this._hasFooter = true
+  this.footer.enterNode()
 }
 
 /**
