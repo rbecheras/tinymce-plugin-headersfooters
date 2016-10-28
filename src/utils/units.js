@@ -1,5 +1,13 @@
 'use strict'
 
+/**
+ * A set of static helper methods to work with units.
+ * It is imported from tinymce-plugin-paragraph.
+ * @module utils/units
+ * @see https://github.com/sirap-group/tinymce-plugin-paragraph
+ * @see https://github.com/sirap-group/tinymce-plugin-paragraph/blob/master/src/lib/units.js
+ */
+
 var document = window.document
 
 createDpiTestElements()
