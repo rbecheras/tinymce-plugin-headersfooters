@@ -72,13 +72,47 @@ function tinymcePluginHeadersFooters (editor, url) {
   editor.on('init', onInitHandler)
   editor.on('SetContent', onSetContent)
   editor.on('NodeChange', onNodeChange)
-  editor.on('BeforeSetContent', function () {
+  editor.on('SetContent NodeChange', enterBodyNodeOnLoad)
+  editor.on('BeforeSetContent', saveLastActiveSectionOnBeforeSetContent)
+  editor.on('SetContent', removeAnyOuterElementOnSetContent)
+  editor.on('NodeChange', fixSelectAllOnNodeChange)
+
+  /**
+   * Auto-enter in the body section on document load.
+   * (SetContent or NodeChange with some conditions) event handler.
+   * @function
+   * @inner
+   * @returns void
+   */
+  function enterBodyNodeOnLoad (evt) {
+    setTimeout(function () {
+      if (headerFooterFactory && headerFooterFactory.hasBody() && !headerFooterFactory.getActiveSection()) {
+        headerFooterFactory.body.enterNode()
+      }
+    }, 500)
+  }
+
+  /**
+   * Save the last active section on BeforeSetContent to be able to restore it if needed on SetContent event.
+   * BeforeSetContent event handler.
+   * @function
+   * @inner
+   * @returns void
+   */
+  function saveLastActiveSectionOnBeforeSetContent () {
     if (headerFooterFactory) {
       lastActiveSection = headerFooterFactory.getActiveSection()
     }
-  })
-  editor.on('SetContent', function (evt) {
-    // console.log('SetContent', evt)
+  }
+
+  /**
+   * Remove any element located out of the allowed sections.
+   * SetContent event handler.
+   * @function
+   * @inner
+   * @returns void
+   */
+  function removeAnyOuterElementOnSetContent (evt) {
     var conditions = [
       !!evt.content,
       !!evt.content.length,
@@ -108,15 +142,22 @@ function tinymcePluginHeadersFooters (editor, url) {
       lastActiveSection.enterNode()
       lastActiveSection = null
     }
-  })
-  editor.on('NodeChange', function (evt) {
-    // if (!editor.selection.isCollapsed()) {
-    //   if (editor.selection.getNode() === editor.getBody()) {
-    //     console.info('Select ALL')
-    //     editor.selection.select(headerFooterFactory.getActiveSection())
-    //   }
-    // }
-  })
+  }
+
+  /**
+   * When pressing Ctrl+A to select all content, force the selection to be contained in the current active section.
+   * onNodeChange event handler.
+   * @function
+   * @inner
+   * @returns void
+   */
+  function fixSelectAllOnNodeChange (evt) {
+    if (evt.selectionChange && !editor.selection.isCollapsed()) {
+      if (editor.selection.getNode() === editor.getBody()) {
+        editor.selection.select(headerFooterFactory.getActiveSection().node)
+      }
+    }
+  }
 
   /**
    * On init event handler. Instanciate the factory and initialize menu items states
