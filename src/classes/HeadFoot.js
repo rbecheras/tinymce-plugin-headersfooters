@@ -64,41 +64,43 @@ HeadFoot.prototype._createNode = function () {
  * @returns void
  */
 HeadFoot.prototype.enterNode = function () {
-  var that = this
-  var headfootContent
-  var currentPageContent
-  var $thisNode = $(this.node)
+  if (!this.isActive) {
+    var that = this
+    var headfootContent
+    var currentPageContent
+    var $thisNode = $(this.node)
 
-  this.isActive = true
-  $thisNode.trigger('EnterNode', this.node)
+    this.isActive = true
+    $thisNode.trigger('EnterNode', this.node)
 
-  // disable paginator watching
-  if (this.pluginPaginate) {
-    this.pluginPaginate.disableWatchPage()
+    // disable paginator watching
+    if (this.pluginPaginate) {
+      this.pluginPaginate.disableWatchPage()
 
-    // toggle elements states (contentEditable or not)
-    $.each(this.pluginPaginate.paginator.getPages(), function () {
-      ui.lockNode.call(this)
-    })
-  }
+      // toggle elements states (contentEditable or not)
+      $.each(this.pluginPaginate.paginator.getPages(), function () {
+        ui.lockNode.call(this)
+      })
+    }
 
-  ui.unlockNode.call(this.node)
+    ui.unlockNode.call(this.node)
 
-  // select the unlocked node content or not
-  headfootContent = this.node.firstChild
-  if (!headfootContent) {
-    throw new Error('no child is not allowed in a headfoot')
-  }
-  this._editor.selection.select(headfootContent)
-  this._editor.selection.collapse(true)
-  if ($thisNode.attr('data-headfoot-pristine')) {
-    $thisNode.removeAttr('data-headfoot-pristine')
-  }
+    // select the unlocked node content or not
+    headfootContent = this.node.firstChild
+    if (!headfootContent) {
+      throw new Error('no child is not allowed in a headfoot')
+    }
+    this._editor.selection.select(headfootContent)
+    this._editor.selection.collapse(true)
+    if ($thisNode.attr('data-headfoot-pristine')) {
+      $thisNode.removeAttr('data-headfoot-pristine')
+    }
 
-  if (this.pluginPaginate) {
-    // bind a click handler to the current page to toggle contentEditable state between header/footer and the page
-    currentPageContent = this.pluginPaginate.getCurrentPage().content()
-    $(currentPageContent).click(that.liveNode.bind(that))
+    if (this.pluginPaginate) {
+      // bind a click handler to the current page to toggle contentEditable state between header/footer and the page
+      currentPageContent = this.pluginPaginate.getCurrentPage().content()
+      $(currentPageContent).click(that.liveNode.bind(that))
+    }
   }
 }
 
