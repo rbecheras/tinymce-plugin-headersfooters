@@ -54,6 +54,7 @@ tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
  */
 function tinymcePluginHeadersFooters (editor, url) {
   var headerFooterFactory
+  var lastActiveSection = null
 
   var menuItems = {
     insertHeader: ui.createInsertHeaderMenuItem(),
@@ -71,6 +72,43 @@ function tinymcePluginHeadersFooters (editor, url) {
   editor.on('init', onInitHandler)
   editor.on('SetContent', onSetContent)
   editor.on('NodeChange', onNodeChange)
+  editor.on('BeforeSetContent', function () {
+    if (headerFooterFactory) {
+      lastActiveSection = headerFooterFactory.getActiveSection()
+    }
+  })
+  editor.on('SetContent', function (evt) {
+    // console.log('SetContent', evt)
+    var conditions = [
+      !!evt.content,
+      !!evt.content.length,
+      !!editor.getContent(),
+      !!editor.getContent().length,
+      !!headerFooterFactory
+    ]
+    if (!~conditions.indexOf(false)) {
+      var $body = $(editor.getBody())
+      $body.children().each(function (i) {
+        var allowedRootNodes = [headerFooterFactory.body.node]
+        if (headerFooterFactory.hasHeader()) {
+          allowedRootNodes.push(headerFooterFactory.header.node)
+        }
+        if (headerFooterFactory.hasFooter()) {
+          allowedRootNodes.push(headerFooterFactory.footer.node)
+        }
+        if (!~allowedRootNodes.indexOf(this)) {
+          console.error('Removing the following element because it is out of the allowed sections')
+          console.log(this.innerHTML)
+          $(this).remove()
+        }
+      })
+    }
+    if (lastActiveSection) {
+      console.log('entering to node', lastActiveSection)
+      lastActiveSection.enterNode()
+      lastActiveSection = null
+    }
+  })
   editor.on('NodeChange', function (evt) {
     // if (!editor.selection.isCollapsed()) {
     //   if (editor.selection.getNode() === editor.getBody()) {
