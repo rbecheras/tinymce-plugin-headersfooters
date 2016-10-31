@@ -62,23 +62,23 @@ HeadFoot.prototype._createNode = function () {
  */
 HeadFoot.prototype.enterNode = function () {
   if (!this.isActive) {
-    var that = this
+    // var that = this
+    // var currentPageContent
     var headfootContent
-    var currentPageContent
     var $thisNode = $(this.node)
 
     this.isActive = true
     $thisNode.trigger('EnterNode', this.node)
 
     // disable paginator watching
-    if (this.pluginPaginate) {
-      this.pluginPaginate.disableWatchPage()
-
-      // toggle elements states (contentEditable or not)
-      $.each(this.pluginPaginate.paginator.getPages(), function () {
-        ui.lockNode.call(this)
-      })
-    }
+    // if (this.pluginPaginate) {
+    //   this.pluginPaginate.disableWatchPage()
+    //
+    //   // toggle elements states (contentEditable or not)
+    //   $.each(this.pluginPaginate.paginator.getPages(), function () {
+    //     ui.lockNode.call(this)
+    //   })
+    // }
 
     ui.unlockNode.call(this.node)
 
@@ -93,11 +93,12 @@ HeadFoot.prototype.enterNode = function () {
       $thisNode.removeAttr('data-headfoot-pristine')
     }
 
-    if (this.pluginPaginate) {
-      // bind a click handler to the current page to toggle contentEditable state between header/footer and the page
-      currentPageContent = this.pluginPaginate.getCurrentPage().content()
-      $(currentPageContent).click(that.liveNode.bind(that))
     }
+    // if (this.pluginPaginate) {
+    //   // bind a click handler to the current page to toggle contentEditable state between header/footer and the page
+    //   currentPageContent = this.pluginPaginate.getCurrentPage().content()
+    //   $(currentPageContent).click(that.liveNode.bind(that))
+    // }
   }
 }
 
