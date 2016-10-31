@@ -1,6 +1,7 @@
 'use strict'
 
 var ui = require('../utils/ui')
+var domUtils = require('../utils/dom')
 
 var $ = window.jQuery
 var tinymce = window.tinymce
