@@ -49,10 +49,8 @@ function HeadFoot (editor, documentBody, existingElement) {
  * @method
  */
 HeadFoot.prototype._createNode = function () {
-  this.node = $('<section>')
-  .attr('data-headfoot', true)
-  .attr('data-headfoot-pristine', true)[0]
-  this.setPlaceholder()
+  this.node = $('<section>').attr('data-headfoot', true)[0]
+  this.initParagraph()
 }
 
 /**
