@@ -115,18 +115,9 @@ HeadFoot.prototype.liveNode = function () {
       ui.unlockNode.call(this)
     })
   }
-  // var sectionChildNodes = this.node.childNodes
-  // if (sectionChildNodes) {
-  //   if (
-  //     !sectionChildNodes.length ||
-  //     sectionChildNodes.length === 1 && !sectionChildNodes.item(0).childNodes.length ||
-  //     sectionChildNodes.length === 1 && sectionChildNodes.item(0).childNodes.length === 1 && sectionChildNodes.item(0).childNodes.item(0) === 'BR'
-  //   ) {
-  //     this.setPlaceholder()
-  //   }
-  // } else {
-  //   this.setPlaceholder()
-  // }
+  if (domUtils.elementIsEmpty(this.node)) {
+    this.setPlaceholder()
+  }
   ui.lockNode.call(this.node)
 }
 
