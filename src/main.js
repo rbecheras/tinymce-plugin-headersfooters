@@ -38,6 +38,7 @@ var tinymce = window.tinymce
  * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
  */
 var $ = window.jQuery
+var getComputedStyle = window.getComputedStyle
 
 var ui = require('./utils/ui')
 var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
@@ -72,10 +73,50 @@ function tinymcePluginHeadersFooters (editor, url) {
   editor.on('init', onInitHandler)
   editor.on('SetContent', onSetContent)
   editor.on('NodeChange', onNodeChange)
+  editor.on('NodeChange', forceBodyMinHeightOnNodeChange)
   editor.on('SetContent NodeChange', enterBodyNodeOnLoad)
   editor.on('BeforeSetContent', saveLastActiveSectionOnBeforeSetContent)
   editor.on('SetContent', removeAnyOuterElementOnSetContent)
   editor.on('NodeChange', fixSelectAllOnNodeChange)
+
+  /**
+   * Make sure the body minimum height is correct, depending the margins, header and footer height.
+   * NodeChange event handler.
+   * @function
+   * @inner
+   * @returns void
+   */
+  function forceBodyMinHeightOnNodeChange (evt) {
+    if (headerFooterFactory.hasBody()) {
+      var bodyTag = {}
+      var bodySection = {}
+      var headerSection = {}
+      var footerSection = {}
+      var pageHeight
+
+      bodySection.node = headerFooterFactory.body.node
+      bodySection.height = headerFooterFactory.body.node.offsetHeight
+      bodySection.style = window.getComputedStyle(bodySection.node)
+
+      headerSection.node = headerFooterFactory.header.node
+      headerSection.height = headerFooterFactory.header.node.offsetHeight
+      headerSection.style = window.getComputedStyle(headerSection.node)
+
+      footerSection.node = headerFooterFactory.footer.node
+      footerSection.height = headerFooterFactory.footer.node.offsetHeight
+      footerSection.style = window.getComputedStyle(footerSection.node)
+
+      bodyTag.node = editor.getBody()
+      bodyTag.minHeight = getComputedStyle(editor.getBody()).item('min-height')
+      bodyTag.style = window.getComputedStyle(bodyTag.node)
+      bodyTag.paddingTop = units.getValueFromStyle(bodyTag.style.paddingTop)
+      bodyTag.paddingBottom = units.getValueFromStyle(bodyTag.style.paddingBottom)
+
+      pageHeight = bodyTag.height - bodyTag.paddingTop - bodyTag.paddingBottom - headerSection.height - footerSection.height
+
+      $(bodySection.node).css({ minHeight: pageHeight })
+    }
+  }
 
   /**
    * Auto-enter in the body section on document load.

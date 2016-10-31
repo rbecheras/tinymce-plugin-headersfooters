@@ -15,9 +15,11 @@ createDpiTestElements()
 module.exports = {
   getValueFromStyle: getValueFromStyle,
   getUnitFromStyle: getUnitFromStyle,
+  px2mm: px2mm,
   px2pt: px2pt,
   px2in: px2in,
   in2pt: in2pt,
+  in2mm: in2mm,
   getDpi: getDpi
 }
 
@@ -43,6 +45,31 @@ function getValueFromStyle (styleValue) {
  */
 function getUnitFromStyle (styleValue) {
   return styleValue.slice(styleValue.length - 2, styleValue.length)
+}
+
+/**
+ * Converts a quantity of pixels to a quantity of milimeters
+ * 1 in = 25.4 mm
+ * Calculate pixels to inches then inches to milimeters
+ * @method
+ * @static
+ * @param {Number} qPx The quantity of pixels to convert to milimeters
+ * @returns {Number} qMm The resuluting quantity of milimeters
+ */
+function px2mm (qPx) {
+  return in2mm(px2in(qPx))
+}
+
+/**
+ * Converts a quantity of inches to a quantity of milimeters
+ * 1 in = 25.4 mm
+ * @method
+ * @static
+ * @param {Number} qPx The quantity of inches to convert to milimeters
+ * @returns {Number} qMm The resulting length in milimeters
+ */
+function in2mm (qIn) {
+  return Number(qIn) * 25.4
 }
 
 /**
