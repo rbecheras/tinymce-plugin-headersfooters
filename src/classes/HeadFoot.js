@@ -3,6 +3,7 @@
 var ui = require('../utils/ui')
 
 var $ = window.jQuery
+var tinymce = window.tinymce
 
 module.exports = HeadFoot
 
@@ -118,13 +119,25 @@ HeadFoot.prototype.liveNode = function () {
       ui.unlockNode.call(this)
     })
   }
+  // var sectionChildNodes = this.node.childNodes
+  // if (sectionChildNodes) {
+  //   if (
+  //     !sectionChildNodes.length ||
+  //     sectionChildNodes.length === 1 && !sectionChildNodes.item(0).childNodes.length ||
+  //     sectionChildNodes.length === 1 && sectionChildNodes.item(0).childNodes.length === 1 && sectionChildNodes.item(0).childNodes.item(0) === 'BR'
+  //   ) {
+  //     this.setPlaceholder()
+  //   }
+  // } else {
+  //   this.setPlaceholder()
+  // }
   ui.lockNode.call(this.node)
 }
 
 HeadFoot.prototype.setPlaceholder = function () {
   var $placeholderSpan = $('<span>').css({ 'font-family': 'calibri', 'font-size': '12pt' })
   var $placeholder = $('<p>').append($placeholderSpan)
-  var translatedLabel = this._editor.i18n.translate('Double-click to edit this content')
+  var translatedLabel = tinymce.i18n.translate('Double-click to edit this content')
   $placeholderSpan.html(translatedLabel)
   $(this.node).empty().append($placeholder)
 }
