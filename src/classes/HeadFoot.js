@@ -137,4 +137,13 @@ HeadFoot.prototype.setPlaceholder = function () {
   var translatedLabel = tinymce.i18n.translate('Double-click to edit this content')
   $placeholderSpan.html(translatedLabel)
   $(this.node).empty().append($placeholder)
+
+HeadFoot.prototype.initParagraph = function () {
+  var $span = $('<span>').css({ 'font-family': 'calibri', 'font-size': '12pt' })
+  var $p = $('<p>').append($span)
+  $span.html('<br data-mce-bogus="1">')
+  $(this.node).removeAttr('data-headfoot-pristine').empty().append($p)
+  return $p
+}
+
 }
