@@ -122,11 +122,11 @@ HeadFoot.prototype.liveNode = function () {
 }
 
 HeadFoot.prototype.setPlaceholder = function () {
-  var $placeholderSpan = $('<span>').css({ 'font-family': 'calibri', 'font-size': '12pt' })
-  var $placeholder = $('<p>').append($placeholderSpan)
   var translatedLabel = tinymce.i18n.translate('Double-click to edit this content')
-  $placeholderSpan.html(translatedLabel)
-  $(this.node).empty().append($placeholder)
+  var $p = this.initParagraph().html(translatedLabel)
+  $(this.node).append($p)
+  this.pristine(true)
+}
 
 HeadFoot.prototype.initParagraph = function () {
   var $span = $('<span>').css({ 'font-family': 'calibri', 'font-size': '12pt' })
