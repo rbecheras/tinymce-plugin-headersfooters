@@ -171,7 +171,7 @@ HeaderFooterFactory.prototype.getActiveSection = function () {
     if (prev) {
       return prev
     } else {
-      if (section.isActive) {
+      if (section && section.isActive) {
         return section
       }
     }
