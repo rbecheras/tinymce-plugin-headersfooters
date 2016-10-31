@@ -146,4 +146,21 @@ HeadFoot.prototype.initParagraph = function () {
   return $p
 }
 
+/**
+ * [Getter/Setter] Get or set the pristine state of the headfoot node
+ * @method
+ * @param {Boolean} [b] If defined, the value to set
+ * @returns {Boolean|undefined} - The pristine value if no argument is given.
+ * @throws {Error} - if this.node is unset an error is thrown
+ */
+HeadFoot.prototype.pristine = function (b) {
+  if (!this.node || !this.node.nodeType) {
+    throw new Error('Missing node can not be pristine or not.')
+  }
+  var attr = 'data-headfoot-pristine'
+  if (b === undefined) {
+    return this.node.getAttribute(attr) === 'true'
+  } else {
+    this.node.setAttribute(attr, !!b)
+  }
 }
