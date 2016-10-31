@@ -41,6 +41,7 @@ var $ = window.jQuery
 var getComputedStyle = window.getComputedStyle
 
 var ui = require('./utils/ui')
+var units = require('./utils/units')
 var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
 
 // Add the plugin to the tinymce PluginManager
@@ -63,6 +64,8 @@ function tinymcePluginHeadersFooters (editor, url) {
     removeHeader: ui.createRemoveHeaderMenuItem(),
     removeFooter: ui.createRemoveFooterMenuItem()
   }
+
+  this.units = units
 
   // add menu items
   editor.addMenuItem('insertHeader', menuItems.insertHeader)
