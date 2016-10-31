@@ -86,13 +86,13 @@ HeadFoot.prototype.enterNode = function () {
     if (!headfootContent) {
       throw new Error('no child is not allowed in a headfoot')
     }
-    this._editor.selection.select(headfootContent)
-    this._editor.selection.collapse(true)
-    if ($thisNode.attr('data-headfoot-pristine')) {
-      $thisNode.removeAttr('data-headfoot-pristine')
+    if (this.pristine()) {
+      this.initParagraph()
     }
+    this._editor.focus()
+    this._editor.selection.setCursorLocation(this.node, this.node.childNodes.length)
+    $thisNode.focus()
 
-    }
     // if (this.pluginPaginate) {
     //   // bind a click handler to the current page to toggle contentEditable state between header/footer and the page
     //   currentPageContent = this.pluginPaginate.getCurrentPage().content()
