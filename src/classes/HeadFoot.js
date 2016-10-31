@@ -49,14 +49,10 @@ function HeadFoot (editor, documentBody, existingElement) {
  * @method
  */
 HeadFoot.prototype._createNode = function () {
-  var placeholder = '<p><span style="font-family: calibri; font-size: 12pt;">'
-  placeholder += 'Double-click to edit this content'
-  placeholder += '</span></p>'
-
   this.node = $('<section>')
-    .attr('data-headfoot', true)
-    .attr('data-headfoot-pristine', true)
-    .html(placeholder)[0]
+  .attr('data-headfoot', true)
+  .attr('data-headfoot-pristine', true)[0]
+  this.setPlaceholder()
 }
 
 /**
