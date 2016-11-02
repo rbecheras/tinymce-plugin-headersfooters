@@ -1,7 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 require('./src/main');
 
-},{"./src/main":9}],2:[function(require,module,exports){
+},{"./src/main":10}],2:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -2153,6 +2153,56 @@ var HeadFoot = require('./HeadFoot')
 
 var $ = window.jQuery
 
+module.exports = Body
+
+/**
+ * Body class
+ * @class
+ * @augments HeadFoot
+ * @param {Editor} editor The current editor
+ * @param {DOMElement} documentBody The document body for this documentBody
+ * @param {DOMNode} [existingElement] The optional existing element that constitute a header of a footer and should be loaded from it
+ * @property {Editor} _editor The current editor
+ * @property {DOMElement}  _documentBody The body element of the current document
+ * @property {DOMNode} node The header/footer's node element
+ */
+function Body (editor, _documentBody, existingElement, hasHeader, hasFooter, header) {
+  HeadFoot.call(this, editor, _documentBody, existingElement)
+
+  var hasBoth = hasHeader && hasFooter
+  var hasNoOne = !hasHeader && !hasFooter
+  var hasJustHeader = hasHeader && !hasFooter
+  var hasJustFooter = !hasHeader && hasFooter
+
+  if (hasBoth || hasJustHeader) {
+    $(this.node).insertAfter(header.node)
+  } else if (hasNoOne || hasJustFooter) {
+    $(this.node).prependTo(this._documentBody)
+  } else {
+    throw new Error('Unexpected context to insert the body section')
+  }
+}
+
+Body.prototype = Object.create(HeadFoot.prototype)
+
+/**
+ * Create a new node for the body.
+ * @private
+ * @method
+ * @override
+ */
+Body.prototype._createNode = function () {
+  HeadFoot.prototype._createNode.call(this)
+  $(this.node).attr('data-headfoot-body', true)
+}
+
+},{"./HeadFoot":6}],5:[function(require,module,exports){
+'use strict'
+
+var HeadFoot = require('./HeadFoot')
+
+var $ = window.jQuery
+
 module.exports = Footer
 
 /**
@@ -2184,12 +2234,14 @@ Footer.prototype._createNode = function () {
   $(this.node).attr('data-headfoot-footer', true)
 }
 
-},{"./HeadFoot":5}],5:[function(require,module,exports){
+},{"./HeadFoot":6}],6:[function(require,module,exports){
 'use strict'
 
 var ui = require('../utils/ui')
+var domUtils = require('../utils/dom')
 
 var $ = window.jQuery
+var tinymce = window.tinymce
 
 module.exports = HeadFoot
 
@@ -2208,6 +2260,7 @@ function HeadFoot (editor, documentBody, existingElement) {
   var that = this
   this._editor = editor
   this._documentBody = documentBody
+  this.pluginPaginate = editor.plugins.paginate
 
   // load the existing element if it exists or create a new one.
   if (existingElement) {
@@ -2216,11 +2269,15 @@ function HeadFoot (editor, documentBody, existingElement) {
     this._createNode()
   }
 
+  var $thisNode = $(this.node)
   // live the node and implements the double click handler to switch the contentEditable mode.
+  this.isActive = false
   this.liveNode()
-  $(this.node).dblclick(function () {
-    console.log('double click on node', that.node)
-    that.enterNode()
+  $thisNode.dblclick(this.enterNode.bind(this))
+  $(this._documentBody).on('EnterNode', function (evt) {
+    if (that.node !== evt.target) {
+      that.liveNode()
+    }
   })
 }
 
@@ -2230,10 +2287,8 @@ function HeadFoot (editor, documentBody, existingElement) {
  * @method
  */
 HeadFoot.prototype._createNode = function () {
-  this.node = $('<section>')
-    .attr('data-headfoot', true)
-    .attr('data-headfoot-pristine', true)
-    .html('Double-click to edit this content')[0]
+  this.node = $('<section>').attr('data-headfoot', true)[0]
+  this.initParagraph()
 }
 
 /**
@@ -2242,31 +2297,45 @@ HeadFoot.prototype._createNode = function () {
  * @returns void
  */
 HeadFoot.prototype.enterNode = function () {
-  var that = this
-  var headfootContent
-  var currentPageContent
+  if (!this.isActive) {
+    // var that = this
+    // var currentPageContent
+    var headfootContent
+    var $thisNode = $(this.node)
 
-  this._editor.plugins.paginate.disableWatchPage()
-  ui.lockNode.call(this._editor.plugins.paginate.getCurrentPage().content())
-  ui.unlockNode.call(this.node)
+    this.isActive = true
+    $thisNode.trigger('EnterNode', this.node)
 
-  headfootContent = this.node.firstChild
-  if (!headfootContent) {
-    throw new Error('no child is not allowed in a headfoot')
+    // disable paginator watching
+    // if (this.pluginPaginate) {
+    //   this.pluginPaginate.disableWatchPage()
+    //
+    //   // toggle elements states (contentEditable or not)
+    //   $.each(this.pluginPaginate.paginator.getPages(), function () {
+    //     ui.lockNode.call(this)
+    //   })
+    // }
+
+    ui.unlockNode.call(this.node)
+
+    // select the unlocked node content or not
+    headfootContent = this.node.firstChild
+    if (!headfootContent) {
+      throw new Error('no child is not allowed in a headfoot')
+    }
+    if (this.pristine()) {
+      this.initParagraph()
+    }
+    this._editor.focus()
+    this._editor.selection.setCursorLocation(this.node, this.node.childNodes.length)
+    $thisNode.focus()
+
+    // if (this.pluginPaginate) {
+    //   // bind a click handler to the current page to toggle contentEditable state between header/footer and the page
+    //   currentPageContent = this.pluginPaginate.getCurrentPage().content()
+    //   $(currentPageContent).click(that.liveNode.bind(that))
+    // }
   }
-  this._editor.selection.select(headfootContent)
-  if ($(this.node).attr('data-headfoot-pristine')) {
-    // this._editor.selection.setContent('')
-    $(this.node).removeAttr('data-headfoot-pristine')
-  } else {
-    this._editor.selection.collapse(true)
-  }
-  console.log('configure livenode', this._editor.plugins.paginate.getCurrentPage().content())
-  currentPageContent = this._editor.plugins.paginate.getCurrentPage().content()
-  $(currentPageContent).click(function () {
-    console.log('paginate.getCurrentPage().content() clicked')
-    that.liveNode()
-  })
 }
 
 /**
@@ -2275,12 +2344,55 @@ HeadFoot.prototype.enterNode = function () {
  * @returns void
  */
 HeadFoot.prototype.liveNode = function () {
-  this._editor.plugins.paginate.enableWatchPage()
+  this.isActive = false
+  $(this.node).trigger('LiveNode', this.node)
+  if (this.pluginPaginate) {
+    this.pluginPaginate.enableWatchPage()
+    $.each(this.pluginPaginate.paginator.getPages(), function () {
+      ui.unlockNode.call(this)
+    })
+  }
+  if (domUtils.elementIsEmpty(this.node, this._editor.getWin())) {
+    this.setPlaceholder()
+  }
   ui.lockNode.call(this.node)
-  ui.unlockNode.call(this._editor.plugins.paginate.getCurrentPage().content())
 }
 
-},{"../utils/ui":10}],6:[function(require,module,exports){
+HeadFoot.prototype.setPlaceholder = function () {
+  var translatedLabel = tinymce.i18n.translate('Double-click to edit this content')
+  var $p = this.initParagraph().html(translatedLabel)
+  $(this.node).append($p)
+  this.pristine(true)
+}
+
+HeadFoot.prototype.initParagraph = function () {
+  var $span = $('<span>').css({ 'font-family': 'calibri', 'font-size': '12pt' })
+  var $p = $('<p>').append($span)
+  $span.html('<br data-mce-bogus="1">')
+  $(this.node).removeAttr('data-headfoot-pristine').empty().append($p)
+  return $p
+}
+
+/**
+ * [Getter/Setter] Get or set the pristine state of the headfoot node
+ * @method
+ * @param {Boolean} [b] If defined, the value to set
+ * @returns {Boolean|undefined} - The pristine value if no argument is given.
+ * @throws {Error} - if this.node is unset an error is thrown
+ */
+HeadFoot.prototype.pristine = function (b) {
+  if (!this.node || !this.node.nodeType) {
+    throw new Error('Missing node can not be pristine or not.')
+  }
+  var attr = 'data-headfoot-pristine'
+  if (b === undefined) {
+    return this.node.getAttribute(attr) === 'true'
+  } else {
+    this.node.setAttribute(attr, !!b)
+  }
+}
+
+},{"../utils/dom":11,"../utils/ui":12}],7:[function(require,module,exports){
 'use strict'
 
 var HeadFoot = require('./HeadFoot')
@@ -2318,11 +2430,12 @@ Header.prototype._createNode = function () {
   $(this.node).attr('data-headfoot-header', true)
 }
 
-},{"./HeadFoot":5}],7:[function(require,module,exports){
+},{"./HeadFoot":6}],8:[function(require,module,exports){
 'use strict'
 
 var Header = require('./Header')
 var Footer = require('./Footer')
+var Body = require('./Body')
 
 var $ = window.jQuery
 
@@ -2334,6 +2447,7 @@ module.exports = HeaderFooterFactory
  * @param {Editor} editor The current editor
  * @property {Editor} _editor The current editor
  * @property {Boolean} _hasHeader Tell if the document has a header or not
+ * @property {Boolean} _hasBody Tell if the document has a body or not
  * @property {Boolean} _hasFooter Tell if the document has a fooer or not
  * @property {Header} header The current header if exists
  * @property {Footer} footer The current footer if exists
@@ -2341,6 +2455,7 @@ module.exports = HeaderFooterFactory
 function HeaderFooterFactory (editor) {
   this._editor = editor
   this._hasHeader = false
+  this._hasBody = false
   this._hasFooter = false
 }
 
@@ -2358,7 +2473,10 @@ HeaderFooterFactory.prototype.loadElement = function (element) {
   } else if ($el.attr('data-headfoot-footer')) {
     this._hasFooter = true
     this.footer = new Footer(this._editor, this._editor.getBody(), element)
-  } else throw new Error('This element is not a header neither a footer element.')
+  } else if ($el.attr('data-headfoot-body')) {
+    this._hasBody = true
+    this.body = new Body(this._editor, this._editor.getBody(), element, this.hasHeader(), this.hasFooter(), this.header)
+  } else throw new Error('This element is not a header, footer neither a body element.')
 }
 
 /**
@@ -2369,6 +2487,18 @@ HeaderFooterFactory.prototype.loadElement = function (element) {
 HeaderFooterFactory.prototype.insertHeader = function () {
   this.header = new Header(this._editor, this._editor.getBody())
   this._hasHeader = true
+  this.header.enterNode()
+}
+
+/**
+ * Insert a new body
+ * @method
+ * @returns void
+ */
+HeaderFooterFactory.prototype.insertBody = function () {
+  this.body = new Body(this._editor, this._editor.getBody(), this._hasHeader, this._hasFooter, this.header)
+  this._hasBody = true
+  this.body.enterNode()
 }
 
 /**
@@ -2379,6 +2509,7 @@ HeaderFooterFactory.prototype.insertHeader = function () {
 HeaderFooterFactory.prototype.insertFooter = function () {
   this.footer = new Footer(this._editor, this._editor.getBody())
   this._hasFooter = true
+  this.footer.enterNode()
 }
 
 /**
@@ -2419,6 +2550,15 @@ HeaderFooterFactory.prototype.hasHeader = function () {
 }
 
 /**
+ * Check if the document has a body or not
+ * @method
+ * @returns {Boolean} true if the document has a body, false if not
+ */
+HeaderFooterFactory.prototype.hasBody = function () {
+  return this._hasBody
+}
+
+/**
  * Check if the document has a footer or not
  * @method
  * @returns {Boolean} true if the document has a footer, false if not
@@ -2427,7 +2567,51 @@ HeaderFooterFactory.prototype.hasFooter = function () {
   return this._hasFooter
 }
 
-},{"./Footer":4,"./Header":6}],8:[function(require,module,exports){
+HeaderFooterFactory.prototype.focusToEndOfBody = function () {
+  var $body = $(this.body.node)
+  var lastBodyChild = $body.children().last()[0]
+  this.body.enterNode()
+  this._editor.selection.setCursorLocation(lastBodyChild, lastBodyChild.childNodes.length)
+}
+
+HeaderFooterFactory.prototype.forceCursorToAllowedLocation = function (node, parents) {
+  if (this.hasBody()) {
+    if (!parents) {
+      var $node = $(node)
+      var allparents = $node.parents()
+      parents = allparents.slice(0, -2)
+    }
+
+    var lastParent = parents[parents.length - 1]
+    var allowedLocations = [this.body.node]
+
+    if (this.hasHeader()) {
+      allowedLocations.push(this.header.node)
+    }
+    if (this.hasFooter()) {
+      allowedLocations.push(this.footer.node)
+    }
+
+    if (!~allowedLocations.indexOf(lastParent) && !~allowedLocations.indexOf(node)) {
+      this.focusToEndOfBody()
+    }
+  }
+}
+
+HeaderFooterFactory.prototype.getActiveSection = function () {
+  return [this.header, this.body, this.footer]
+  .reduce(function (prev, section) {
+    if (prev) {
+      return prev
+    } else {
+      if (section && section.isActive) {
+        return section
+      }
+    }
+  }, null)
+}
+
+},{"./Body":4,"./Footer":5,"./Header":7}],9:[function(require,module,exports){
 'use strict'
 
 var q = require('q')
@@ -2589,11 +2773,17 @@ MenuItem.prototype.enable = function () {
 function _setUIControlPromise (that) {
   var d = q.defer()
   var $body = $('body')
-  $body.on('menusController:mceMenuRendered', function (evt, menuLabel) {
-    $body.on('menusController:mceMenuItemRendered', function (evt, itemID) {
-      if (itemID === that.id) d.resolve()
+
+  // resolve menuItems DOM elements
+  $body.on('menusController:mceMenuRendered', function (evt, menu) {
+    $('.mce-menu-item', menu).each(function (i, item) {
+      if ($(item).attr('id') === that.id) d.resolve(item)
     })
   })
+  // $body.on('menusController:mceMenuItemRendered', function (evt, itemID) {
+  //   console.info('menusController:mceMenuItemRendered', itemID)
+  //   if (itemID === that.id) d.resolve()
+  // })
   that._renderingPromise = d.promise
 }
 
@@ -2614,7 +2804,7 @@ function camel2Dash (inputStr) {
   return inputStr.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
 }
 
-},{"q":3}],9:[function(require,module,exports){
+},{"q":3}],10:[function(require,module,exports){
 'use strict'
 
 /**
@@ -2632,7 +2822,9 @@ function camel2Dash (inputStr) {
  * @file plugin.js
  * @module
  * @name tinycmce-plugin-headersfooters
- * @description A plugin for tinymce WYSIWYG HTML editor that allow to insert headers and footers - requires tinymce-plugin-paginate.
+ * @description
+ * A plugin for tinymce WYSIWYG HTML editor that allow to insert headers and footers
+ * It will may be used with requires tinymce-plugin-paginate the a near future, but not for now.
  * @link https://github.com/sirap-group/tinymce-plugin-headersfooters
  * @author Rémi Becheras
  * @author Groupe SIRAP
@@ -2653,9 +2845,11 @@ var tinymce = window.tinymce
  * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
  */
 var $ = window.jQuery
+var getComputedStyle = window.getComputedStyle
 
-var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
 var ui = require('./utils/ui')
+var units = require('./utils/units')
+var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
 
 // Add the plugin to the tinymce PluginManager
 tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
@@ -2669,31 +2863,239 @@ tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
  */
 function tinymcePluginHeadersFooters (editor, url) {
   var headerFooterFactory
+  var lastActiveSection = null
 
-  // add menu items
-  editor.addMenuItem('insertHeader', ui.menuItems.insertHeader)
-  editor.addMenuItem('removeHeader', ui.menuItems.removeHeader)
-  editor.addMenuItem('insertFooter', ui.menuItems.insertFooter)
-  editor.addMenuItem('removeFooter', ui.menuItems.removeFooter)
-
-  editor.on('init', onInitHandler)
-
-  function onInitHandler () {
-    // instanciate the factory
-    headerFooterFactory = new HeaderFooterFactory(editor)
-
-    // initialize menu items states
-    initMenuItems(headerFooterFactory, ui.menuItems)
-
-    editor.on('SetContent', onSetContent)
+  var menuItems = {
+    insertHeader: ui.createInsertHeaderMenuItem(),
+    insertFooter: ui.createInsertFooterMenuItem(),
+    removeHeader: ui.createRemoveHeaderMenuItem(),
+    removeFooter: ui.createRemoveFooterMenuItem()
   }
 
-  function onSetContent (evt) {
-    // var $bodyElmt = $('body', editor.getDoc())
+  this.units = units
+
+  // add menu items
+  editor.addMenuItem('insertHeader', menuItems.insertHeader)
+  editor.addMenuItem('removeHeader', menuItems.removeHeader)
+  editor.addMenuItem('insertFooter', menuItems.insertFooter)
+  editor.addMenuItem('removeFooter', menuItems.removeFooter)
+
+  editor.on('init', onInitHandler)
+  editor.on('SetContent', reloadHeadFootIfNeededOnSetContent)
+  editor.on('NodeChange', onNodeChange)
+  editor.on('NodeChange', forceBodyMinHeightOnNodeChange)
+  editor.on('SetContent NodeChange', enterBodyNodeOnLoad)
+  editor.on('BeforeSetContent', saveLastActiveSectionOnBeforeSetContent)
+  editor.on('SetContent', removeAnyOuterElementOnSetContent)
+  editor.on('NodeChange', fixSelectAllOnNodeChange)
+
+  /**
+   * Make sure the body minimum height is correct, depending the margins, header and footer height.
+   * NodeChange event handler.
+   * @function
+   * @inner
+   * @returns void
+   */
+  function forceBodyMinHeightOnNodeChange (evt) {
+    if (headerFooterFactory.hasBody()) {
+      var bodyTag = {}
+      var bodySection = {}
+      var headerSection = {}
+      var footerSection = {}
+      var pageHeight
+
+      bodySection.node = headerFooterFactory.body.node
+      bodySection.height = headerFooterFactory.body.node.offsetHeight
+      bodySection.style = window.getComputedStyle(bodySection.node)
+
+      if (headerFooterFactory.hasHeader()) {
+        headerSection.node = headerFooterFactory.header.node
+        headerSection.height = headerFooterFactory.header.node.offsetHeight
+        headerSection.style = window.getComputedStyle(headerSection.node)
+      } else {
+        headerSection.node = null
+        headerSection.height = 0
+        headerSection.style = window.getComputedStyle(document.createElement('bogusElement'))
+      }
+
+      if (headerFooterFactory.hasFooter()) {
+        footerSection.node = headerFooterFactory.footer.node
+        footerSection.height = headerFooterFactory.footer.node.offsetHeight
+        footerSection.style = window.getComputedStyle(footerSection.node)
+      } else {
+        footerSection.node = null
+        footerSection.height = 0
+        footerSection.style = window.getComputedStyle(document.createElement('bogusElement'))
+      }
+
+      bodyTag.node = editor.getBody()
+      bodyTag.height = units.getValueFromStyle(getComputedStyle(editor.getBody()).minHeight)
+      bodyTag.style = window.getComputedStyle(bodyTag.node)
+      bodyTag.paddingTop = units.getValueFromStyle(bodyTag.style.paddingTop)
+      bodyTag.paddingBottom = units.getValueFromStyle(bodyTag.style.paddingBottom)
+
+      pageHeight = bodyTag.height - bodyTag.paddingTop - bodyTag.paddingBottom - headerSection.height - footerSection.height
+      $(bodySection.node).css({ minHeight: pageHeight })
+    }
+  }
+
+  /**
+   * Auto-enter in the body section on document load.
+   * (SetContent or NodeChange with some conditions) event handler.
+   * @function
+   * @inner
+   * @returns void
+   */
+  function enterBodyNodeOnLoad (evt) {
+    setTimeout(function () {
+      if (headerFooterFactory && headerFooterFactory.hasBody() && !headerFooterFactory.getActiveSection()) {
+        headerFooterFactory.body.enterNode()
+      }
+    }, 500)
+  }
+
+  /**
+   * Save the last active section on BeforeSetContent to be able to restore it if needed on SetContent event.
+   * BeforeSetContent event handler.
+   * @function
+   * @inner
+   * @returns void
+   */
+  function saveLastActiveSectionOnBeforeSetContent () {
+    if (headerFooterFactory) {
+      lastActiveSection = headerFooterFactory.getActiveSection()
+    }
+  }
+
+  /**
+   * Remove any element located out of the allowed sections.
+   * SetContent event handler.
+   * @function
+   * @inner
+   * @returns void
+   */
+  function removeAnyOuterElementOnSetContent (evt) {
+    var conditions = [
+      !!evt.content,
+      !!evt.content.length,
+      !!editor.getContent(),
+      !!editor.getContent().length,
+      !!headerFooterFactory
+    ]
+    if (!~conditions.indexOf(false)) {
+      var $body = $(editor.getBody())
+      $body.children().each(function (i) {
+        var allowedRootNodes = [headerFooterFactory.body.node]
+        if (headerFooterFactory.hasHeader()) {
+          allowedRootNodes.push(headerFooterFactory.header.node)
+        }
+        if (headerFooterFactory.hasFooter()) {
+          allowedRootNodes.push(headerFooterFactory.footer.node)
+        }
+        if (!~allowedRootNodes.indexOf(this)) {
+          console.error('Removing the following element because it is out of the allowed sections')
+          console.log(this)
+          $(this).remove()
+        }
+      })
+    }
+    if (lastActiveSection) {
+      console.info('entering to the last node', lastActiveSection)
+      lastActiveSection.enterNode()
+      lastActiveSection = null
+    }
+  }
+
+  /**
+   * When pressing Ctrl+A to select all content, force the selection to be contained in the current active section.
+   * onNodeChange event handler.
+   * @function
+   * @inner
+   * @returns void
+   */
+  function fixSelectAllOnNodeChange (evt) {
+    if (evt.selectionChange && !editor.selection.isCollapsed()) {
+      if (editor.selection.getNode() === editor.getBody()) {
+        editor.selection.select(headerFooterFactory.getActiveSection().node)
+      }
+    }
+  }
+
+  /**
+   * On init event handler. Instanciate the factory and initialize menu items states
+   * @function
+   * @inner
+   * @returns void
+   */
+  function onInitHandler () {
+    headerFooterFactory = new HeaderFooterFactory(editor)
+    initMenuItems(headerFooterFactory, menuItems)
+    ui.addUnselectableCSSClass(editor)
+  }
+
+  /**
+   * On SetContent event handler. Load or reload headers and footers from existing elements if it should do.
+   * @function
+   * @inner
+   * @returns void
+   */
+  function reloadHeadFootIfNeededOnSetContent (evt) {
+    if (headerFooterFactory) {
+      reloadHeadFoots(menuItems)
+    } else {
+      setTimeout(reloadHeadFootIfNeededOnSetContent.bind(null, evt), 100)
+    }
+  }
+
+  function onNodeChange (evt) {
+    headerFooterFactory.forceCursorToAllowedLocation(evt.element)
+  }
+
+  /**
+   * Helper function. Do the reload of headers and footers
+   * @function
+   * @inner
+   * @returns void
+   */
+  function reloadHeadFoots (menuItems) {
     var $headFootElmts = $('*[data-headfoot]', editor.getDoc())
+    var $bodyElmt = $('*[data-headfoot-body]', editor.getDoc())
+    var hasBody = !!$bodyElmt.length
+    var $allElmts = null
+
+    // init starting states
+    menuItems.insertHeader.show()
+    menuItems.insertFooter.show()
+    menuItems.removeHeader.hide()
+    menuItems.removeFooter.hide()
+
+    // set another state and load elements if a header or a footer exists
     $headFootElmts.each(function (i, el) {
+      var $el = $(el)
+      if ($el.attr('data-headfoot-header')) {
+        menuItems.insertHeader.hide()
+        menuItems.removeHeader.show()
+      } else if ($el.attr('data-headfoot-body')) {
+        // @TODO something ?
+      } else if ($el.attr('data-headfoot-footer')) {
+        menuItems.insertFooter.hide()
+        menuItems.removeFooter.show()
+      }
       headerFooterFactory.loadElement(el)
     })
+
+    if (!hasBody) {
+      $allElmts = $(editor.getBody()).children()
+      headerFooterFactory.insertBody()
+      var $body = $(headerFooterFactory.body.node)
+      $body.empty()
+      $allElmts.each(function (i, el) {
+        var $el = $(el)
+        if (!$el.attr('data-headfoot')) {
+          $body.append($el)
+        }
+      })
+    }
   }
 }
 
@@ -2733,7 +3135,35 @@ function initMenuItems (factory, menuItems) {
   }
 }
 
-},{"./classes/HeaderFooterFactory":7,"./utils/ui":10}],10:[function(require,module,exports){
+},{"./classes/HeaderFooterFactory":8,"./utils/ui":12,"./utils/units":13}],11:[function(require,module,exports){
+'use strict'
+
+module.exports = {
+  elementIsEmpty: elementIsEmpty
+}
+
+/**
+ * Tells if an element is empty (pure JS)
+ * i.e. if:
+ * - it contains nothing,
+ * - or it contains an empty element,
+ * - or the only contained element is the mceBogus element
+ * @method
+ * @static
+ * @param {HTMLElement} element The node element to check if it is empty
+ * @param {window} [contextWindow] The contextual window for this element
+ * @returns {Boolean} true if the element is considered empty.
+ */
+function elementIsEmpty (element, contextWindow) {
+  if (!contextWindow) { contextWindow = window }
+  if (!(element instanceof window.HTMLElement || element instanceof contextWindow.HTMLElement)) {
+    console.error('TypeError element: ', element, 'contextWindow', contextWindow)
+    throw new TypeError('argument 1 must be an instance of HTMLElement.')
+  }
+  return !element.textContent.trim()
+}
+
+},{}],12:[function(require,module,exports){
 'use strict'
 
 var $ = window.jQuery
@@ -2760,79 +3190,258 @@ var MenuItem = require('../classes/MenuItem')
  * @type  {object}
  *
  */
-var menuItems = exports.menuItems = {}
-
-/**
- * Insert header menu item
- * @var
- * @name insertHeader
- * @type {MenuItem}
- * @memberof menuItems
- */
-menuItems.insertHeader = new MenuItem('insertHeader', {
-  text: 'Insérer une entête',
-  icon: 'abc',
-  id: 'plugin-headersfooters-menuitem-insert-header',
-  context: 'insert',
-  onclick: function () {
-    window.alert('insert header')
-  }
-})
-
-/**
- * Remove header menu item
- * @var
- * @name removeHeader
- * @type {MenuItem}
- * @memberof menuItems
- */
-menuItems.removeHeader = new MenuItem('removeHeader', {
-  text: "Supprimer l'entête",
-  icon: 'text',
-  context: 'insert',
-  onclick: function () {
-    window.alert('remove header')
-  }
-})
-
-/**
- * Insert footer menu item
- * @var
- * @name insertFooter
- * @type {MenuItem}
- * @memberof menuItems
- */
-menuItems.insertFooter = new MenuItem('insertFooter', {
-  text: 'Insérer un pied de page',
-  icon: 'abc',
-  context: 'insert',
-  onclick: function () {
-    window.alert('insert footer')
-  }
-})
-
-/**
- * Remove footer menu item
- * @var
- * @name removeFooter
- * @type {MenuItem}
- * @memberof menuItems
- */
-menuItems.removeFooter = new MenuItem('removeFooter', {
-  text: 'Supprimer le pied de page',
-  icon: 'text',
-  context: 'insert',
-  onclick: function () {
-    window.alert('remove footer')
-  }
-})
-
-exports.lockNode = function () {
-  $(this).attr('contenteditable', false)
-}
-exports.unlockNode = function () {
-  $(this).attr('contenteditable', true)
-  $(this).focus()
+module.exports = {
+  createInsertHeaderMenuItem: createInsertHeaderMenuItem,
+  createRemoveHeaderMenuItem: createRemoveHeaderMenuItem,
+  createInsertFooterMenuItem: createInsertFooterMenuItem,
+  createRemoveFooterMenuItem: createRemoveFooterMenuItem,
+  lockNode: lockNode,
+  unlockNode: unlockNode,
+  addUnselectableCSSClass: addUnselectableCSSClass
 }
 
-},{"../classes/MenuItem":8}]},{},[1]);
+/**
+ * Create a menu item to insert a header
+ * @function
+ * @static
+ * @returns {MenuItem}
+ */
+function createInsertHeaderMenuItem () {
+  return new MenuItem('insertHeader', {
+    text: 'Insérer une entête',
+    icon: 'abc',
+    id: 'plugin-headersfooters-menuitem-insert-header',
+    context: 'insert',
+    onclick: function () {
+      window.alert('insert header')
+    }
+  })
+}
+
+/**
+ * Create a menu item to remove a header
+ * @function
+ * @static
+ * @returns {MenuItem}
+ */
+function createRemoveHeaderMenuItem () {
+  return new MenuItem('removeHeader', {
+    text: "Supprimer l'entête",
+    icon: 'text',
+    context: 'insert',
+    onclick: function () {
+      window.alert('remove header')
+    }
+  })
+}
+
+/**
+ * Create a menu item to insert a footer
+ * @function
+ * @static
+ * @returns {MenuItem}
+ */
+function createInsertFooterMenuItem () {
+  return new MenuItem('insertFooter', {
+    text: 'Insérer un pied de page',
+    icon: 'abc',
+    context: 'insert',
+    onclick: function () {
+      window.alert('insert footer')
+    }
+  })
+}
+
+/**
+ * Create a menu item to remove a footer
+ * @function
+ * @static
+ * @returns {MenuItem}
+ */
+function createRemoveFooterMenuItem () {
+  return new MenuItem('removeFooter', {
+    text: 'Supprimer le pied de page',
+    icon: 'text',
+    context: 'insert',
+    onclick: function () {
+      window.alert('remove footer')
+    }
+  })
+}
+
+/**
+ * Lock a node
+ * @method
+ * @memberof ::callerFunction
+ */
+function lockNode () {
+  var $this = $(this)
+  $this.attr('contenteditable', false)
+  $this.addClass('unselectable')
+}
+
+/**
+ * Unlock a node
+ * @method
+ * @memberof ::callerFunction
+ */
+function unlockNode () {
+  var $this = $(this)
+  $this.attr('contenteditable', true)
+  $this.removeClass('unselectable')
+  $this.focus()
+}
+
+function addUnselectableCSSClass (editor) {
+  var head = $('head', editor.getDoc())
+  var unselectableCSSRules = '.unselectable { -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }'
+  var style = $('<style>').attr('type', 'text/css').html(unselectableCSSRules)
+  style.appendTo(head)
+}
+
+},{"../classes/MenuItem":9}],13:[function(require,module,exports){
+'use strict'
+
+/**
+ * A set of static helper methods to work with units.
+ * It is imported from tinymce-plugin-paragraph.
+ * @module utils/units
+ * @see https://github.com/sirap-group/tinymce-plugin-paragraph
+ * @see https://github.com/sirap-group/tinymce-plugin-paragraph/blob/master/src/lib/units.js
+ */
+
+var document = window.document
+
+createDpiTestElements()
+
+module.exports = {
+  getValueFromStyle: getValueFromStyle,
+  getUnitFromStyle: getUnitFromStyle,
+  px2mm: px2mm,
+  px2pt: px2pt,
+  px2in: px2in,
+  in2pt: in2pt,
+  in2mm: in2mm,
+  getDpi: getDpi
+}
+
+/**
+ * Get the numerc value of a style value with unit (remove the 2-digits unit and cast as number)
+ * For example, returns `11` from a style value of `11px`
+ * @method
+ * @static
+ * @param {string} styleValue A style value with a 2-digits unit
+ * @returns {number} - The absolute value of the given style value
+ */
+function getValueFromStyle (styleValue) {
+  return styleValue.slice(0, styleValue.length - 2)
+}
+
+/**
+ * Get the 2-digit unit representation of a style value with unit.
+ * For example, returns `px` from a style value of `11px`
+ * @method
+ * @static
+ * @param {string} styleValue A style value with a 2-digits unit
+ * @returns {string} - The unit as a 2-digits representation
+ */
+function getUnitFromStyle (styleValue) {
+  return styleValue.slice(styleValue.length - 2, styleValue.length)
+}
+
+/**
+ * Converts a quantity of pixels to a quantity of milimeters
+ * 1 in = 25.4 mm
+ * Calculate pixels to inches then inches to milimeters
+ * @method
+ * @static
+ * @param {Number} qPx The quantity of pixels to convert to milimeters
+ * @returns {Number} qMm The resuluting quantity of milimeters
+ */
+function px2mm (qPx) {
+  return in2mm(px2in(qPx))
+}
+
+/**
+ * Converts a quantity of inches to a quantity of milimeters
+ * 1 in = 25.4 mm
+ * @method
+ * @static
+ * @param {Number} qPx The quantity of inches to convert to milimeters
+ * @returns {Number} qMm The resulting length in milimeters
+ */
+function in2mm (qIn) {
+  return Number(qIn) * 25.4
+}
+
+/**
+ * Converts pixels (px) to points (pt)
+ * px -> in -> pt
+ * @method
+ * @static
+ * @param {number} px Number of pixels to convert to points
+ * @returns {number} - Resulting number of points (pt)
+ */
+function px2pt (px) {
+  var inches = px2in(px)
+  return in2pt(inches)
+}
+
+/**
+ * Converts pixels (px) to inches (in)
+ * dpi = px / in -> in = px / dpi
+ * @method
+ * @static
+ * @param {number} px Number of pixels to convert to inches
+ * @returns {number} - Resulting number of inches (in)
+ */
+function px2in (px) {
+  var dpi = getDpi()
+  return Number(px) / Number(dpi)
+}
+
+/**
+ * Converts inches (in) to points (pt)
+ * 72 = pt / in -> pt = 72 * in
+ * @method
+ * @static
+ * @param {number} inches Number of inches (in) to convet to points (pt)
+ * @returns {number} - Resulting number of points (pt)
+ */
+function in2pt (inches) {
+  return Number(inches) * 72
+}
+
+/**
+ * Evaluate the DPI of the device's screen (pixels per inche).
+ * It creates and inpect a dedicated and hidden `data-dpi-test` DOM element to
+ * deduct the screen DPI.
+ * @method
+ * @static
+ * @returns {number} - The current screen DPI, so in pixels per inch.
+ */
+function getDpi () {
+  return document.getElementById('dpi-test').offsetHeight
+}
+
+/**
+ * @function
+ * @inner
+ */
+function createDpiTestElements () {
+  var getDpiHtmlStyle = 'data-dpi-test { height: 1in; left: -100%; position: absolute; top: -100%; width: 1in; }'
+
+  var head = document.getElementsByTagName('head')[0]
+  var getDPIElement = document.createElement('style')
+  getDPIElement.setAttribute('type', 'text/css')
+  getDPIElement.setAttribute('rel', 'stylesheet')
+  getDPIElement.innerHTML = getDpiHtmlStyle
+  head.appendChild(getDPIElement)
+
+  var body = document.getElementsByTagName('body')[0]
+  var dpiTestElement = document.createElement('data-dpi-test')
+  dpiTestElement.setAttribute('id', 'dpi-test')
+  body.appendChild(dpiTestElement)
+}
+
+},{}]},{},[1]);
