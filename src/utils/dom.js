@@ -12,16 +12,15 @@ module.exports = {
  * - or the only contained element is the mceBogus element
  * @method
  * @static
- * @param {Node} node The node to check if it is empty
+ * @param {HTMLElement} element The node element to check if it is empty
  * @param {window} [contextWindow] The contextual window for this element
- * @returns {Boolean} true if the element is concidered empty.
+ * @returns {Boolean} true if the element is considered empty.
  */
 function elementIsEmpty (element, contextWindow) {
-  if (!contextWindow) {
-    contextWindow = window
-  }
-  if (!element || !(element instanceof contextWindow.HTMLElement)) {
-    throw new TypeError('argument 1 must be an instance of Node.')
+  if (!contextWindow) { contextWindow = window }
+  if (!(element instanceof window.HTMLElement || element instanceof contextWindow.HTMLElement)) {
+    console.error('TypeError element: ', element, 'contextWindow', contextWindow)
+    throw new TypeError('argument 1 must be an instance of HTMLElement.')
   }
   return !element.textContent.trim()
 }
