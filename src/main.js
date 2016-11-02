@@ -101,22 +101,33 @@ function tinymcePluginHeadersFooters (editor, url) {
       bodySection.height = headerFooterFactory.body.node.offsetHeight
       bodySection.style = window.getComputedStyle(bodySection.node)
 
-      headerSection.node = headerFooterFactory.header.node
-      headerSection.height = headerFooterFactory.header.node.offsetHeight
-      headerSection.style = window.getComputedStyle(headerSection.node)
+      if (headerFooterFactory.hasHeader()) {
+        headerSection.node = headerFooterFactory.header.node
+        headerSection.height = headerFooterFactory.header.node.offsetHeight
+        headerSection.style = window.getComputedStyle(headerSection.node)
+      } else {
+        headerSection.node = null
+        headerSection.height = 0
+        headerSection.style = window.getComputedStyle(document.createElement('bogusElement'))
+      }
 
-      footerSection.node = headerFooterFactory.footer.node
-      footerSection.height = headerFooterFactory.footer.node.offsetHeight
-      footerSection.style = window.getComputedStyle(footerSection.node)
+      if (headerFooterFactory.hasFooter()) {
+        footerSection.node = headerFooterFactory.footer.node
+        footerSection.height = headerFooterFactory.footer.node.offsetHeight
+        footerSection.style = window.getComputedStyle(footerSection.node)
+      } else {
+        footerSection.node = null
+        footerSection.height = 0
+        footerSection.style = window.getComputedStyle(document.createElement('bogusElement'))
+      }
 
       bodyTag.node = editor.getBody()
-      bodyTag.minHeight = getComputedStyle(editor.getBody()).item('min-height')
+      bodyTag.height = units.getValueFromStyle(getComputedStyle(editor.getBody()).minHeight)
       bodyTag.style = window.getComputedStyle(bodyTag.node)
       bodyTag.paddingTop = units.getValueFromStyle(bodyTag.style.paddingTop)
       bodyTag.paddingBottom = units.getValueFromStyle(bodyTag.style.paddingBottom)
 
       pageHeight = bodyTag.height - bodyTag.paddingTop - bodyTag.paddingBottom - headerSection.height - footerSection.height
-
       $(bodySection.node).css({ minHeight: pageHeight })
     }
   }
