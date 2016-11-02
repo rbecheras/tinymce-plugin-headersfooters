@@ -13,11 +13,15 @@ module.exports = {
  * @method
  * @static
  * @param {Node} node The node to check if it is empty
- * @returns {boolean} true if the element is concidered empty.
+ * @param {window} [contextWindow] The contextual window for this element
+ * @returns {Boolean} true if the element is concidered empty.
  */
-function elementIsEmpty (node) {
-  if (!node || !(node instanceof window.Node)) {
+function elementIsEmpty (element, contextWindow) {
+  if (!contextWindow) {
+    contextWindow = window
+  }
+  if (!element || !(element instanceof contextWindow.HTMLElement)) {
     throw new TypeError('argument 1 must be an instance of Node.')
   }
-  return !node.textContent.trim()
+  return !element.textContent.trim()
 }

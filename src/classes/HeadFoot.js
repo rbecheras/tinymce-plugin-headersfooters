@@ -115,7 +115,7 @@ HeadFoot.prototype.liveNode = function () {
       ui.unlockNode.call(this)
     })
   }
-  if (domUtils.elementIsEmpty(this.node)) {
+  if (domUtils.elementIsEmpty(this.node, this._editor.getWin())) {
     this.setPlaceholder()
   }
   ui.lockNode.call(this.node)
