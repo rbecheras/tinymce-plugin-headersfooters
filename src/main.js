@@ -187,13 +187,13 @@ function tinymcePluginHeadersFooters (editor, url) {
         }
         if (!~allowedRootNodes.indexOf(this)) {
           console.error('Removing the following element because it is out of the allowed sections')
-          console.log(this.innerHTML)
+          console.log(this)
           $(this).remove()
         }
       })
     }
     if (lastActiveSection) {
-      console.log('entering to node', lastActiveSection)
+      console.info('entering to the last node', lastActiveSection)
       lastActiveSection.enterNode()
       lastActiveSection = null
     }
