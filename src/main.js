@@ -74,7 +74,7 @@ function tinymcePluginHeadersFooters (editor, url) {
   editor.addMenuItem('removeFooter', menuItems.removeFooter)
 
   editor.on('init', onInitHandler)
-  editor.on('SetContent', onSetContent)
+  editor.on('SetContent', reloadHeadFootIfNeededOnSetContent)
   editor.on('NodeChange', onNodeChange)
   editor.on('NodeChange', forceBodyMinHeightOnNodeChange)
   editor.on('SetContent NodeChange', enterBodyNodeOnLoad)
@@ -221,18 +221,11 @@ function tinymcePluginHeadersFooters (editor, url) {
    * @inner
    * @returns void
    */
-  function onSetContent (evt) {
-    // var $bodyElmt = $('body', editor.getDoc())
-    var content = $(editor.getBody()).html()
-    var emptyContent = '<p><br data-mce-bogus="1"></p>'
-    if (content && content !== emptyContent) {
-      if (headerFooterFactory) {
-        reloadHeadFoots(menuItems)
-      } else {
-        setTimeout(reloadHeadFoots.bind(null, menuItems), 100)
-      }
+  function reloadHeadFootIfNeededOnSetContent (evt) {
+    if (headerFooterFactory) {
+      reloadHeadFoots(menuItems)
     } else {
-      // evt.content = '<section data-headfoot="true" data-headfoot-body="true">' + evt.content + '</section>'
+      setTimeout(reloadHeadFootIfNeededOnSetContent.bind(null, evt), 100)
     }
   }
 
