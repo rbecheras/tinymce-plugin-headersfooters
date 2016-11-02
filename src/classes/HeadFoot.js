@@ -1,8 +1,10 @@
 'use strict'
 
 var ui = require('../utils/ui')
+var domUtils = require('../utils/dom')
 
 var $ = window.jQuery
+var tinymce = window.tinymce
 
 module.exports = HeadFoot
 
@@ -18,8 +20,10 @@ module.exports = HeadFoot
  */
 function HeadFoot (editor, documentBody, existingElement) {
   // bind useful vars
+  var that = this
   this._editor = editor
   this._documentBody = documentBody
+  this.pluginPaginate = editor.plugins.paginate
 
   // load the existing element if it exists or create a new one.
   if (existingElement) {
@@ -28,9 +32,16 @@ function HeadFoot (editor, documentBody, existingElement) {
     this._createNode()
   }
 
+  var $thisNode = $(this.node)
   // live the node and implements the double click handler to switch the contentEditable mode.
+  this.isActive = false
   this.liveNode()
-  $(this.node).dblclick(this.enterNode.bind(this))
+  $thisNode.dblclick(this.enterNode.bind(this))
+  $(this._documentBody).on('EnterNode', function (evt) {
+    if (that.node !== evt.target) {
+      that.liveNode()
+    }
+  })
 }
 
 /**
@@ -39,14 +50,8 @@ function HeadFoot (editor, documentBody, existingElement) {
  * @method
  */
 HeadFoot.prototype._createNode = function () {
-  var placeholder = '<p><span style="font-family: calibri; font-size: 12pt;">'
-  placeholder += 'Double-click to edit this content'
-  placeholder += '</span></p>'
-
-  this.node = $('<section>')
-    .attr('data-headfoot', true)
-    .attr('data-headfoot-pristine', true)
-    .html(placeholder)[0]
+  this.node = $('<section>').attr('data-headfoot', true)[0]
+  this.initParagraph()
 }
 
 /**
@@ -55,34 +60,45 @@ HeadFoot.prototype._createNode = function () {
  * @returns void
  */
 HeadFoot.prototype.enterNode = function () {
-  var that = this
-  var headfootContent
-  var currentPageContent
-  var $thisNode = $(this.node)
+  if (!this.isActive) {
+    // var that = this
+    // var currentPageContent
+    var headfootContent
+    var $thisNode = $(this.node)
 
-  // disable paginator watching
-  this._editor.plugins.paginate.disableWatchPage()
+    this.isActive = true
+    $thisNode.trigger('EnterNode', this.node)
 
-  // toggle elements states (contentEditable or not)
-  $.each(this._editor.plugins.paginate.paginator.getPages(), function () {
-    ui.lockNode.call(this)
-  })
-  ui.unlockNode.call(this.node)
+    // disable paginator watching
+    // if (this.pluginPaginate) {
+    //   this.pluginPaginate.disableWatchPage()
+    //
+    //   // toggle elements states (contentEditable or not)
+    //   $.each(this.pluginPaginate.paginator.getPages(), function () {
+    //     ui.lockNode.call(this)
+    //   })
+    // }
 
-  // select the unlocked node content or not
-  headfootContent = this.node.firstChild
-  if (!headfootContent) {
-    throw new Error('no child is not allowed in a headfoot')
+    ui.unlockNode.call(this.node)
+
+    // select the unlocked node content or not
+    headfootContent = this.node.firstChild
+    if (!headfootContent) {
+      throw new Error('no child is not allowed in a headfoot')
+    }
+    if (this.pristine()) {
+      this.initParagraph()
+    }
+    this._editor.focus()
+    this._editor.selection.setCursorLocation(this.node, this.node.childNodes.length)
+    $thisNode.focus()
+
+    // if (this.pluginPaginate) {
+    //   // bind a click handler to the current page to toggle contentEditable state between header/footer and the page
+    //   currentPageContent = this.pluginPaginate.getCurrentPage().content()
+    //   $(currentPageContent).click(that.liveNode.bind(that))
+    // }
   }
-  this._editor.selection.select(headfootContent)
-  this._editor.selection.collapse(true)
-  if ($thisNode.attr('data-headfoot-pristine')) {
-    $thisNode.removeAttr('data-headfoot-pristine')
-  }
-
-  // bind a click handler to the current page to toggle contentEditable state between header/footer and the page
-  currentPageContent = this._editor.plugins.paginate.getCurrentPage().content()
-  $(currentPageContent).click(that.liveNode.bind(that))
 }
 
 /**
@@ -91,9 +107,50 @@ HeadFoot.prototype.enterNode = function () {
  * @returns void
  */
 HeadFoot.prototype.liveNode = function () {
-  this._editor.plugins.paginate.enableWatchPage()
+  this.isActive = false
+  $(this.node).trigger('LiveNode', this.node)
+  if (this.pluginPaginate) {
+    this.pluginPaginate.enableWatchPage()
+    $.each(this.pluginPaginate.paginator.getPages(), function () {
+      ui.unlockNode.call(this)
+    })
+  }
+  if (domUtils.elementIsEmpty(this.node, this._editor.getWin())) {
+    this.setPlaceholder()
+  }
   ui.lockNode.call(this.node)
-  $.each(this._editor.plugins.paginate.paginator.getPages(), function () {
-    ui.unlockNode.call(this)
-  })
+}
+
+HeadFoot.prototype.setPlaceholder = function () {
+  var translatedLabel = tinymce.i18n.translate('Double-click to edit this content')
+  var $p = this.initParagraph().html(translatedLabel)
+  $(this.node).append($p)
+  this.pristine(true)
+}
+
+HeadFoot.prototype.initParagraph = function () {
+  var $span = $('<span>').css({ 'font-family': 'calibri', 'font-size': '12pt' })
+  var $p = $('<p>').append($span)
+  $span.html('<br data-mce-bogus="1">')
+  $(this.node).removeAttr('data-headfoot-pristine').empty().append($p)
+  return $p
+}
+
+/**
+ * [Getter/Setter] Get or set the pristine state of the headfoot node
+ * @method
+ * @param {Boolean} [b] If defined, the value to set
+ * @returns {Boolean|undefined} - The pristine value if no argument is given.
+ * @throws {Error} - if this.node is unset an error is thrown
+ */
+HeadFoot.prototype.pristine = function (b) {
+  if (!this.node || !this.node.nodeType) {
+    throw new Error('Missing node can not be pristine or not.')
+  }
+  var attr = 'data-headfoot-pristine'
+  if (b === undefined) {
+    return this.node.getAttribute(attr) === 'true'
+  } else {
+    this.node.setAttribute(attr, !!b)
+  }
 }

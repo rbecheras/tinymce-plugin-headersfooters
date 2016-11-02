@@ -159,11 +159,17 @@ MenuItem.prototype.enable = function () {
 function _setUIControlPromise (that) {
   var d = q.defer()
   var $body = $('body')
-  $body.on('menusController:mceMenuRendered', function (evt, menuLabel) {
-    $body.on('menusController:mceMenuItemRendered', function (evt, itemID) {
-      if (itemID === that.id) d.resolve()
+
+  // resolve menuItems DOM elements
+  $body.on('menusController:mceMenuRendered', function (evt, menu) {
+    $('.mce-menu-item', menu).each(function (i, item) {
+      if ($(item).attr('id') === that.id) d.resolve(item)
     })
   })
+  // $body.on('menusController:mceMenuItemRendered', function (evt, itemID) {
+  //   console.info('menusController:mceMenuItemRendered', itemID)
+  //   if (itemID === that.id) d.resolve()
+  // })
   that._renderingPromise = d.promise
 }
 

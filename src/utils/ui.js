@@ -24,77 +24,111 @@ var MenuItem = require('../classes/MenuItem')
  * @type  {object}
  *
  */
-var menuItems = exports.menuItems = {}
-
-/**
- * Insert header menu item
- * @var
- * @name insertHeader
- * @type {MenuItem}
- * @memberof menuItems
- */
-menuItems.insertHeader = new MenuItem('insertHeader', {
-  text: 'Insérer une entête',
-  icon: 'abc',
-  id: 'plugin-headersfooters-menuitem-insert-header',
-  context: 'insert',
-  onclick: function () {
-    window.alert('insert header')
-  }
-})
-
-/**
- * Remove header menu item
- * @var
- * @name removeHeader
- * @type {MenuItem}
- * @memberof menuItems
- */
-menuItems.removeHeader = new MenuItem('removeHeader', {
-  text: "Supprimer l'entête",
-  icon: 'text',
-  context: 'insert',
-  onclick: function () {
-    window.alert('remove header')
-  }
-})
-
-/**
- * Insert footer menu item
- * @var
- * @name insertFooter
- * @type {MenuItem}
- * @memberof menuItems
- */
-menuItems.insertFooter = new MenuItem('insertFooter', {
-  text: 'Insérer un pied de page',
-  icon: 'abc',
-  context: 'insert',
-  onclick: function () {
-    window.alert('insert footer')
-  }
-})
-
-/**
- * Remove footer menu item
- * @var
- * @name removeFooter
- * @type {MenuItem}
- * @memberof menuItems
- */
-menuItems.removeFooter = new MenuItem('removeFooter', {
-  text: 'Supprimer le pied de page',
-  icon: 'text',
-  context: 'insert',
-  onclick: function () {
-    window.alert('remove footer')
-  }
-})
-
-exports.lockNode = function () {
-  $(this).attr('contenteditable', false)
+module.exports = {
+  createInsertHeaderMenuItem: createInsertHeaderMenuItem,
+  createRemoveHeaderMenuItem: createRemoveHeaderMenuItem,
+  createInsertFooterMenuItem: createInsertFooterMenuItem,
+  createRemoveFooterMenuItem: createRemoveFooterMenuItem,
+  lockNode: lockNode,
+  unlockNode: unlockNode,
+  addUnselectableCSSClass: addUnselectableCSSClass
 }
-exports.unlockNode = function () {
-  $(this).attr('contenteditable', true)
-  $(this).focus()
+
+/**
+ * Create a menu item to insert a header
+ * @function
+ * @static
+ * @returns {MenuItem}
+ */
+function createInsertHeaderMenuItem () {
+  return new MenuItem('insertHeader', {
+    text: 'Insérer une entête',
+    icon: 'abc',
+    id: 'plugin-headersfooters-menuitem-insert-header',
+    context: 'insert',
+    onclick: function () {
+      window.alert('insert header')
+    }
+  })
+}
+
+/**
+ * Create a menu item to remove a header
+ * @function
+ * @static
+ * @returns {MenuItem}
+ */
+function createRemoveHeaderMenuItem () {
+  return new MenuItem('removeHeader', {
+    text: "Supprimer l'entête",
+    icon: 'text',
+    context: 'insert',
+    onclick: function () {
+      window.alert('remove header')
+    }
+  })
+}
+
+/**
+ * Create a menu item to insert a footer
+ * @function
+ * @static
+ * @returns {MenuItem}
+ */
+function createInsertFooterMenuItem () {
+  return new MenuItem('insertFooter', {
+    text: 'Insérer un pied de page',
+    icon: 'abc',
+    context: 'insert',
+    onclick: function () {
+      window.alert('insert footer')
+    }
+  })
+}
+
+/**
+ * Create a menu item to remove a footer
+ * @function
+ * @static
+ * @returns {MenuItem}
+ */
+function createRemoveFooterMenuItem () {
+  return new MenuItem('removeFooter', {
+    text: 'Supprimer le pied de page',
+    icon: 'text',
+    context: 'insert',
+    onclick: function () {
+      window.alert('remove footer')
+    }
+  })
+}
+
+/**
+ * Lock a node
+ * @method
+ * @memberof ::callerFunction
+ */
+function lockNode () {
+  var $this = $(this)
+  $this.attr('contenteditable', false)
+  $this.addClass('unselectable')
+}
+
+/**
+ * Unlock a node
+ * @method
+ * @memberof ::callerFunction
+ */
+function unlockNode () {
+  var $this = $(this)
+  $this.attr('contenteditable', true)
+  $this.removeClass('unselectable')
+  $this.focus()
+}
+
+function addUnselectableCSSClass (editor) {
+  var head = $('head', editor.getDoc())
+  var unselectableCSSRules = '.unselectable { -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }'
+  var style = $('<style>').attr('type', 'text/css').html(unselectableCSSRules)
+  style.appendTo(head)
 }

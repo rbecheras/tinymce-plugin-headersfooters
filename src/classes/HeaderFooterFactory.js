@@ -2,6 +2,7 @@
 
 var Header = require('./Header')
 var Footer = require('./Footer')
+var Body = require('./Body')
 
 var $ = window.jQuery
 
@@ -13,6 +14,7 @@ module.exports = HeaderFooterFactory
  * @param {Editor} editor The current editor
  * @property {Editor} _editor The current editor
  * @property {Boolean} _hasHeader Tell if the document has a header or not
+ * @property {Boolean} _hasBody Tell if the document has a body or not
  * @property {Boolean} _hasFooter Tell if the document has a fooer or not
  * @property {Header} header The current header if exists
  * @property {Footer} footer The current footer if exists
@@ -20,6 +22,7 @@ module.exports = HeaderFooterFactory
 function HeaderFooterFactory (editor) {
   this._editor = editor
   this._hasHeader = false
+  this._hasBody = false
   this._hasFooter = false
 }
 
@@ -37,7 +40,10 @@ HeaderFooterFactory.prototype.loadElement = function (element) {
   } else if ($el.attr('data-headfoot-footer')) {
     this._hasFooter = true
     this.footer = new Footer(this._editor, this._editor.getBody(), element)
-  } else throw new Error('This element is not a header neither a footer element.')
+  } else if ($el.attr('data-headfoot-body')) {
+    this._hasBody = true
+    this.body = new Body(this._editor, this._editor.getBody(), element, this.hasHeader(), this.hasFooter(), this.header)
+  } else throw new Error('This element is not a header, footer neither a body element.')
 }
 
 /**
@@ -48,6 +54,18 @@ HeaderFooterFactory.prototype.loadElement = function (element) {
 HeaderFooterFactory.prototype.insertHeader = function () {
   this.header = new Header(this._editor, this._editor.getBody())
   this._hasHeader = true
+  this.header.enterNode()
+}
+
+/**
+ * Insert a new body
+ * @method
+ * @returns void
+ */
+HeaderFooterFactory.prototype.insertBody = function () {
+  this.body = new Body(this._editor, this._editor.getBody(), this._hasHeader, this._hasFooter, this.header)
+  this._hasBody = true
+  this.body.enterNode()
 }
 
 /**
@@ -58,6 +76,7 @@ HeaderFooterFactory.prototype.insertHeader = function () {
 HeaderFooterFactory.prototype.insertFooter = function () {
   this.footer = new Footer(this._editor, this._editor.getBody())
   this._hasFooter = true
+  this.footer.enterNode()
 }
 
 /**
@@ -98,10 +117,63 @@ HeaderFooterFactory.prototype.hasHeader = function () {
 }
 
 /**
+ * Check if the document has a body or not
+ * @method
+ * @returns {Boolean} true if the document has a body, false if not
+ */
+HeaderFooterFactory.prototype.hasBody = function () {
+  return this._hasBody
+}
+
+/**
  * Check if the document has a footer or not
  * @method
  * @returns {Boolean} true if the document has a footer, false if not
  */
 HeaderFooterFactory.prototype.hasFooter = function () {
   return this._hasFooter
+}
+
+HeaderFooterFactory.prototype.focusToEndOfBody = function () {
+  var $body = $(this.body.node)
+  var lastBodyChild = $body.children().last()[0]
+  this.body.enterNode()
+  this._editor.selection.setCursorLocation(lastBodyChild, lastBodyChild.childNodes.length)
+}
+
+HeaderFooterFactory.prototype.forceCursorToAllowedLocation = function (node, parents) {
+  if (this.hasBody()) {
+    if (!parents) {
+      var $node = $(node)
+      var allparents = $node.parents()
+      parents = allparents.slice(0, -2)
+    }
+
+    var lastParent = parents[parents.length - 1]
+    var allowedLocations = [this.body.node]
+
+    if (this.hasHeader()) {
+      allowedLocations.push(this.header.node)
+    }
+    if (this.hasFooter()) {
+      allowedLocations.push(this.footer.node)
+    }
+
+    if (!~allowedLocations.indexOf(lastParent) && !~allowedLocations.indexOf(node)) {
+      this.focusToEndOfBody()
+    }
+  }
+}
+
+HeaderFooterFactory.prototype.getActiveSection = function () {
+  return [this.header, this.body, this.footer]
+  .reduce(function (prev, section) {
+    if (prev) {
+      return prev
+    } else {
+      if (section && section.isActive) {
+        return section
+      }
+    }
+  }, null)
 }

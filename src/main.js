@@ -15,7 +15,9 @@
  * @file plugin.js
  * @module
  * @name tinycmce-plugin-headersfooters
- * @description A plugin for tinymce WYSIWYG HTML editor that allow to insert headers and footers - requires tinymce-plugin-paginate.
+ * @description
+ * A plugin for tinymce WYSIWYG HTML editor that allow to insert headers and footers
+ * It will may be used with requires tinymce-plugin-paginate the a near future, but not for now.
  * @link https://github.com/sirap-group/tinymce-plugin-headersfooters
  * @author Rémi Becheras
  * @author Groupe SIRAP
@@ -36,9 +38,11 @@ var tinymce = window.tinymce
  * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
  */
 var $ = window.jQuery
+var getComputedStyle = window.getComputedStyle
 
-var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
 var ui = require('./utils/ui')
+var units = require('./utils/units')
+var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
 
 // Add the plugin to the tinymce PluginManager
 tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
@@ -52,15 +56,163 @@ tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
  */
 function tinymcePluginHeadersFooters (editor, url) {
   var headerFooterFactory
+  var lastActiveSection = null
+
+  var menuItems = {
+    insertHeader: ui.createInsertHeaderMenuItem(),
+    insertFooter: ui.createInsertFooterMenuItem(),
+    removeHeader: ui.createRemoveHeaderMenuItem(),
+    removeFooter: ui.createRemoveFooterMenuItem()
+  }
+
+  this.units = units
 
   // add menu items
-  editor.addMenuItem('insertHeader', ui.menuItems.insertHeader)
-  editor.addMenuItem('removeHeader', ui.menuItems.removeHeader)
-  editor.addMenuItem('insertFooter', ui.menuItems.insertFooter)
-  editor.addMenuItem('removeFooter', ui.menuItems.removeFooter)
+  editor.addMenuItem('insertHeader', menuItems.insertHeader)
+  editor.addMenuItem('removeHeader', menuItems.removeHeader)
+  editor.addMenuItem('insertFooter', menuItems.insertFooter)
+  editor.addMenuItem('removeFooter', menuItems.removeFooter)
 
   editor.on('init', onInitHandler)
-  editor.on('SetContent', onSetContent)
+  editor.on('SetContent', reloadHeadFootIfNeededOnSetContent)
+  editor.on('NodeChange', onNodeChange)
+  editor.on('NodeChange', forceBodyMinHeightOnNodeChange)
+  editor.on('SetContent NodeChange', enterBodyNodeOnLoad)
+  editor.on('BeforeSetContent', saveLastActiveSectionOnBeforeSetContent)
+  editor.on('SetContent', removeAnyOuterElementOnSetContent)
+  editor.on('NodeChange', fixSelectAllOnNodeChange)
+
+  /**
+   * Make sure the body minimum height is correct, depending the margins, header and footer height.
+   * NodeChange event handler.
+   * @function
+   * @inner
+   * @returns void
+   */
+  function forceBodyMinHeightOnNodeChange (evt) {
+    if (headerFooterFactory.hasBody()) {
+      var bodyTag = {}
+      var bodySection = {}
+      var headerSection = {}
+      var footerSection = {}
+      var pageHeight
+
+      bodySection.node = headerFooterFactory.body.node
+      bodySection.height = headerFooterFactory.body.node.offsetHeight
+      bodySection.style = window.getComputedStyle(bodySection.node)
+
+      if (headerFooterFactory.hasHeader()) {
+        headerSection.node = headerFooterFactory.header.node
+        headerSection.height = headerFooterFactory.header.node.offsetHeight
+        headerSection.style = window.getComputedStyle(headerSection.node)
+      } else {
+        headerSection.node = null
+        headerSection.height = 0
+        headerSection.style = window.getComputedStyle(document.createElement('bogusElement'))
+      }
+
+      if (headerFooterFactory.hasFooter()) {
+        footerSection.node = headerFooterFactory.footer.node
+        footerSection.height = headerFooterFactory.footer.node.offsetHeight
+        footerSection.style = window.getComputedStyle(footerSection.node)
+      } else {
+        footerSection.node = null
+        footerSection.height = 0
+        footerSection.style = window.getComputedStyle(document.createElement('bogusElement'))
+      }
+
+      bodyTag.node = editor.getBody()
+      bodyTag.height = units.getValueFromStyle(getComputedStyle(editor.getBody()).minHeight)
+      bodyTag.style = window.getComputedStyle(bodyTag.node)
+      bodyTag.paddingTop = units.getValueFromStyle(bodyTag.style.paddingTop)
+      bodyTag.paddingBottom = units.getValueFromStyle(bodyTag.style.paddingBottom)
+
+      pageHeight = bodyTag.height - bodyTag.paddingTop - bodyTag.paddingBottom - headerSection.height - footerSection.height
+      $(bodySection.node).css({ minHeight: pageHeight })
+    }
+  }
+
+  /**
+   * Auto-enter in the body section on document load.
+   * (SetContent or NodeChange with some conditions) event handler.
+   * @function
+   * @inner
+   * @returns void
+   */
+  function enterBodyNodeOnLoad (evt) {
+    setTimeout(function () {
+      if (headerFooterFactory && headerFooterFactory.hasBody() && !headerFooterFactory.getActiveSection()) {
+        headerFooterFactory.body.enterNode()
+      }
+    }, 500)
+  }
+
+  /**
+   * Save the last active section on BeforeSetContent to be able to restore it if needed on SetContent event.
+   * BeforeSetContent event handler.
+   * @function
+   * @inner
+   * @returns void
+   */
+  function saveLastActiveSectionOnBeforeSetContent () {
+    if (headerFooterFactory) {
+      lastActiveSection = headerFooterFactory.getActiveSection()
+    }
+  }
+
+  /**
+   * Remove any element located out of the allowed sections.
+   * SetContent event handler.
+   * @function
+   * @inner
+   * @returns void
+   */
+  function removeAnyOuterElementOnSetContent (evt) {
+    var conditions = [
+      !!evt.content,
+      !!evt.content.length,
+      !!editor.getContent(),
+      !!editor.getContent().length,
+      !!headerFooterFactory
+    ]
+    if (!~conditions.indexOf(false)) {
+      var $body = $(editor.getBody())
+      $body.children().each(function (i) {
+        var allowedRootNodes = [headerFooterFactory.body.node]
+        if (headerFooterFactory.hasHeader()) {
+          allowedRootNodes.push(headerFooterFactory.header.node)
+        }
+        if (headerFooterFactory.hasFooter()) {
+          allowedRootNodes.push(headerFooterFactory.footer.node)
+        }
+        if (!~allowedRootNodes.indexOf(this)) {
+          console.error('Removing the following element because it is out of the allowed sections')
+          console.log(this)
+          $(this).remove()
+        }
+      })
+    }
+    if (lastActiveSection) {
+      console.info('entering to the last node', lastActiveSection)
+      lastActiveSection.enterNode()
+      lastActiveSection = null
+    }
+  }
+
+  /**
+   * When pressing Ctrl+A to select all content, force the selection to be contained in the current active section.
+   * onNodeChange event handler.
+   * @function
+   * @inner
+   * @returns void
+   */
+  function fixSelectAllOnNodeChange (evt) {
+    if (evt.selectionChange && !editor.selection.isCollapsed()) {
+      if (editor.selection.getNode() === editor.getBody()) {
+        editor.selection.select(headerFooterFactory.getActiveSection().node)
+      }
+    }
+  }
 
   /**
    * On init event handler. Instanciate the factory and initialize menu items states
@@ -70,7 +222,8 @@ function tinymcePluginHeadersFooters (editor, url) {
    */
   function onInitHandler () {
     headerFooterFactory = new HeaderFooterFactory(editor)
-    initMenuItems(headerFooterFactory, ui.menuItems)
+    initMenuItems(headerFooterFactory, menuItems)
+    ui.addUnselectableCSSClass(editor)
   }
 
   /**
@@ -79,17 +232,16 @@ function tinymcePluginHeadersFooters (editor, url) {
    * @inner
    * @returns void
    */
-  function onSetContent (evt) {
-    // var $bodyElmt = $('body', editor.getDoc())
-    var content = $(editor.getBody()).html()
-    var emptyContent = '<p><br data-mce-bogus="1"></p>'
-    if (content && content !== emptyContent) {
-      if (headerFooterFactory) {
-        reloadHeadFoots()
-      } else {
-        setTimeout(reloadHeadFoots, 100)
-      }
+  function reloadHeadFootIfNeededOnSetContent (evt) {
+    if (headerFooterFactory) {
+      reloadHeadFoots(menuItems)
+    } else {
+      setTimeout(reloadHeadFootIfNeededOnSetContent.bind(null, evt), 100)
     }
+  }
+
+  function onNodeChange (evt) {
+    headerFooterFactory.forceCursorToAllowedLocation(evt.element)
   }
 
   /**
@@ -98,27 +250,45 @@ function tinymcePluginHeadersFooters (editor, url) {
    * @inner
    * @returns void
    */
-  function reloadHeadFoots () {
+  function reloadHeadFoots (menuItems) {
     var $headFootElmts = $('*[data-headfoot]', editor.getDoc())
+    var $bodyElmt = $('*[data-headfoot-body]', editor.getDoc())
+    var hasBody = !!$bodyElmt.length
+    var $allElmts = null
 
     // init starting states
-    ui.menuItems.insertHeader.show()
-    ui.menuItems.insertFooter.show()
-    ui.menuItems.removeHeader.hide()
-    ui.menuItems.removeFooter.hide()
+    menuItems.insertHeader.show()
+    menuItems.insertFooter.show()
+    menuItems.removeHeader.hide()
+    menuItems.removeFooter.hide()
 
     // set another state and load elements if a header or a footer exists
     $headFootElmts.each(function (i, el) {
       var $el = $(el)
       if ($el.attr('data-headfoot-header')) {
-        ui.menuItems.insertHeader.hide()
-        ui.menuItems.removeHeader.show()
+        menuItems.insertHeader.hide()
+        menuItems.removeHeader.show()
+      } else if ($el.attr('data-headfoot-body')) {
+        // @TODO something ?
       } else if ($el.attr('data-headfoot-footer')) {
-        ui.menuItems.insertFooter.hide()
-        ui.menuItems.removeFooter.show()
+        menuItems.insertFooter.hide()
+        menuItems.removeFooter.show()
       }
       headerFooterFactory.loadElement(el)
     })
+
+    if (!hasBody) {
+      $allElmts = $(editor.getBody()).children()
+      headerFooterFactory.insertBody()
+      var $body = $(headerFooterFactory.body.node)
+      $body.empty()
+      $allElmts.each(function (i, el) {
+        var $el = $(el)
+        if (!$el.attr('data-headfoot')) {
+          $body.append($el)
+        }
+      })
+    }
   }
 }
 
