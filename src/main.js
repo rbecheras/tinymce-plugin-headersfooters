@@ -62,7 +62,9 @@ function tinymcePluginHeadersFooters (editor, url) {
     insertHeader: ui.createInsertHeaderMenuItem(),
     insertFooter: ui.createInsertFooterMenuItem(),
     removeHeader: ui.createRemoveHeaderMenuItem(),
-    removeFooter: ui.createRemoveFooterMenuItem()
+    removeFooter: ui.createRemoveFooterMenuItem(),
+    insertPageNumber: ui.createInsertPageNumber(editor),
+    insertNumberOfPages: ui.createinsertNumberOfPages(editor)
   }
 
   this.units = units
@@ -72,6 +74,16 @@ function tinymcePluginHeadersFooters (editor, url) {
   editor.addMenuItem('removeHeader', menuItems.removeHeader)
   editor.addMenuItem('insertFooter', menuItems.insertFooter)
   editor.addMenuItem('removeFooter', menuItems.removeFooter)
+  editor.addMenuItem('insertPageNumber', menuItems.insertPageNumber)
+  editor.addMenuItem('insertNumberOfPages', menuItems.insertNumberOfPages)
+
+  editor.addCommand('insertPageNumberCmd', function () {
+    editor.insertContent('{{page}}')
+  })
+
+  editor.addCommand('insertNumberOfPagesCmd', function () {
+    editor.insertContent('{{pages}}')
+  })
 
   editor.on('init', onInitHandler)
   editor.on('SetContent', reloadHeadFootIfNeededOnSetContent)
