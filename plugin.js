@@ -2998,7 +2998,7 @@ function tinymcePluginHeadersFooters (editor, url) {
    * @returns void
    */
   function forceBodyMinHeightOnNodeChange (evt) {
-    if (headerFooterFactory.hasBody()) {
+    if (headerFooterFactory && headerFooterFactory.hasBody()) {
       var bodyTag = {}
       var bodySection = {}
       var headerSection = {}
@@ -3149,7 +3149,9 @@ function tinymcePluginHeadersFooters (editor, url) {
   }
 
   function onNodeChange (evt) {
-    headerFooterFactory.forceCursorToAllowedLocation(evt.element)
+    if (headerFooterFactory) {
+      headerFooterFactory.forceCursorToAllowedLocation(evt.element)
+    }
   }
 
   /**
