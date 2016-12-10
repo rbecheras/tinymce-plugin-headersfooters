@@ -177,3 +177,53 @@ HeaderFooterFactory.prototype.getActiveSection = function () {
     }
   }, null)
 }
+
+/**
+ * Helper function. Do the reload of headers and footers
+ * @method
+ * @param {Array<MenuItem>} menuItemsList The list of all menu items
+ * @returns {undefined}
+ */
+HeaderFooterFactory.prototype.reload = function (menuItemsList) {
+  var that = this
+  var editor = this.editor
+  var $headFootElmts = $('*[data-headfoot]', editor.getDoc())
+  var $bodyElmt = $('*[data-headfoot-body]', editor.getDoc())
+  var hasBody = !!$bodyElmt.length
+  var $allElmts = null
+
+  // init starting states
+  menuItemsList.insertHeader.show()
+  menuItemsList.insertFooter.show()
+  menuItemsList.removeHeader.hide()
+  menuItemsList.removeFooter.hide()
+
+  // set another state and load elements if a header or a footer exists
+  $headFootElmts.each(function (i, el) {
+    var $el = $(el)
+    if ($el.attr('data-headfoot-header')) {
+      menuItemsList.insertHeader.hide()
+      menuItemsList.removeHeader.show()
+    } else if ($el.attr('data-headfoot-body')) {
+      // @TODO something ?
+    } else if ($el.attr('data-headfoot-footer')) {
+      menuItemsList.insertFooter.hide()
+      menuItemsList.removeFooter.show()
+    }
+    that.loadElement(el)
+  })
+
+  if (!hasBody) {
+    $allElmts = $(editor.getBody()).children()
+    that.insertBody()
+    var $body = $(that.body.node)
+    $body.empty()
+    $allElmts.each(function (i, el) {
+      var $el = $(el)
+      if (!$el.attr('data-headfoot')) {
+        $body.append($el)
+      }
+    })
+  }
+  // editor.fire('SetContent', {set: true})
+}
