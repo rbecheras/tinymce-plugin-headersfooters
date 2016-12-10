@@ -76,13 +76,18 @@ function tinymcePluginHeadersFooters (editor, url) {
   })
 
   editor.on('init', onInitHandler)
-  editor.on('SetContent', reloadHeadFootIfNeededOnSetContent)
-  editor.on('NodeChange', onNodeChange)
-  editor.on('NodeChange', forceBodyMinHeightOnNodeChange)
-  editor.on('SetContent NodeChange', enterBodyNodeOnLoad)
+  editor.on('NodeChange', function (evt) {
+    onNodeChange(evt)
+    forceBodyMinHeightOnNodeChange(evt)
+    fixSelectAllOnNodeChange(evt)
+    enterBodyNodeOnLoad(evt)
+  })
   editor.on('BeforeSetContent', saveLastActiveSectionOnBeforeSetContent)
-  editor.on('SetContent', removeAnyOuterElementOnSetContent)
-  editor.on('NodeChange', fixSelectAllOnNodeChange)
+  editor.on('SetContent', function (evt) {
+    reloadHeadFootIfNeededOnSetContent(evt)
+    enterBodyNodeOnLoad(evt)
+    removeAnyOuterElementOnSetContent(evt)
+  })
 
   /**
    * Make sure the body minimum height is correct, depending the margins, header and footer height.
