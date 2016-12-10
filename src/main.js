@@ -241,7 +241,7 @@ function tinymcePluginHeadersFooters (editor, url) {
    */
   function reloadHeadFootIfNeededOnSetContent (evt) {
     if (headerFooterFactory) {
-      reloadHeadFoots(menuItems)
+      headerFooterFactory.reload(menuItems)
     } else {
       setTimeout(reloadHeadFootIfNeededOnSetContent.bind(null, evt), 100)
     }
@@ -251,53 +251,5 @@ function tinymcePluginHeadersFooters (editor, url) {
     if (headerFooterFactory) {
       headerFooterFactory.forceCursorToAllowedLocation(evt.element)
     }
-  }
-
-  /**
-   * Helper function. Do the reload of headers and footers
-   * @function
-   * @inner
-   * @returns void
-   */
-  function reloadHeadFoots (menuItemsList) {
-    var $headFootElmts = $('*[data-headfoot]', editor.getDoc())
-    var $bodyElmt = $('*[data-headfoot-body]', editor.getDoc())
-    var hasBody = !!$bodyElmt.length
-    var $allElmts = null
-
-    // init starting states
-    menuItemsList.insertHeader.show()
-    menuItemsList.insertFooter.show()
-    menuItemsList.removeHeader.hide()
-    menuItemsList.removeFooter.hide()
-
-    // set another state and load elements if a header or a footer exists
-    $headFootElmts.each(function (i, el) {
-      var $el = $(el)
-      if ($el.attr('data-headfoot-header')) {
-        menuItemsList.insertHeader.hide()
-        menuItemsList.removeHeader.show()
-      } else if ($el.attr('data-headfoot-body')) {
-        // @TODO something ?
-      } else if ($el.attr('data-headfoot-footer')) {
-        menuItemsList.insertFooter.hide()
-        menuItemsList.removeFooter.show()
-      }
-      headerFooterFactory.loadElement(el)
-    })
-
-    if (!hasBody) {
-      $allElmts = $(editor.getBody()).children()
-      headerFooterFactory.insertBody()
-      var $body = $(headerFooterFactory.body.node)
-      $body.empty()
-      $allElmts.each(function (i, el) {
-        var $el = $(el)
-        if (!$el.attr('data-headfoot')) {
-          $body.append($el)
-        }
-      })
-    }
-
   }
 }
