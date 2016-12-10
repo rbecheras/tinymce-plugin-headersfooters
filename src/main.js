@@ -41,7 +41,7 @@ var $ = window.jQuery
 var getComputedStyle = window.getComputedStyle
 
 var ui = require('./utils/ui')
-var createMenuItems = require('./components/menu-items')
+var menuItems = require('./components/menu-items')
 var units = require('./utils/units')
 var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
 
@@ -58,13 +58,13 @@ tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
 function tinymcePluginHeadersFooters (editor, url) {
   var headerFooterFactory
   var lastActiveSection = null
-  var menuItems = createMenuItems(editor)
+  var menuItemsList = menuItems.create(editor)
 
   this.units = units
 
   // add the plugin's menu items
-  for (var itemName in menuItems) {
-    editor.addMenuItem(itemName, menuItems[itemName])
+  for (var itemName in menuItemsList) {
+    editor.addMenuItem(itemName, menuItemsList[itemName])
   }
 
   editor.addCommand('insertPageNumberCmd', function () {
@@ -224,7 +224,7 @@ function tinymcePluginHeadersFooters (editor, url) {
    */
   function onInitHandler () {
     headerFooterFactory = new HeaderFooterFactory(editor)
-    initMenuItems(headerFooterFactory, menuItems)
+    menuItems.init(headerFooterFactory, menuItemsList)
     ui.addUnselectableCSSClass(editor)
   }
 
@@ -254,29 +254,29 @@ function tinymcePluginHeadersFooters (editor, url) {
    * @inner
    * @returns void
    */
-  function reloadHeadFoots (menuItems) {
+  function reloadHeadFoots (menuItemsList) {
     var $headFootElmts = $('*[data-headfoot]', editor.getDoc())
     var $bodyElmt = $('*[data-headfoot-body]', editor.getDoc())
     var hasBody = !!$bodyElmt.length
     var $allElmts = null
 
     // init starting states
-    menuItems.insertHeader.show()
-    menuItems.insertFooter.show()
-    menuItems.removeHeader.hide()
-    menuItems.removeFooter.hide()
+    menuItemsList.insertHeader.show()
+    menuItemsList.insertFooter.show()
+    menuItemsList.removeHeader.hide()
+    menuItemsList.removeFooter.hide()
 
     // set another state and load elements if a header or a footer exists
     $headFootElmts.each(function (i, el) {
       var $el = $(el)
       if ($el.attr('data-headfoot-header')) {
-        menuItems.insertHeader.hide()
-        menuItems.removeHeader.show()
+        menuItemsList.insertHeader.hide()
+        menuItemsList.removeHeader.show()
       } else if ($el.attr('data-headfoot-body')) {
         // @TODO something ?
       } else if ($el.attr('data-headfoot-footer')) {
-        menuItems.insertFooter.hide()
-        menuItems.removeFooter.show()
+        menuItemsList.insertFooter.hide()
+        menuItemsList.removeFooter.show()
       }
       headerFooterFactory.loadElement(el)
     })
@@ -293,41 +293,6 @@ function tinymcePluginHeadersFooters (editor, url) {
         }
       })
     }
-  }
-}
 
-/**
- * Initialize menu items states (show, hide, ...) and implements onclick handlers
- * @function
- * @inner
- * @param {HeaderFooterFactory} factory The header and footer factory
- * @param {object} menuItems The set of plugin's menu items
- * @returns undefined
- */
-function initMenuItems (factory, menuItems) {
-  // on startup, hide remove buttons
-  menuItems.removeHeader.hide()
-  menuItems.removeFooter.hide()
-
-  // override insertHeader, insertFooter, removeHeader and removeFooter onclick handlers
-  menuItems.insertHeader.onclick = function () {
-    factory.insertHeader()
-    menuItems.insertHeader.hide()
-    menuItems.removeHeader.show()
-  }
-  menuItems.insertFooter.onclick = function () {
-    factory.insertFooter()
-    menuItems.insertFooter.hide()
-    menuItems.removeFooter.show()
-  }
-  menuItems.removeHeader.onclick = function () {
-    factory.removeHeader()
-    menuItems.insertHeader.show()
-    menuItems.removeHeader.hide()
-  }
-  menuItems.removeFooter.onclick = function () {
-    factory.removeFooter()
-    menuItems.insertFooter.show()
-    menuItems.removeFooter.hide()
   }
 }
