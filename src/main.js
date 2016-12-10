@@ -41,6 +41,7 @@ var $ = window.jQuery
 var getComputedStyle = window.getComputedStyle
 
 var ui = require('./utils/ui')
+var createMenuItems = require('./components/menu-items')
 var units = require('./utils/units')
 var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
 
@@ -57,25 +58,14 @@ tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
 function tinymcePluginHeadersFooters (editor, url) {
   var headerFooterFactory
   var lastActiveSection = null
-
-  var menuItems = {
-    insertHeader: ui.createInsertHeaderMenuItem(),
-    insertFooter: ui.createInsertFooterMenuItem(),
-    removeHeader: ui.createRemoveHeaderMenuItem(),
-    removeFooter: ui.createRemoveFooterMenuItem(),
-    insertPageNumber: ui.createInsertPageNumber(editor),
-    insertNumberOfPages: ui.createinsertNumberOfPages(editor)
-  }
+  var menuItems = createMenuItems(editor)
 
   this.units = units
 
-  // add menu items
-  editor.addMenuItem('insertHeader', menuItems.insertHeader)
-  editor.addMenuItem('removeHeader', menuItems.removeHeader)
-  editor.addMenuItem('insertFooter', menuItems.insertFooter)
-  editor.addMenuItem('removeFooter', menuItems.removeFooter)
-  editor.addMenuItem('insertPageNumber', menuItems.insertPageNumber)
-  editor.addMenuItem('insertNumberOfPages', menuItems.insertNumberOfPages)
+  // add the plugin's menu items
+  for (var itemName in menuItems) {
+    editor.addMenuItem(itemName, menuItems[itemName])
+  }
 
   editor.addCommand('insertPageNumberCmd', function () {
     editor.insertContent('{{page}}')
