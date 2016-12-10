@@ -30,7 +30,10 @@ var ui = require('../utils/ui')
  */
 var HEADER_FOOTER_ONLY_SELECTOR = 'section[data-headfoot-header], section[data-headfoot-footer]'
 
-module.exports = createMenuItems
+module.exports = {
+  create: create,
+  init: init
+}
 
 /**
  * Create a hash of all the menu items for the plugin
@@ -38,7 +41,7 @@ module.exports = createMenuItems
  * @param {Editor} editor The tinymce active editor
  * @returns {object} the created hash of menu items
  */
-function createMenuItems (editor) {
+function create (editor) {
   return {
     insertHeader: createInsertHeaderMenuItem(),
     insertFooter: createInsertFooterMenuItem(),
@@ -46,6 +49,42 @@ function createMenuItems (editor) {
     removeFooter: createRemoveFooterMenuItem(),
     insertPageNumber: createInsertPageNumber(editor),
     insertNumberOfPages: createinsertNumberOfPages(editor)
+  }
+}
+
+/**
+ * Initialize menu items states (show, hide, ...) and implements onclick handlers
+ * @method
+ * @static
+ * @param {HeaderFooterFactory} factory The header and footer factory
+ * @param {object} menuItems The set of plugin's menu items
+ * @returns undefined
+ */
+function init (factory, menuItems) {
+  // on startup, hide remove buttons
+  menuItems.removeHeader.hide()
+  menuItems.removeFooter.hide()
+
+  // override insertHeader, insertFooter, removeHeader and removeFooter onclick handlers
+  menuItems.insertHeader.onclick = function () {
+    factory.insertHeader()
+    menuItems.insertHeader.hide()
+    menuItems.removeHeader.show()
+  }
+  menuItems.insertFooter.onclick = function () {
+    factory.insertFooter()
+    menuItems.insertFooter.hide()
+    menuItems.removeFooter.show()
+  }
+  menuItems.removeHeader.onclick = function () {
+    factory.removeHeader()
+    menuItems.insertHeader.show()
+    menuItems.removeHeader.hide()
+  }
+  menuItems.removeFooter.onclick = function () {
+    factory.removeFooter()
+    menuItems.insertFooter.show()
+    menuItems.removeFooter.hide()
   }
 }
 
