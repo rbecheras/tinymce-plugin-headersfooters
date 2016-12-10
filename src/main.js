@@ -177,7 +177,7 @@ function tinymcePluginHeadersFooters (editor, url) {
   function removeAnyOuterElementOnSetContent (evt) {
     var conditions = [
       !!evt.content,
-      !!evt.content.length,
+      evt.content && !!evt.content.length,
       !!editor.getContent(),
       !!editor.getContent().length,
       !!headerFooterFactory
