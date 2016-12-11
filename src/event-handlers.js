@@ -8,7 +8,17 @@
 
 module.exports = {
   onInit: {},
-  onNodeChange: {},
+  onNodeChange: {
+    forceBodyMinHeigh: forceBodyMinHeightOnNodeChange
+  },
   onSetContent: {},
   onBeforeSetContent: {}
+}
+
+function forceBodyMinHeightOnNodeChange (evt) {
+  var headerFooterFactory = evt.headerFooterFactory
+
+  if (headerFooterFactory && headerFooterFactory.hasBody()) {
+    headerFooterFactory.forceBodyMinHeigh()
+  }
 }
