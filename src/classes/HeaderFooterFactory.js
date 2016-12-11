@@ -186,7 +186,7 @@ HeaderFooterFactory.prototype.getActiveSection = function () {
  */
 HeaderFooterFactory.prototype.reload = function (menuItemsList) {
   var that = this
-  var editor = this.editor
+  var editor = this._editor
   var $headFootElmts = $('*[data-headfoot]', editor.getDoc())
   var $bodyElmt = $('*[data-headfoot-body]', editor.getDoc())
   var hasBody = !!$bodyElmt.length
