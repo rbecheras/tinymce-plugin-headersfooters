@@ -38,12 +38,13 @@ var tinymce = window.tinymce
  * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
  */
 var $ = window.jQuery
-var getComputedStyle = window.getComputedStyle
+
+var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
 
 var ui = require('./utils/ui')
 var menuItems = require('./components/menu-items')
 var units = require('./utils/units')
-var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
+var eventHandlers = require('./eventHandlers')
 
 // Add the plugin to the tinymce PluginManager
 tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
@@ -78,7 +79,7 @@ function tinymcePluginHeadersFooters (editor, url) {
   editor.on('init', onInitHandler)
   editor.on('NodeChange', function (evt) {
     onNodeChange(evt)
-    forceBodyMinHeightOnNodeChange(evt)
+    eventHandlers.onNodeChange.forceBodyMinHeight.call({headerFooterFactory: headerFooterFactory}, evt)
     fixSelectAllOnNodeChange(evt)
     enterBodyNodeOnLoad(evt)
   })
@@ -88,56 +89,6 @@ function tinymcePluginHeadersFooters (editor, url) {
     enterBodyNodeOnLoad(evt)
     removeAnyOuterElementOnSetContent(evt)
   })
-
-  /**
-   * Make sure the body minimum height is correct, depending the margins, header and footer height.
-   * NodeChange event handler.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function forceBodyMinHeightOnNodeChange (evt) {
-    if (headerFooterFactory && headerFooterFactory.hasBody()) {
-      var bodyTag = {}
-      var bodySection = {}
-      var headerSection = {}
-      var footerSection = {}
-      var pageHeight
-
-      bodySection.node = headerFooterFactory.body.node
-      bodySection.height = headerFooterFactory.body.node.offsetHeight
-      bodySection.style = window.getComputedStyle(bodySection.node)
-
-      if (headerFooterFactory.hasHeader()) {
-        headerSection.node = headerFooterFactory.header.node
-        headerSection.height = headerFooterFactory.header.node.offsetHeight
-        headerSection.style = window.getComputedStyle(headerSection.node)
-      } else {
-        headerSection.node = null
-        headerSection.height = 0
-        headerSection.style = window.getComputedStyle(document.createElement('bogusElement'))
-      }
-
-      if (headerFooterFactory.hasFooter()) {
-        footerSection.node = headerFooterFactory.footer.node
-        footerSection.height = headerFooterFactory.footer.node.offsetHeight
-        footerSection.style = window.getComputedStyle(footerSection.node)
-      } else {
-        footerSection.node = null
-        footerSection.height = 0
-        footerSection.style = window.getComputedStyle(document.createElement('bogusElement'))
-      }
-
-      bodyTag.node = editor.getBody()
-      bodyTag.height = units.getValueFromStyle(getComputedStyle(editor.getBody()).minHeight)
-      bodyTag.style = window.getComputedStyle(bodyTag.node)
-      bodyTag.paddingTop = units.getValueFromStyle(bodyTag.style.paddingTop)
-      bodyTag.paddingBottom = units.getValueFromStyle(bodyTag.style.paddingBottom)
-
-      pageHeight = bodyTag.height - bodyTag.paddingTop - bodyTag.paddingBottom - headerSection.height - footerSection.height
-      $(bodySection.node).css({ minHeight: pageHeight })
-    }
-  }
 
   /**
    * Auto-enter in the body section on document load.
