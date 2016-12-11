@@ -228,7 +228,7 @@ function tinymcePluginHeadersFooters (editor, url) {
    * @returns void
    */
   function onInitHandler () {
-    headerFooterFactory = new HeaderFooterFactory(editor)
+    headerFooterFactory = new HeaderFooterFactory(editor, menuItemsList)
     menuItems.init(headerFooterFactory, menuItemsList)
     ui.addUnselectableCSSClass(editor)
   }
