@@ -201,6 +201,8 @@ HeaderFooterFactory.prototype.reload = function () {
   // set another state and load elements if a header or a footer exists
   $headFootElmts.each(function (i, el) {
     var $el = $(el)
+
+    // Configure menu items
     if ($el.attr('data-headfoot-header')) {
       that._menuItemsList.insertHeader.hide()
       that._menuItemsList.removeHeader.show()
@@ -210,9 +212,13 @@ HeaderFooterFactory.prototype.reload = function () {
       that._menuItemsList.insertFooter.hide()
       that._menuItemsList.removeFooter.show()
     }
+
+    // Configure the headfoot DOM section
     that.loadElement(el)
   })
 
+  // Create the body section if it doesn't exist yet
+  // and populate it with the previous body tag children elements
   if (!hasBody) {
     $allElmts = $(editor.getBody()).children()
     that.insertBody()
