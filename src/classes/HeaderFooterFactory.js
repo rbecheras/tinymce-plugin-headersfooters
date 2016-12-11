@@ -19,11 +19,12 @@ module.exports = HeaderFooterFactory
  * @property {Header} header The current header if exists
  * @property {Footer} footer The current footer if exists
  */
-function HeaderFooterFactory (editor) {
+function HeaderFooterFactory (editor, menuItemsList) {
   this._editor = editor
   this._hasHeader = false
   this._hasBody = false
   this._hasFooter = false
+  this._menuItemsList = menuItemsList
 }
 
 /**
@@ -176,4 +177,59 @@ HeaderFooterFactory.prototype.getActiveSection = function () {
       }
     }
   }, null)
+}
+
+/**
+ * Helper function. Do the reload of headers and footers
+ * @method
+ * @returns {undefined}
+ */
+HeaderFooterFactory.prototype.reload = function () {
+  var that = this
+  var editor = this._editor
+  var $headFootElmts = $('*[data-headfoot]', editor.getDoc())
+  var $bodyElmt = $('*[data-headfoot-body]', editor.getDoc())
+  var hasBody = !!$bodyElmt.length
+  var $allElmts = null
+
+  // init starting states
+  this._menuItemsList.insertHeader.show()
+  this._menuItemsList.insertFooter.show()
+  this._menuItemsList.removeHeader.hide()
+  this._menuItemsList.removeFooter.hide()
+
+  // set another state and load elements if a header or a footer exists
+  $headFootElmts.each(function (i, el) {
+    var $el = $(el)
+
+    // Configure menu items
+    if ($el.attr('data-headfoot-header')) {
+      that._menuItemsList.insertHeader.hide()
+      that._menuItemsList.removeHeader.show()
+    } else if ($el.attr('data-headfoot-body')) {
+      // @TODO something ?
+    } else if ($el.attr('data-headfoot-footer')) {
+      that._menuItemsList.insertFooter.hide()
+      that._menuItemsList.removeFooter.show()
+    }
+
+    // Configure the headfoot DOM section
+    that.loadElement(el)
+  })
+
+  // Create the body section if it doesn't exist yet
+  // and populate it with the previous body tag children elements
+  if (!hasBody) {
+    $allElmts = $(editor.getBody()).children()
+    that.insertBody()
+    var $body = $(that.body.node)
+    $body.empty()
+    $allElmts.each(function (i, el) {
+      var $el = $(el)
+      if (!$el.attr('data-headfoot')) {
+        $body.append($el)
+      }
+    })
+  }
+  // editor.fire('SetContent', {set: true})
 }
