@@ -20,7 +20,7 @@ module.exports = {
 }
 
 function forceBodyMinHeightOnNodeChange (evt) {
-  var headerFooterFactory = evt.headerFooterFactory
+  var headerFooterFactory = this.headerFooterFactory
 
   if (headerFooterFactory && headerFooterFactory.hasBody()) {
     headerFooterFactory.forceBodyMinHeigh()
