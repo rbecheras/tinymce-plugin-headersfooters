@@ -6,6 +6,9 @@ var $ = window.jQuery
 
 module.exports = Body
 
+Body.prototype = Object.create(HeadFoot.prototype)
+Body.prototype._createNode = _createNode
+
 /**
  * Body class
  * @class
@@ -34,15 +37,13 @@ function Body (editor, _documentBody, existingElement, hasHeader, hasFooter, hea
   }
 }
 
-Body.prototype = Object.create(HeadFoot.prototype)
-
 /**
  * Create a new node for the body.
  * @private
  * @method
  * @override
  */
-Body.prototype._createNode = function () {
+function _createNode () {
   HeadFoot.prototype._createNode.call(this)
   $(this.node).attr('data-headfoot-body', true)
 }
