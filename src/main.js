@@ -72,7 +72,7 @@ function tinymcePluginHeadersFooters (editor, url) {
   editor.on('NodeChange', function (evt) {
     onNodeChange(evt)
     eventHandlers.onNodeChange.forceBodyMinHeight.call({headerFooterFactory: headerFooterFactory}, evt)
-    fixSelectAllOnNodeChange(evt)
+    eventHandlers.onNodeChange.fixSelectAll.call({ headerFooterFactory: headerFooterFactory, editor: editor }, evt)
     eventHandlers.onSetContent.enterBodyNodeOnLoad.call({headerFooterFactory: headerFooterFactory}, evt)
   })
   editor.on('BeforeSetContent', eventHandlers.onBeforeSetContent.updateLastActiveSection.bind({headerFooterFactory: headerFooterFactory}))
@@ -81,21 +81,6 @@ function tinymcePluginHeadersFooters (editor, url) {
     eventHandlers.onSetContent.enterBodyNodeOnLoad.call({headerFooterFactory: headerFooterFactory}, evt)
     eventHandlers.onSetContent.removeAnyOuterElement.call({ headerFooterFactory: headerFooterFactory, editor: editor }, evt)
   })
-
-  /**
-   * When pressing Ctrl+A to select all content, force the selection to be contained in the current active section.
-   * onNodeChange event handler.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function fixSelectAllOnNodeChange (evt) {
-    if (evt.selectionChange && !editor.selection.isCollapsed()) {
-      if (editor.selection.getNode() === editor.getBody()) {
-        editor.selection.select(headerFooterFactory.getActiveSection().node)
-      }
-    }
-  }
 
   /**
    * On init event handler. Instanciate the factory and initialize menu items states

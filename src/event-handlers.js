@@ -9,7 +9,8 @@
 module.exports = {
   onInit: {},
   onNodeChange: {
-    forceBodyMinHeigh: forceBodyMinHeightOnNodeChange
+    forceBodyMinHeigh: forceBodyMinHeightOnNodeChange,
+    fixSelectAll: fixSelectAllOnNodeChange
   },
   onSetContent: {
     enterBodyNodeOnLoad: enterBodyNodeOnLoadOnSetContent,
@@ -84,5 +85,23 @@ function removeAnyOuterElementOnSetContent (evt) {
     console.info('entering to the last node', headerFooterFactory.lastActiveSection)
     headerFooterFactory.lastActiveSection.enterNode()
     headerFooterFactory.resetLastActiveSection()
+  }
+}
+
+/**
+ * When pressing Ctrl+A to select all content, force the selection to be contained in the current active section.
+ * onNodeChange event handler.
+ * @function
+ * @inner
+ * @returns void
+ */
+function fixSelectAllOnNodeChange (evt) {
+  var editor = this.editor
+  var headerFooterFactory = this.headerFooterFactory
+
+  if (evt.selectionChange && !editor.selection.isCollapsed()) {
+    if (editor.selection.getNode() === editor.getBody()) {
+      editor.selection.select(headerFooterFactory.getActiveSection().node)
+    }
   }
 }
