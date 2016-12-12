@@ -15,6 +15,7 @@ module.exports = {
     enterBodyNodeOnLoad: enterBodyNodeOnLoadOnSetContent
   },
   onBeforeSetContent: {
+    updateLastActiveSection: updateLastActiveSectionOnBeforeSetContent
   }
 }
 
@@ -43,3 +44,17 @@ function enterBodyNodeOnLoadOnSetContent (evt) {
   }, 500)
 }
 
+/**
+ * Update the last active section on BeforeSetContent to be able to restore it if needed on SetContent event.
+ * BeforeSetContent event handler.
+ * @method
+ * @mixin
+ * @returns void
+ */
+function updateLastActiveSectionOnBeforeSetContent (evt) {
+  var headerFooterFactory = this.headerFooterFactory
+
+  if (headerFooterFactory) {
+    headerFooterFactory.updateLastActiveSection()
+  }
+}

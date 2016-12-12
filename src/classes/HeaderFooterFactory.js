@@ -28,6 +28,18 @@ function HeaderFooterFactory (editor, menuItemsList) {
   this._hasBody = false
   this._hasFooter = false
   this._menuItemsList = menuItemsList
+
+  this.lastActiveSection = null
+}
+
+/**
+ * Update HeaderFooterFactory#lastActiveSection getting the HeaderFooterFactory#getActiveSection() returned value
+ * @method
+ * @returns {HeadFoot} the updated last active section
+ */
+HeaderFooterFactory.prototype.updateLastActiveSection = function () {
+  this.lastActiveSection = this.getActiveSection()
+  return this.lastActiveSection
 }
 
 /**

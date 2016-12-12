@@ -58,7 +58,6 @@ tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
  */
 function tinymcePluginHeadersFooters (editor, url) {
   var headerFooterFactory
-  var lastActiveSection = null
   var menuItemsList = menuItems.create(editor)
 
   this.units = units
@@ -83,7 +82,7 @@ function tinymcePluginHeadersFooters (editor, url) {
     fixSelectAllOnNodeChange(evt)
     eventHandlers.onSetContent.enterBodyNodeOnLoad.call({headerFooterFactory: headerFooterFactory}, evt)
   })
-  editor.on('BeforeSetContent', saveLastActiveSectionOnBeforeSetContent)
+  editor.on('BeforeSetContent', eventHandlers.onBeforeSetContent.updateLastActiveSection.bind({headerFooterFactory: headerFooterFactory}))
   editor.on('SetContent', function (evt) {
     reloadHeadFootIfNeededOnSetContent(evt)
     eventHandlers.onSetContent.enterBodyNodeOnLoad.call({headerFooterFactory: headerFooterFactory}, evt)
@@ -91,19 +90,6 @@ function tinymcePluginHeadersFooters (editor, url) {
   })
 
   /**
-  /**
-   * Save the last active section on BeforeSetContent to be able to restore it if needed on SetContent event.
-   * BeforeSetContent event handler.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function saveLastActiveSectionOnBeforeSetContent () {
-    if (headerFooterFactory) {
-      lastActiveSection = headerFooterFactory.getActiveSection()
-    }
-  }
-
    * Remove any element located out of the allowed sections.
    * SetContent event handler.
    * @function
@@ -135,10 +121,10 @@ function tinymcePluginHeadersFooters (editor, url) {
         }
       })
     }
-    if (lastActiveSection) {
-      console.info('entering to the last node', lastActiveSection)
-      lastActiveSection.enterNode()
-      lastActiveSection = null
+    if (headerFooterFactory && headerFooterFactory.lastActiveSection) {
+      console.info('entering to the last node', headerFooterFactory.lastActiveSection)
+      headerFooterFactory.lastActiveSection.enterNode()
+      headerFooterFactory.lastActiveSection = null
     }
   }
 
