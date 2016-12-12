@@ -5,6 +5,20 @@ var $ = window.jQuery
 
 module.exports = MenuItem
 
+// Public API
+MenuItem.prototype = {
+  getUIControl: getUIControl,
+  onclick: onclick,
+  show: show,
+  hide: hide,
+  disable: disable,
+  enable: enable
+}
+
+// Private API
+// _setUIControlPromise()
+// _camel2Dash()
+
 /**
  * MenuItem Class
  * @class
@@ -23,14 +37,14 @@ module.exports = MenuItem
  */
 function MenuItem (name, options) {
   this.name = name
-  _setUIControlPromise(this)
+  _setUIControlPromise.call(this)
   for (var key in options) {
     if (key !== 'visible' && key !== 'disabled') {
       this[key] = options[key]
     }
   }
   if (!options.id) {
-    this.id = 'mce-plugin-headersfooters-' + camel2Dash(name)
+    this.id = 'mce-plugin-headersfooters-' + _camel2Dash(name)
   }
   if (options.visible === false) this.hide()
   if (options.disabled) this.disable()
@@ -44,7 +58,7 @@ function MenuItem (name, options) {
  * var menuElement = ui.menuItems.insertHeader.getUIControl()
  * menuElement.css('color','red')
  */
-MenuItem.prototype.getUIControl = function () {
+function getUIControl () {
   var that = this
   return this._renderingPromise.then(function () {
     return $('#' + that.id)
@@ -63,7 +77,7 @@ MenuItem.prototype.getUIControl = function () {
  * 	// implement your own
  * }
  */
-MenuItem.prototype.onclick = function () {
+function onclick () {
   console.info('%s menu item has been clicked', this.name)
 }
 
@@ -78,7 +92,7 @@ MenuItem.prototype.onclick = function () {
  *   menuItem.disable() // now the menu item is shown but disabled
  * })
  */
-MenuItem.prototype.show = function () {
+function show () {
   return this.getUIControl().then(function (uiControl) {
     uiControl.show()
     return uiControl
@@ -90,7 +104,7 @@ MenuItem.prototype.show = function () {
  * @method
  * @returns {Promise} A promise resolved by the menu item
  */
-MenuItem.prototype.hide = function () {
+function hide () {
   return this.getUIControl().then(function (uiControl) {
     uiControl.hide()
     return uiControl
@@ -114,7 +128,7 @@ MenuItem.prototype.hide = function () {
  *   })
  * })
  */
-MenuItem.prototype.disable = function () {
+function disable () {
   return this.getUIControl().then(function (uiControl) {
     uiControl.addClass('mce-disabled')
     return uiControl
@@ -133,7 +147,7 @@ MenuItem.prototype.disable = function () {
  *   },2000)
  * })
  */
-MenuItem.prototype.enable = function () {
+function enable () {
   return this.getUIControl().then(function (uiControl) {
     uiControl.removeClass('mce-disabled')
     return uiControl
@@ -152,11 +166,12 @@ MenuItem.prototype.enable = function () {
  * @example
  * function MenuItem (name, options) {
  *   this.name = name
- *   _setUIControlPromise(this) // this step must be done more earlier as possible to get access to the DOMNode when it will be rendered
+ *   _setUIControlPromise.call(this) // this step must be done more earlier as possible to get access to the DOMNode when it will be rendered
  *   // continue to build the instance
  * }
  */
-function _setUIControlPromise (that) {
+function _setUIControlPromise () {
+  var that = this
   var d = q.defer()
   var $body = $('body')
 
@@ -170,7 +185,7 @@ function _setUIControlPromise (that) {
   //   console.info('menusController:mceMenuItemRendered', itemID)
   //   if (itemID === that.id) d.resolve()
   // })
-  that._renderingPromise = d.promise
+  this._renderingPromise = d.promise
 }
 
 /**
@@ -181,11 +196,11 @@ function _setUIControlPromise (that) {
  * @param {String} inputStr The input string to dasherize
  * @example
  * var camelCasedString = 'helloWorld'
- * var dashedString = camel2Dash(s)
+ * var dashedString = _camel2Dash(s)
  * console.log(dashedString)
  * // -> hello-world
  */
-function camel2Dash (inputStr) {
+function _camel2Dash (inputStr) {
   if (!inputStr.replace) throw new Error('The replace() method is not available.')
   return inputStr.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
 }
