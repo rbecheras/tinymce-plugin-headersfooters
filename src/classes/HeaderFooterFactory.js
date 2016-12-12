@@ -4,7 +4,10 @@ var Header = require('./Header')
 var Footer = require('./Footer')
 var Body = require('./Body')
 
+var units = require('../utils/units')
+
 var $ = window.jQuery
+var getComputedStyle = window.getComputedStyle
 
 module.exports = HeaderFooterFactory
 
@@ -25,6 +28,27 @@ function HeaderFooterFactory (editor, menuItemsList) {
   this._hasBody = false
   this._hasFooter = false
   this._menuItemsList = menuItemsList
+
+  this.resetLastActiveSection()
+}
+
+/**
+ * Reset the last active section
+ * @method
+ * @returns {undefined}
+ */
+HeaderFooterFactory.prototype.resetLastActiveSection = function () {
+  this.lastActiveSection = null
+}
+
+/**
+ * Update HeaderFooterFactory#lastActiveSection getting the HeaderFooterFactory#getActiveSection() returned value
+ * @method
+ * @returns {HeadFoot} the updated last active section
+ */
+HeaderFooterFactory.prototype.updateLastActiveSection = function () {
+  this.lastActiveSection = this.getActiveSection()
+  return this.lastActiveSection
 }
 
 /**
@@ -232,4 +256,76 @@ HeaderFooterFactory.prototype.reload = function () {
     })
   }
   // editor.fire('SetContent', {set: true})
+}
+
+/**
+ * Make sure the body minimum height is correct, depending the margins, header and footer height.
+ * NodeChange event handler.
+ * @function
+ * @inner
+ * @returns void
+ */
+HeaderFooterFactory.prototype.forceBodyMinHeigh = function () {
+  var bodyTag = {}
+  var bodySection = {}
+  var headerSection = {}
+  var footerSection = {}
+  var pageHeight
+
+  bodySection.node = this.body.node
+  bodySection.height = this.body.node.offsetHeight
+  bodySection.style = window.getComputedStyle(bodySection.node)
+
+  if (this.hasHeader()) {
+    headerSection.node = this.header.node
+    headerSection.height = this.header.node.offsetHeight
+    headerSection.style = window.getComputedStyle(headerSection.node)
+  } else {
+    headerSection.node = null
+    headerSection.height = 0
+    headerSection.style = window.getComputedStyle(document.createElement('bogusElement'))
+  }
+
+  if (this.hasFooter()) {
+    footerSection.node = this.footer.node
+    footerSection.height = this.footer.node.offsetHeight
+    footerSection.style = window.getComputedStyle(footerSection.node)
+  } else {
+    footerSection.node = null
+    footerSection.height = 0
+    footerSection.style = window.getComputedStyle(document.createElement('bogusElement'))
+  }
+
+  bodyTag.node = this._editor.getBody()
+  bodyTag.height = units.getValueFromStyle(getComputedStyle(this._editor.getBody()).minHeight)
+  bodyTag.style = getComputedStyle(bodyTag.node)
+  bodyTag.paddingTop = units.getValueFromStyle(bodyTag.style.paddingTop)
+  bodyTag.paddingBottom = units.getValueFromStyle(bodyTag.style.paddingBottom)
+
+  pageHeight = bodyTag.height - bodyTag.paddingTop - bodyTag.paddingBottom - headerSection.height - footerSection.height
+  $(bodySection.node).css({ minHeight: pageHeight })
+}
+
+/**
+ * Remove any element located out of the allowed sections.
+ * @method
+ * @returns void
+ */
+HeaderFooterFactory.prototype.removeAnyOuterElement = function () {
+  var that = this
+  var $body = $(this._editor.getBody())
+  $body.children().each(function (i) {
+    var allowedRootNodes = [that.body.node]
+    if (that.hasHeader()) {
+      allowedRootNodes.push(that.header.node)
+    }
+    if (that.hasFooter()) {
+      allowedRootNodes.push(that.footer.node)
+    }
+    if (!~allowedRootNodes.indexOf(this)) {
+      console.error('Removing the following element because it is out of the allowed sections')
+      console.log(this)
+      $(this).remove()
+    }
+  })
 }

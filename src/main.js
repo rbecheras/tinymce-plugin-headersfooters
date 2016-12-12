@@ -32,18 +32,9 @@
  */
 var tinymce = window.tinymce
 
-/**
- * The jQuery plugin namespace - plugin dependency.
- * @external "jQuery.fn"
- * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
- */
-var $ = window.jQuery
-var getComputedStyle = window.getComputedStyle
-
-var ui = require('./utils/ui')
 var menuItems = require('./components/menu-items')
 var units = require('./utils/units')
-var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
+var eventHandlers = require('./event-handlers')
 
 // Add the plugin to the tinymce PluginManager
 tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
@@ -56,200 +47,41 @@ tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
  * @returns void
  */
 function tinymcePluginHeadersFooters (editor, url) {
-  var headerFooterFactory
-  var lastActiveSection = null
-  var menuItemsList = menuItems.create(editor)
-
+  var thisPlugin = this
+  this.headerFooterFactory = null
   this.units = units
+  this.editor = editor
+  this.menuItemsList = menuItems.create(editor)
 
   // add the plugin's menu items
-  for (var itemName in menuItemsList) {
-    editor.addMenuItem(itemName, menuItemsList[itemName])
+  for (var itemName in this.menuItemsList) {
+    editor.addMenuItem(itemName, this.menuItemsList[itemName])
   }
 
   editor.addCommand('insertPageNumberCmd', function () {
     editor.insertContent('{{page}}')
   })
-
   editor.addCommand('insertNumberOfPagesCmd', function () {
     editor.insertContent('{{pages}}')
   })
 
-  editor.on('init', onInitHandler)
+  editor.on('init', function (evt) {
+    eventHandlers.onInit.initHeaderFooterFactory.call(thisPlugin, evt)
+    eventHandlers.onInit.initMenuItemsList.call(thisPlugin, evt)
+    eventHandlers.onInit.initUI.call(thisPlugin, evt)
+  })
   editor.on('NodeChange', function (evt) {
-    onNodeChange(evt)
-    forceBodyMinHeightOnNodeChange(evt)
-    fixSelectAllOnNodeChange(evt)
-    enterBodyNodeOnLoad(evt)
+    eventHandlers.onNodeChange.forceCursorToAllowedLocation.call(thisPlugin, evt)
+    eventHandlers.onNodeChange.forceBodyMinHeight.call(thisPlugin, evt)
+    eventHandlers.onNodeChange.fixSelectAll.call(thisPlugin, evt)
+    eventHandlers.onSetContent.enterBodyNodeOnLoad.call(thisPlugin, evt)
   })
-  editor.on('BeforeSetContent', saveLastActiveSectionOnBeforeSetContent)
+  editor.on('BeforeSetContent', function (evt) {
+    eventHandlers.onBeforeSetContent.updateLastActiveSection.call(thisPlugin, evt)
+  })
   editor.on('SetContent', function (evt) {
-    reloadHeadFootIfNeededOnSetContent(evt)
-    enterBodyNodeOnLoad(evt)
-    removeAnyOuterElementOnSetContent(evt)
+    eventHandlers.onSetContent.reloadHeadFootIfNeeded.call(thisPlugin, evt)
+    eventHandlers.onSetContent.enterBodyNodeOnLoad.call(thisPlugin, evt)
+    eventHandlers.onSetContent.removeAnyOuterElement.call(thisPlugin, evt)
   })
-
-  /**
-   * Make sure the body minimum height is correct, depending the margins, header and footer height.
-   * NodeChange event handler.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function forceBodyMinHeightOnNodeChange (evt) {
-    if (headerFooterFactory && headerFooterFactory.hasBody()) {
-      var bodyTag = {}
-      var bodySection = {}
-      var headerSection = {}
-      var footerSection = {}
-      var pageHeight
-
-      bodySection.node = headerFooterFactory.body.node
-      bodySection.height = headerFooterFactory.body.node.offsetHeight
-      bodySection.style = window.getComputedStyle(bodySection.node)
-
-      if (headerFooterFactory.hasHeader()) {
-        headerSection.node = headerFooterFactory.header.node
-        headerSection.height = headerFooterFactory.header.node.offsetHeight
-        headerSection.style = window.getComputedStyle(headerSection.node)
-      } else {
-        headerSection.node = null
-        headerSection.height = 0
-        headerSection.style = window.getComputedStyle(document.createElement('bogusElement'))
-      }
-
-      if (headerFooterFactory.hasFooter()) {
-        footerSection.node = headerFooterFactory.footer.node
-        footerSection.height = headerFooterFactory.footer.node.offsetHeight
-        footerSection.style = window.getComputedStyle(footerSection.node)
-      } else {
-        footerSection.node = null
-        footerSection.height = 0
-        footerSection.style = window.getComputedStyle(document.createElement('bogusElement'))
-      }
-
-      bodyTag.node = editor.getBody()
-      bodyTag.height = units.getValueFromStyle(getComputedStyle(editor.getBody()).minHeight)
-      bodyTag.style = window.getComputedStyle(bodyTag.node)
-      bodyTag.paddingTop = units.getValueFromStyle(bodyTag.style.paddingTop)
-      bodyTag.paddingBottom = units.getValueFromStyle(bodyTag.style.paddingBottom)
-
-      pageHeight = bodyTag.height - bodyTag.paddingTop - bodyTag.paddingBottom - headerSection.height - footerSection.height
-      $(bodySection.node).css({ minHeight: pageHeight })
-    }
-  }
-
-  /**
-   * Auto-enter in the body section on document load.
-   * (SetContent or NodeChange with some conditions) event handler.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function enterBodyNodeOnLoad (evt) {
-    setTimeout(function () {
-      if (headerFooterFactory && headerFooterFactory.hasBody() && !headerFooterFactory.getActiveSection()) {
-        headerFooterFactory.body.enterNode()
-      }
-    }, 500)
-  }
-
-  /**
-   * Save the last active section on BeforeSetContent to be able to restore it if needed on SetContent event.
-   * BeforeSetContent event handler.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function saveLastActiveSectionOnBeforeSetContent () {
-    if (headerFooterFactory) {
-      lastActiveSection = headerFooterFactory.getActiveSection()
-    }
-  }
-
-  /**
-   * Remove any element located out of the allowed sections.
-   * SetContent event handler.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function removeAnyOuterElementOnSetContent (evt) {
-    var conditions = [
-      !!evt.content,
-      evt.content && !!evt.content.length,
-      !!editor.getContent(),
-      !!editor.getContent().length,
-      !!headerFooterFactory
-    ]
-    if (!~conditions.indexOf(false)) {
-      var $body = $(editor.getBody())
-      $body.children().each(function (i) {
-        var allowedRootNodes = [headerFooterFactory.body.node]
-        if (headerFooterFactory.hasHeader()) {
-          allowedRootNodes.push(headerFooterFactory.header.node)
-        }
-        if (headerFooterFactory.hasFooter()) {
-          allowedRootNodes.push(headerFooterFactory.footer.node)
-        }
-        if (!~allowedRootNodes.indexOf(this)) {
-          console.error('Removing the following element because it is out of the allowed sections')
-          console.log(this)
-          $(this).remove()
-        }
-      })
-    }
-    if (lastActiveSection) {
-      console.info('entering to the last node', lastActiveSection)
-      lastActiveSection.enterNode()
-      lastActiveSection = null
-    }
-  }
-
-  /**
-   * When pressing Ctrl+A to select all content, force the selection to be contained in the current active section.
-   * onNodeChange event handler.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function fixSelectAllOnNodeChange (evt) {
-    if (evt.selectionChange && !editor.selection.isCollapsed()) {
-      if (editor.selection.getNode() === editor.getBody()) {
-        editor.selection.select(headerFooterFactory.getActiveSection().node)
-      }
-    }
-  }
-
-  /**
-   * On init event handler. Instanciate the factory and initialize menu items states
-   * @function
-   * @inner
-   * @returns void
-   */
-  function onInitHandler () {
-    headerFooterFactory = new HeaderFooterFactory(editor, menuItemsList)
-    menuItems.init(headerFooterFactory, menuItemsList)
-    ui.addUnselectableCSSClass(editor)
-  }
-
-  /**
-   * On SetContent event handler. Load or reload headers and footers from existing elements if it should do.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function reloadHeadFootIfNeededOnSetContent (evt) {
-    if (headerFooterFactory) {
-      headerFooterFactory.reload(menuItems)
-    } else {
-      setTimeout(reloadHeadFootIfNeededOnSetContent.bind(null, evt), 100)
-    }
-  }
-
-  function onNodeChange (evt) {
-    if (headerFooterFactory) {
-      headerFooterFactory.forceCursorToAllowedLocation(evt.element)
-    }
-  }
 }
