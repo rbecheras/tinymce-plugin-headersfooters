@@ -1,10 +1,20 @@
 'use strict'
 
 var HeadFoot = require('./HeadFoot')
+var HeadFoot_protected = require('./HeadFootProtected')
 
 var $ = window.jQuery
 
 module.exports = Body
+
+// Prototypal Inheritance
+Body.prototype = Object.create(HeadFoot.prototype)
+
+// Public API
+Body.prototype._createNode = _createNode
+
+// Private API
+// _createNode()
 
 /**
  * Body class
@@ -34,15 +44,13 @@ function Body (editor, _documentBody, existingElement, hasHeader, hasFooter, hea
   }
 }
 
-Body.prototype = Object.create(HeadFoot.prototype)
-
 /**
  * Create a new node for the body.
  * @private
  * @method
  * @override
  */
-Body.prototype._createNode = function () {
-  HeadFoot.prototype._createNode.call(this)
+function _createNode () {
+  HeadFoot_protected.createNode.call(this)
   $(this.node).attr('data-headfoot-body', true)
 }

@@ -30,10 +30,19 @@ var ui = require('../utils/ui')
  */
 var HEADER_FOOTER_ONLY_SELECTOR = 'section[data-headfoot-header], section[data-headfoot-footer]'
 
+// Static API
 module.exports = {
   create: create,
   init: init
 }
+
+// Inner API
+// _createInsertHeaderMenuItem()
+// _createInsertFooterMenuItem()
+// _createRemoveHeaderMenuItem()
+// _createRemoveFooterMenuItem()
+// _createInsertPageNumber(editor)
+// _createinsertNumberOfPages(editor)
 
 /**
  * Create a hash of all the menu items for the plugin
@@ -43,12 +52,12 @@ module.exports = {
  */
 function create (editor) {
   return {
-    insertHeader: createInsertHeaderMenuItem(),
-    insertFooter: createInsertFooterMenuItem(),
-    removeHeader: createRemoveHeaderMenuItem(),
-    removeFooter: createRemoveFooterMenuItem(),
-    insertPageNumber: createInsertPageNumber(editor),
-    insertNumberOfPages: createinsertNumberOfPages(editor)
+    insertHeader: _createInsertHeaderMenuItem(),
+    insertFooter: _createInsertFooterMenuItem(),
+    removeHeader: _createRemoveHeaderMenuItem(),
+    removeFooter: _createRemoveFooterMenuItem(),
+    insertPageNumber: _createInsertPageNumber(editor),
+    insertNumberOfPages: _createinsertNumberOfPages(editor)
   }
 }
 
@@ -94,7 +103,7 @@ function init (factory, menuItems) {
  * @inner
  * @returns {MenuItem}
  */
-function createInsertHeaderMenuItem () {
+function _createInsertHeaderMenuItem () {
   return new MenuItem('insertHeader', {
     text: 'Insérer une entête',
     icon: 'abc',
@@ -112,7 +121,7 @@ function createInsertHeaderMenuItem () {
  * @inner
  * @returns {MenuItem}
  */
-function createRemoveHeaderMenuItem () {
+function _createRemoveHeaderMenuItem () {
   return new MenuItem('removeHeader', {
     text: "Supprimer l'entête",
     icon: 'text',
@@ -129,7 +138,7 @@ function createRemoveHeaderMenuItem () {
  * @inner
  * @returns {MenuItem}
  */
-function createInsertFooterMenuItem () {
+function _createInsertFooterMenuItem () {
   return new MenuItem('insertFooter', {
     text: 'Insérer un pied de page',
     icon: 'abc',
@@ -146,7 +155,7 @@ function createInsertFooterMenuItem () {
  * @inner
  * @returns {MenuItem}
  */
-function createRemoveFooterMenuItem () {
+function _createRemoveFooterMenuItem () {
   return new MenuItem('removeFooter', {
     text: 'Supprimer le pied de page',
     icon: 'text',
@@ -163,7 +172,7 @@ function createRemoveFooterMenuItem () {
  * @inner
  * @returns {MenuItem}
  */
-function createInsertPageNumber (editor) {
+function _createInsertPageNumber (editor) {
   return new MenuItem('insertPageNumber', {
     text: 'Insérer le numéro de page',
     context: 'document',
@@ -180,7 +189,7 @@ function createInsertPageNumber (editor) {
  * @inner
  * @returns {MenuItem}
  */
-function createinsertNumberOfPages (editor) {
+function _createinsertNumberOfPages (editor) {
   return new MenuItem('insertNumberOfPages', {
     text: 'Insérer le nombre de page',
     // icon: 'text',
