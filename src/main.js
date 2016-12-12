@@ -32,13 +32,6 @@
  */
 var tinymce = window.tinymce
 
-/**
- * The jQuery plugin namespace - plugin dependency.
- * @external "jQuery.fn"
- * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
- */
-var $ = window.jQuery
-
 var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
 
 var ui = require('./utils/ui')
