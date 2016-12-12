@@ -3,6 +3,9 @@
 var ui = require('../utils/ui')
 var domUtils = require('../utils/dom')
 
+// Import self protected API
+var HeadFoot_protected = require('./HeadFootProtected')
+
 var $ = window.jQuery
 var tinymce = window.tinymce
 
@@ -17,8 +20,8 @@ HeadFoot.prototype = {
   pristine: pristine
 }
 
-// Private API
-// _createNode()
+// Protected API
+// HeadFoot_protected.createNode()
 
 /**
  * Abstract class to inherit Header and Footer sub classes from.
@@ -42,7 +45,7 @@ function HeadFoot (editor, documentBody, existingElement) {
   if (existingElement) {
     this.node = existingElement
   } else {
-    _createNode.call(this)
+    HeadFoot_protected.createNode.call(this)
   }
 
   var $thisNode = $(this.node)
@@ -156,14 +159,4 @@ function pristine (b) {
   } else {
     this.node.setAttribute(attr, !!b)
   }
-}
-
-/**
-* Create a new node for an header or a footer.
-* @private
-* @method
-*/
-function _createNode () {
-  this.node = $('<section>').attr('data-headfoot', true)[0]
-  this.initParagraph()
 }

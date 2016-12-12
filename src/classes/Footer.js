@@ -1,13 +1,20 @@
 'use strict'
 
 var HeadFoot = require('./HeadFoot')
+var HeadFoot_protected = require('./HeadFootProtected')
 
 var $ = window.jQuery
 
 module.exports = Footer
 
+// Prototypal Inheritance
 Footer.prototype = Object.create(HeadFoot.prototype)
+
+// Public API
 Footer.prototype._createNode = _createNode
+
+// Private API
+// _createNode()
 
 /**
  * Footer class
@@ -32,6 +39,6 @@ function Footer (editor, _documentBody, existingElement) {
  * @override
  */
 function _createNode () {
-  HeadFoot.prototype._createNode.call(this)
+  HeadFoot_protected.createNode.call(this)
   $(this.node).attr('data-headfoot-footer', true)
 }
