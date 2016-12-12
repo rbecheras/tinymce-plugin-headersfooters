@@ -305,3 +305,27 @@ HeaderFooterFactory.prototype.forceBodyMinHeigh = function () {
   pageHeight = bodyTag.height - bodyTag.paddingTop - bodyTag.paddingBottom - headerSection.height - footerSection.height
   $(bodySection.node).css({ minHeight: pageHeight })
 }
+
+/**
+ * Remove any element located out of the allowed sections.
+ * @method
+ * @returns void
+ */
+HeaderFooterFactory.prototype.removeAnyOuterElement = function () {
+  var that = this
+  var $body = $(this._editor.getBody())
+  $body.children().each(function (i) {
+    var allowedRootNodes = [that.body.node]
+    if (that.hasHeader()) {
+      allowedRootNodes.push(that.header.node)
+    }
+    if (that.hasFooter()) {
+      allowedRootNodes.push(that.footer.node)
+    }
+    if (!~allowedRootNodes.indexOf(this)) {
+      console.error('Removing the following element because it is out of the allowed sections')
+      console.log(this)
+      $(this).remove()
+    }
+  })
+}
