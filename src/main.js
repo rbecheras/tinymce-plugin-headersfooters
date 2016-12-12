@@ -86,47 +86,8 @@ function tinymcePluginHeadersFooters (editor, url) {
   editor.on('SetContent', function (evt) {
     reloadHeadFootIfNeededOnSetContent(evt)
     eventHandlers.onSetContent.enterBodyNodeOnLoad.call({headerFooterFactory: headerFooterFactory}, evt)
-    removeAnyOuterElementOnSetContent(evt)
+    eventHandlers.onSetContent.removeAnyOuterElement.call({ headerFooterFactory: headerFooterFactory, editor: editor }, evt)
   })
-
-  /**
-   * Remove any element located out of the allowed sections.
-   * SetContent event handler.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function removeAnyOuterElementOnSetContent (evt) {
-    var conditions = [
-      !!evt.content,
-      evt.content && !!evt.content.length,
-      !!editor.getContent(),
-      !!editor.getContent().length,
-      !!headerFooterFactory
-    ]
-    if (!~conditions.indexOf(false)) {
-      var $body = $(editor.getBody())
-      $body.children().each(function (i) {
-        var allowedRootNodes = [headerFooterFactory.body.node]
-        if (headerFooterFactory.hasHeader()) {
-          allowedRootNodes.push(headerFooterFactory.header.node)
-        }
-        if (headerFooterFactory.hasFooter()) {
-          allowedRootNodes.push(headerFooterFactory.footer.node)
-        }
-        if (!~allowedRootNodes.indexOf(this)) {
-          console.error('Removing the following element because it is out of the allowed sections')
-          console.log(this)
-          $(this).remove()
-        }
-      })
-    }
-    if (headerFooterFactory && headerFooterFactory.lastActiveSection) {
-      console.info('entering to the last node', headerFooterFactory.lastActiveSection)
-      headerFooterFactory.lastActiveSection.enterNode()
-      headerFooterFactory.lastActiveSection = null
-    }
-  }
 
   /**
    * When pressing Ctrl+A to select all content, force the selection to be contained in the current active section.

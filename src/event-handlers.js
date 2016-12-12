@@ -12,7 +12,8 @@ module.exports = {
     forceBodyMinHeigh: forceBodyMinHeightOnNodeChange
   },
   onSetContent: {
-    enterBodyNodeOnLoad: enterBodyNodeOnLoadOnSetContent
+    enterBodyNodeOnLoad: enterBodyNodeOnLoadOnSetContent,
+    removeAnyOuterElement: removeAnyOuterElementOnSetContent
   },
   onBeforeSetContent: {
     updateLastActiveSection: updateLastActiveSectionOnBeforeSetContent
@@ -56,5 +57,32 @@ function updateLastActiveSectionOnBeforeSetContent (evt) {
 
   if (headerFooterFactory) {
     headerFooterFactory.updateLastActiveSection()
+  }
+}
+
+/**
+ * Remove any element located out of the allowed sections on SetContent
+ * SetContent event handler.
+ * @method
+ * @mixin
+ * @returns void
+ */
+function removeAnyOuterElementOnSetContent (evt) {
+  var editor = this.editor
+  var headerFooterFactory = this.headerFooterFactory
+  var conditions = [
+    !!evt.content,
+    evt.content && !!evt.content.length,
+    !!editor.getContent(),
+    !!editor.getContent().length,
+    !!headerFooterFactory
+  ]
+  if (!~conditions.indexOf(false)) {
+    headerFooterFactory.removeAnyOuterElement()
+  }
+  if (headerFooterFactory && headerFooterFactory.lastActiveSection) {
+    console.info('entering to the last node', headerFooterFactory.lastActiveSection)
+    headerFooterFactory.lastActiveSection.enterNode()
+    headerFooterFactory.resetLastActiveSection()
   }
 }
