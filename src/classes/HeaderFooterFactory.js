@@ -11,6 +11,26 @@ var getComputedStyle = window.getComputedStyle
 
 module.exports = HeaderFooterFactory
 
+HeaderFooterFactory.prototype = {
+  resetLastActiveSection: resetLastActiveSection,
+  updateLastActiveSection: updateLastActiveSection,
+  loadElement: loadElement,
+  insertHeader: insertHeader,
+  insertBody: insertBody,
+  insertFooter: insertFooter,
+  removeHeader: removeHeader,
+  removeFooter: removeFooter,
+  hasHeader: hasHeader,
+  hasBody: hasBody,
+  hasFooter: hasFooter,
+  focusToEndOfBody: focusToEndOfBody,
+  forceCursorToAllowedLocation: forceCursorToAllowedLocation,
+  getActiveSection: getActiveSection,
+  reload: reload,
+  forceBodyMinHeigh: forceBodyMinHeigh,
+  removeAnyOuterElement: removeAnyOuterElement
+}
+
 /**
  * HeaderFactory class. The aim of this class is to manage the document header and footer.
  * @constructor
@@ -37,7 +57,7 @@ function HeaderFooterFactory (editor, menuItemsList) {
  * @method
  * @returns {undefined}
  */
-HeaderFooterFactory.prototype.resetLastActiveSection = function () {
+function resetLastActiveSection () {
   this.lastActiveSection = null
 }
 
@@ -46,7 +66,7 @@ HeaderFooterFactory.prototype.resetLastActiveSection = function () {
  * @method
  * @returns {HeadFoot} the updated last active section
  */
-HeaderFooterFactory.prototype.updateLastActiveSection = function () {
+function updateLastActiveSection () {
   this.lastActiveSection = this.getActiveSection()
   return this.lastActiveSection
 }
@@ -57,7 +77,7 @@ HeaderFooterFactory.prototype.updateLastActiveSection = function () {
  * @param {DOMElement} element
  * @returns void
  */
-HeaderFooterFactory.prototype.loadElement = function (element) {
+function loadElement (element) {
   var $el = $(element)
   if ($el.attr('data-headfoot-header')) {
     this._hasHeader = true
@@ -76,7 +96,7 @@ HeaderFooterFactory.prototype.loadElement = function (element) {
  * @method
  * @returns void
  */
-HeaderFooterFactory.prototype.insertHeader = function () {
+function insertHeader () {
   this.header = new Header(this._editor, this._editor.getBody())
   this._hasHeader = true
   this.header.enterNode()
@@ -87,7 +107,7 @@ HeaderFooterFactory.prototype.insertHeader = function () {
  * @method
  * @returns void
  */
-HeaderFooterFactory.prototype.insertBody = function () {
+function insertBody () {
   this.body = new Body(this._editor, this._editor.getBody(), this._hasHeader, this._hasFooter, this.header)
   this._hasBody = true
   this.body.enterNode()
@@ -98,7 +118,7 @@ HeaderFooterFactory.prototype.insertBody = function () {
  * @method
  * @returns void
  */
-HeaderFooterFactory.prototype.insertFooter = function () {
+function insertFooter () {
   this.footer = new Footer(this._editor, this._editor.getBody())
   this._hasFooter = true
   this.footer.enterNode()
@@ -109,7 +129,7 @@ HeaderFooterFactory.prototype.insertFooter = function () {
  * @method
  * @returns void
  */
-HeaderFooterFactory.prototype.removeHeader = function () {
+function removeHeader () {
   // the header can be removed only if it exists
   if (!this.hasHeader()) throw new Error('No header available to remove')
 
@@ -123,7 +143,7 @@ HeaderFooterFactory.prototype.removeHeader = function () {
  * @method
  * @returns void
  */
-HeaderFooterFactory.prototype.removeFooter = function () {
+function removeFooter () {
   // the footer can be removed only if it exists
   if (!this.hasFooter()) throw new Error('No footer available to remove')
 
@@ -137,7 +157,7 @@ HeaderFooterFactory.prototype.removeFooter = function () {
  * @method
  * @returns {Boolean} true if the document has a header, false if not
  */
-HeaderFooterFactory.prototype.hasHeader = function () {
+function hasHeader () {
   return this._hasHeader
 }
 
@@ -146,7 +166,7 @@ HeaderFooterFactory.prototype.hasHeader = function () {
  * @method
  * @returns {Boolean} true if the document has a body, false if not
  */
-HeaderFooterFactory.prototype.hasBody = function () {
+function hasBody () {
   return this._hasBody
 }
 
@@ -155,18 +175,18 @@ HeaderFooterFactory.prototype.hasBody = function () {
  * @method
  * @returns {Boolean} true if the document has a footer, false if not
  */
-HeaderFooterFactory.prototype.hasFooter = function () {
+function hasFooter () {
   return this._hasFooter
 }
 
-HeaderFooterFactory.prototype.focusToEndOfBody = function () {
+function focusToEndOfBody () {
   var $body = $(this.body.node)
   var lastBodyChild = $body.children().last()[0]
   this.body.enterNode()
   this._editor.selection.setCursorLocation(lastBodyChild, lastBodyChild.childNodes.length)
 }
 
-HeaderFooterFactory.prototype.forceCursorToAllowedLocation = function (node, parents) {
+function forceCursorToAllowedLocation (node, parents) {
   if (this.hasBody()) {
     if (!parents) {
       var $node = $(node)
@@ -190,7 +210,7 @@ HeaderFooterFactory.prototype.forceCursorToAllowedLocation = function (node, par
   }
 }
 
-HeaderFooterFactory.prototype.getActiveSection = function () {
+function getActiveSection () {
   return [this.header, this.body, this.footer]
   .reduce(function (prev, section) {
     if (prev) {
@@ -208,7 +228,7 @@ HeaderFooterFactory.prototype.getActiveSection = function () {
  * @method
  * @returns {undefined}
  */
-HeaderFooterFactory.prototype.reload = function () {
+function reload () {
   var that = this
   var editor = this._editor
   var $headFootElmts = $('*[data-headfoot]', editor.getDoc())
@@ -265,7 +285,7 @@ HeaderFooterFactory.prototype.reload = function () {
  * @inner
  * @returns void
  */
-HeaderFooterFactory.prototype.forceBodyMinHeigh = function () {
+function forceBodyMinHeigh () {
   var bodyTag = {}
   var bodySection = {}
   var headerSection = {}
@@ -311,7 +331,7 @@ HeaderFooterFactory.prototype.forceBodyMinHeigh = function () {
  * @method
  * @returns void
  */
-HeaderFooterFactory.prototype.removeAnyOuterElement = function () {
+function removeAnyOuterElement () {
   var that = this
   var $body = $(this._editor.getBody())
   $body.children().each(function (i) {
