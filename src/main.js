@@ -32,9 +32,6 @@
  */
 var tinymce = window.tinymce
 
-var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
-
-var ui = require('./utils/ui')
 var menuItems = require('./components/menu-items')
 var units = require('./utils/units')
 var eventHandlers = require('./event-handlers')
@@ -50,52 +47,41 @@ tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
  * @returns void
  */
 function tinymcePluginHeadersFooters (editor, url) {
-  var headerFooterFactory
-  var menuItemsList = menuItems.create(editor)
-
+  var thisPlugin = this
+  this.headerFooterFactory = null
   this.units = units
+  this.editor = editor
+  this.menuItemsList = menuItems.create(editor)
 
   // add the plugin's menu items
-  for (var itemName in menuItemsList) {
-    editor.addMenuItem(itemName, menuItemsList[itemName])
+  for (var itemName in this.menuItemsList) {
+    editor.addMenuItem(itemName, this.menuItemsList[itemName])
   }
 
   editor.addCommand('insertPageNumberCmd', function () {
     editor.insertContent('{{page}}')
   })
-
   editor.addCommand('insertNumberOfPagesCmd', function () {
     editor.insertContent('{{pages}}')
   })
 
-  editor.on('init', onInitHandler)
+  editor.on('init', function (evt) {
+    eventHandlers.onInit.initHeaderFooterFactory.call(thisPlugin, evt)
+    eventHandlers.onInit.initMenuItemsList.call(thisPlugin, evt)
+    eventHandlers.onInit.initUI.call(thisPlugin, evt)
+  })
   editor.on('NodeChange', function (evt) {
-    var eventCtx = {headerFooterFactory: headerFooterFactory}
-    eventHandlers.onNodeChange.forceCursorToAllowedLocation.call(eventCtx, evt)
-    eventHandlers.onNodeChange.forceBodyMinHeight.call(eventCtx, evt)
-    eventHandlers.onNodeChange.fixSelectAll.call(eventCtx, evt)
-    eventHandlers.onSetContent.enterBodyNodeOnLoad.call(eventCtx, evt)
+    eventHandlers.onNodeChange.forceCursorToAllowedLocation.call(thisPlugin, evt)
+    eventHandlers.onNodeChange.forceBodyMinHeight.call(thisPlugin, evt)
+    eventHandlers.onNodeChange.fixSelectAll.call(thisPlugin, evt)
+    eventHandlers.onSetContent.enterBodyNodeOnLoad.call(thisPlugin, evt)
   })
   editor.on('BeforeSetContent', function (evt) {
-    var eventCtx = {headerFooterFactory: headerFooterFactory}
-    eventHandlers.onBeforeSetContent.updateLastActiveSection.call(eventCtx, evt)
+    eventHandlers.onBeforeSetContent.updateLastActiveSection.call(thisPlugin, evt)
   })
   editor.on('SetContent', function (evt) {
-    var eventCtx = {headerFooterFactory: headerFooterFactory}
-    eventHandlers.onSetContent.reloadHeadFootIfNeeded.call(eventCtx, evt)
-    eventHandlers.onSetContent.enterBodyNodeOnLoad.call(eventCtx, evt)
-    eventHandlers.onSetContent.removeAnyOuterElement.call(eventCtx, evt)
+    eventHandlers.onSetContent.reloadHeadFootIfNeeded.call(thisPlugin, evt)
+    eventHandlers.onSetContent.enterBodyNodeOnLoad.call(thisPlugin, evt)
+    eventHandlers.onSetContent.removeAnyOuterElement.call(thisPlugin, evt)
   })
-
-  /**
-   * On init event handler. Instanciate the factory and initialize menu items states
-   * @function
-   * @inner
-   * @returns void
-   */
-  function onInitHandler () {
-    headerFooterFactory = new HeaderFooterFactory(editor, menuItemsList)
-    menuItems.init(headerFooterFactory, menuItemsList)
-    ui.addUnselectableCSSClass(editor)
-  }
 }

@@ -6,8 +6,14 @@
  * @name eventHandlers
  */
 
+var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
+var ui = require('./utils/ui')
 module.exports = {
-  onInit: {},
+  onInit: {
+    initHeaderFooterFactory: initHeaderFooterFactoryOnInit,
+    initMenuItemsList: initMenuItemsListOnInit,
+    initUI: initUIOnInit
+  },
   onNodeChange: {
     forceBodyMinHeight: forceBodyMinHeightOnNodeChange,
     fixSelectAll: fixSelectAllOnNodeChange,
@@ -24,10 +30,8 @@ module.exports = {
 }
 
 function forceBodyMinHeightOnNodeChange (evt) {
-  var headerFooterFactory = this.headerFooterFactory
-
-  if (headerFooterFactory && headerFooterFactory.hasBody()) {
-    headerFooterFactory.forceBodyMinHeigh()
+  if (this.headerFooterFactory && this.headerFooterFactory.hasBody()) {
+    this.headerFooterFactory.forceBodyMinHeigh()
   }
 }
 
@@ -39,11 +43,10 @@ function forceBodyMinHeightOnNodeChange (evt) {
  * @returns void
  */
 function enterBodyNodeOnLoadOnSetContent (evt) {
-  var headerFooterFactory = this.headerFooterFactory
-
+  var that = this
   setTimeout(function () {
-    if (headerFooterFactory && headerFooterFactory.hasBody() && !headerFooterFactory.getActiveSection()) {
-      headerFooterFactory.body.enterNode()
+    if (that.headerFooterFactory && that.headerFooterFactory.hasBody() && !that.headerFooterFactory.getActiveSection()) {
+      that.headerFooterFactory.body.enterNode()
     }
   }, 500)
 }
@@ -56,10 +59,8 @@ function enterBodyNodeOnLoadOnSetContent (evt) {
  * @returns void
  */
 function updateLastActiveSectionOnBeforeSetContent (evt) {
-  var headerFooterFactory = this.headerFooterFactory
-
-  if (headerFooterFactory) {
-    headerFooterFactory.updateLastActiveSection()
+  if (this.headerFooterFactory) {
+    this.headerFooterFactory.updateLastActiveSection()
   }
 }
 
@@ -71,23 +72,20 @@ function updateLastActiveSectionOnBeforeSetContent (evt) {
  * @returns void
  */
 function removeAnyOuterElementOnSetContent (evt) {
-  var headerFooterFactory = this.headerFooterFactory
-  var editor = headerFooterFactory._editor
-
   var conditions = [
     !!evt.content,
     evt.content && !!evt.content.length,
-    !!editor.getContent(),
-    !!editor.getContent().length,
-    !!headerFooterFactory
+    !!this.editor.getContent(),
+    !!this.editor.getContent().length,
+    !!this.headerFooterFactory
   ]
   if (!~conditions.indexOf(false)) {
-    headerFooterFactory.removeAnyOuterElement()
+    this.headerFooterFactory.removeAnyOuterElement()
   }
-  if (headerFooterFactory && headerFooterFactory.lastActiveSection) {
-    console.info('entering to the last node', headerFooterFactory.lastActiveSection)
-    headerFooterFactory.lastActiveSection.enterNode()
-    headerFooterFactory.resetLastActiveSection()
+  if (this.headerFooterFactory && this.headerFooterFactory.lastActiveSection) {
+    console.info('entering to the last node', this.headerFooterFactory.lastActiveSection)
+    this.headerFooterFactory.lastActiveSection.enterNode()
+    this.headerFooterFactory.resetLastActiveSection()
   }
 }
 
@@ -99,12 +97,9 @@ function removeAnyOuterElementOnSetContent (evt) {
  * @returns void
  */
 function fixSelectAllOnNodeChange (evt) {
-  var headerFooterFactory = this.headerFooterFactory
-  var editor = headerFooterFactory._editor
-
-  if (evt.selectionChange && !editor.selection.isCollapsed()) {
-    if (editor.selection.getNode() === editor.getBody()) {
-      editor.selection.select(headerFooterFactory.getActiveSection().node)
+  if (evt.selectionChange && !this.editor.selection.isCollapsed()) {
+    if (this.editor.selection.getNode() === this.editor.getBody()) {
+      this.editor.selection.select(this.headerFooterFactory.getActiveSection().node)
     }
   }
 }
@@ -116,9 +111,8 @@ function fixSelectAllOnNodeChange (evt) {
  * @returns void
  */
 function reloadHeadFootIfNeededOnSetContent (evt) {
-  var headerFooterFactory = this.headerFooterFactory
-  if (headerFooterFactory) {
-    headerFooterFactory.reload()
+  if (this.headerFooterFactory) {
+    this.headerFooterFactory.reload()
   } else {
     setTimeout(reloadHeadFootIfNeededOnSetContent.bind(this, evt), 100)
   }
@@ -131,8 +125,37 @@ function reloadHeadFootIfNeededOnSetContent (evt) {
  * @returns void
  */
 function forceCursorToAllowedLocationOnNodeChange (evt) {
-  var headerFooterFactory = this.headerFooterFactory
-  if (headerFooterFactory) {
-    headerFooterFactory.forceCursorToAllowedLocation(evt.element)
+  if (this.headerFooterFactory) {
+    this.headerFooterFactory.forceCursorToAllowedLocation(evt.element)
   }
+}
+
+/**
+ * On init event handler. Instanciate the factory.
+ * @method
+ * @mixin
+ * @returns void
+ */
+function initHeaderFooterFactoryOnInit (evt) {
+  this.headerFooterFactory = new HeaderFooterFactory(this.editor, this.menuItemsList)
+}
+
+/**
+ * On init event handler. Init the menu items list.
+ * @method
+ * @mixin
+ * @returns void
+ */
+function initMenuItemsListOnInit (evt) {
+  this.menuItems.init(this.headerFooterFactory, this.menuItemsList)
+}
+
+/**
+ * On init event handler. Init the plugin's needed CSS classes.
+ * @method
+ * @mixin
+ * @returns void
+ */
+function initUIOnInit (evt) {
+  ui.addUnselectableCSSClass(this.editor)
 }
