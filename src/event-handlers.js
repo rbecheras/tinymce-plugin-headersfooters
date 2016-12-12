@@ -17,7 +17,8 @@ module.exports = {
     removeAnyOuterElement: removeAnyOuterElementOnSetContent
   },
   onBeforeSetContent: {
-    updateLastActiveSection: updateLastActiveSectionOnBeforeSetContent
+    updateLastActiveSection: updateLastActiveSectionOnBeforeSetContent,
+    reloadHeadFootIfNeeded: reloadHeadFootIfNeededOnSetContent
   }
 }
 
@@ -103,5 +104,20 @@ function fixSelectAllOnNodeChange (evt) {
     if (editor.selection.getNode() === editor.getBody()) {
       editor.selection.select(headerFooterFactory.getActiveSection().node)
     }
+  }
+}
+
+/**
+ * On SetContent event handler. Load or reload headers and footers from existing elements if it should do.
+ * @function
+ * @inner
+ * @returns void
+ */
+function reloadHeadFootIfNeededOnSetContent (evt) {
+  var headerFooterFactory = this.headerFooterFactory
+  if (headerFooterFactory) {
+    headerFooterFactory.reload()
+  } else {
+    setTimeout(reloadHeadFootIfNeededOnSetContent.bind(this, evt), 100)
   }
 }

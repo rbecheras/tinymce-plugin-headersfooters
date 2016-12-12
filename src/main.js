@@ -75,11 +75,16 @@ function tinymcePluginHeadersFooters (editor, url) {
     eventHandlers.onNodeChange.fixSelectAll.call({ headerFooterFactory: headerFooterFactory, editor: editor }, evt)
     eventHandlers.onSetContent.enterBodyNodeOnLoad.call({headerFooterFactory: headerFooterFactory}, evt)
   })
+  editor.on('BeforeSetContent', function (evt) {
+    var eventCtx = {headerFooterFactory: headerFooterFactory}
+    eventHandlers.onBeforeSetContent.updateLastActiveSection.call(eventCtx, evt)
+  })
   editor.on('BeforeSetContent', eventHandlers.onBeforeSetContent.updateLastActiveSection.bind({headerFooterFactory: headerFooterFactory}))
   editor.on('SetContent', function (evt) {
-    reloadHeadFootIfNeededOnSetContent(evt)
     eventHandlers.onSetContent.enterBodyNodeOnLoad.call({headerFooterFactory: headerFooterFactory}, evt)
     eventHandlers.onSetContent.removeAnyOuterElement.call({ headerFooterFactory: headerFooterFactory, editor: editor }, evt)
+    var eventCtx = {headerFooterFactory: headerFooterFactory}
+    eventHandlers.onSetContent.reloadHeadFootIfNeeded.call(eventCtx, evt)
   })
 
   /**
@@ -92,20 +97,6 @@ function tinymcePluginHeadersFooters (editor, url) {
     headerFooterFactory = new HeaderFooterFactory(editor, menuItemsList)
     menuItems.init(headerFooterFactory, menuItemsList)
     ui.addUnselectableCSSClass(editor)
-  }
-
-  /**
-   * On SetContent event handler. Load or reload headers and footers from existing elements if it should do.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function reloadHeadFootIfNeededOnSetContent (evt) {
-    if (headerFooterFactory) {
-      headerFooterFactory.reload(menuItems)
-    } else {
-      setTimeout(reloadHeadFootIfNeededOnSetContent.bind(null, evt), 100)
-    }
   }
 
   function onNodeChange (evt) {
