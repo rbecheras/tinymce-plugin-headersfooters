@@ -8,6 +8,8 @@
 
 var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
 var ui = require('./utils/ui')
+var menuItems = require('./components/menu-items')
+
 module.exports = {
   onInit: {
     initHeaderFooterFactory: initHeaderFooterFactoryOnInit,
@@ -21,11 +23,11 @@ module.exports = {
   },
   onSetContent: {
     enterBodyNodeOnLoad: enterBodyNodeOnLoadOnSetContent,
-    removeAnyOuterElement: removeAnyOuterElementOnSetContent
+    removeAnyOuterElement: removeAnyOuterElementOnSetContent,
+    reloadHeadFootIfNeeded: reloadHeadFootIfNeededOnSetContent
   },
   onBeforeSetContent: {
-    updateLastActiveSection: updateLastActiveSectionOnBeforeSetContent,
-    reloadHeadFootIfNeeded: reloadHeadFootIfNeededOnSetContent
+    updateLastActiveSection: updateLastActiveSectionOnBeforeSetContent
   }
 }
 
@@ -147,7 +149,7 @@ function initHeaderFooterFactoryOnInit (evt) {
  * @returns void
  */
 function initMenuItemsListOnInit (evt) {
-  this.menuItems.init(this.headerFooterFactory, this.menuItemsList)
+  menuItems.init(this.headerFooterFactory, this.menuItemsList)
 }
 
 /**
