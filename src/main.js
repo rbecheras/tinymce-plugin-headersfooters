@@ -71,7 +71,7 @@ function tinymcePluginHeadersFooters (editor, url) {
   editor.on('init', onInitHandler)
   editor.on('NodeChange', function (evt) {
     var eventCtx = {headerFooterFactory: headerFooterFactory}
-    onNodeChange(evt)
+    eventHandlers.onNodeChange.forceCursorToAllowedLocation.call(eventCtx, evt)
     eventHandlers.onNodeChange.forceBodyMinHeight.call(eventCtx, evt)
     eventHandlers.onNodeChange.fixSelectAll.call(eventCtx, evt)
     eventHandlers.onSetContent.enterBodyNodeOnLoad.call(eventCtx, evt)
@@ -97,11 +97,5 @@ function tinymcePluginHeadersFooters (editor, url) {
     headerFooterFactory = new HeaderFooterFactory(editor, menuItemsList)
     menuItems.init(headerFooterFactory, menuItemsList)
     ui.addUnselectableCSSClass(editor)
-  }
-
-  function onNodeChange (evt) {
-    if (headerFooterFactory) {
-      headerFooterFactory.forceCursorToAllowedLocation(evt.element)
-    }
   }
 }

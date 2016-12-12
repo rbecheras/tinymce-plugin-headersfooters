@@ -10,7 +10,8 @@ module.exports = {
   onInit: {},
   onNodeChange: {
     forceBodyMinHeight: forceBodyMinHeightOnNodeChange,
-    fixSelectAll: fixSelectAllOnNodeChange
+    fixSelectAll: fixSelectAllOnNodeChange,
+    forceCursorToAllowedLocation: forceCursorToAllowedLocationOnNodeChange
   },
   onSetContent: {
     enterBodyNodeOnLoad: enterBodyNodeOnLoadOnSetContent,
@@ -93,8 +94,8 @@ function removeAnyOuterElementOnSetContent (evt) {
 /**
  * When pressing Ctrl+A to select all content, force the selection to be contained in the current active section.
  * onNodeChange event handler.
- * @function
- * @inner
+ * @method
+ * @mixin
  * @returns void
  */
 function fixSelectAllOnNodeChange (evt) {
@@ -110,8 +111,8 @@ function fixSelectAllOnNodeChange (evt) {
 
 /**
  * On SetContent event handler. Load or reload headers and footers from existing elements if it should do.
- * @function
- * @inner
+ * @method
+ * @mixin
  * @returns void
  */
 function reloadHeadFootIfNeededOnSetContent (evt) {
@@ -120,5 +121,18 @@ function reloadHeadFootIfNeededOnSetContent (evt) {
     headerFooterFactory.reload()
   } else {
     setTimeout(reloadHeadFootIfNeededOnSetContent.bind(this, evt), 100)
+  }
+}
+
+/**
+ * On NodeChange event handler. Force cursor location to allowedLocations
+ * @method
+ * @mixin
+ * @returns void
+ */
+function forceCursorToAllowedLocationOnNodeChange (evt) {
+  var headerFooterFactory = this.headerFooterFactory
+  if (headerFooterFactory) {
+    headerFooterFactory.forceCursorToAllowedLocation(evt.element)
   }
 }
