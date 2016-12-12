@@ -6,6 +6,9 @@ var $ = window.jQuery
 
 module.exports = Footer
 
+Footer.prototype = Object.create(HeadFoot.prototype)
+Footer.prototype._createNode = _createNode
+
 /**
  * Footer class
  * @class
@@ -22,15 +25,13 @@ function Footer (editor, _documentBody, existingElement) {
   $(this.node).appendTo(this._documentBody)
 }
 
-Footer.prototype = Object.create(HeadFoot.prototype)
-
 /**
  * Create a new node for the footer.
  * @private
  * @method
  * @override
  */
-Footer.prototype._createNode = function () {
+function _createNode () {
   HeadFoot.prototype._createNode.call(this)
   $(this.node).attr('data-headfoot-footer', true)
 }
