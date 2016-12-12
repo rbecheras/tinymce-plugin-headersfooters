@@ -6,6 +6,9 @@ var $ = window.jQuery
 
 module.exports = Header
 
+Header.prototype = Object.create(HeadFoot.prototype)
+Header.prototype._createNode = _createNode
+
 /**
  * Header class
  * @class
@@ -22,15 +25,13 @@ function Header (editor, _documentBody, existingElement) {
   $(this.node).prependTo(this._documentBody)
 }
 
-Header.prototype = Object.create(HeadFoot.prototype)
-
 /**
  * Create a new node for the header.
  * @private
  * @method
  * @override
  */
-Header.prototype._createNode = function () {
+function _createNode () {
   HeadFoot.prototype._createNode.call(this)
   $(this.node).attr('data-headfoot-header', true)
 }
