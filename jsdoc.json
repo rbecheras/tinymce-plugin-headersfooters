@@ -11,7 +11,7 @@
     "templates": {
         "cleverLinks": false,
         "monospaceLinks": false,
-        "systemName"            : "tinycmce-plugin-headersfooters",
+        "systemName"            : "TinymcePluginHeadersFooters",
         "footer"                : "https://github.com/sirap-group",
         "copyright"             : "Copyright SIRAP Group © 2016",
         "includeDate"           : true,

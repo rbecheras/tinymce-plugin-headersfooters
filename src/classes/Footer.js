@@ -34,9 +34,10 @@ function Footer (editor, _documentBody, existingElement) {
 
 /**
  * Create a new node for the footer.
- * @private
  * @method
+ * @private
  * @override
+ * @memberof Footer.prototype
  */
 function _createNode () {
   HeadFoot_protected.createNode.call(this)
