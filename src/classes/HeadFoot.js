@@ -8,9 +8,22 @@ var tinymce = window.tinymce
 
 module.exports = HeadFoot
 
+// Public API
+HeadFoot.prototype = {
+  enterNode: enterNode,
+  liveNode: liveNode,
+  setPlaceholder: setPlaceholder,
+  initParagraph: initParagraph,
+  pristine: pristine
+}
+
+// Private API
+// _createNode()
+
 /**
  * Abstract class to inherit Header and Footer sub classes from.
  * @constructor
+ * @abstract
  * @param {Editor} editor The current editor
  * @param {DOMElement} documentBody The document body for this documentBody
  * @param {DOMNode} [existingElement] The optional existing element that constitute a header of a footer and should be loaded from it
@@ -29,7 +42,7 @@ function HeadFoot (editor, documentBody, existingElement) {
   if (existingElement) {
     this.node = existingElement
   } else {
-    this._createNode()
+    _createNode.call(this)
   }
 
   var $thisNode = $(this.node)
@@ -45,21 +58,11 @@ function HeadFoot (editor, documentBody, existingElement) {
 }
 
 /**
- * Create a new node for an header or a footer.
- * @private
- * @method
- */
-HeadFoot.prototype._createNode = function () {
-  this.node = $('<section>').attr('data-headfoot', true)[0]
-  this.initParagraph()
-}
-
-/**
  * Disable the page edition and enable the edition for the header or the footers
  * @method
  * @returns void
  */
-HeadFoot.prototype.enterNode = function () {
+function enterNode () {
   if (!this.isActive) {
     // var that = this
     // var currentPageContent
@@ -106,7 +109,7 @@ HeadFoot.prototype.enterNode = function () {
  * @method
  * @returns void
  */
-HeadFoot.prototype.liveNode = function () {
+function liveNode () {
   this.isActive = false
   $(this.node).trigger('LiveNode', this.node)
   if (this.pluginPaginate) {
@@ -121,14 +124,14 @@ HeadFoot.prototype.liveNode = function () {
   ui.lockNode.call(this.node)
 }
 
-HeadFoot.prototype.setPlaceholder = function () {
+function setPlaceholder () {
   var translatedLabel = tinymce.i18n.translate('Double-click to edit this content')
   var $p = this.initParagraph().html(translatedLabel)
   $(this.node).append($p)
   this.pristine(true)
 }
 
-HeadFoot.prototype.initParagraph = function () {
+function initParagraph () {
   var $span = $('<span>').css({ 'font-family': 'calibri', 'font-size': '12pt' })
   var $p = $('<p>').append($span)
   $span.html('<br data-mce-bogus="1">')
@@ -143,7 +146,7 @@ HeadFoot.prototype.initParagraph = function () {
  * @returns {Boolean|undefined} - The pristine value if no argument is given.
  * @throws {Error} - if this.node is unset an error is thrown
  */
-HeadFoot.prototype.pristine = function (b) {
+function pristine (b) {
   if (!this.node || !this.node.nodeType) {
     throw new Error('Missing node can not be pristine or not.')
   }
@@ -153,4 +156,14 @@ HeadFoot.prototype.pristine = function (b) {
   } else {
     this.node.setAttribute(attr, !!b)
   }
+}
+
+/**
+* Create a new node for an header or a footer.
+* @private
+* @method
+*/
+function _createNode () {
+  this.node = $('<section>').attr('data-headfoot', true)[0]
+  this.initParagraph()
 }
