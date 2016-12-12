@@ -11,8 +11,11 @@ module.exports = {
   onNodeChange: {
     forceBodyMinHeigh: forceBodyMinHeightOnNodeChange
   },
-  onSetContent: {},
-  onBeforeSetContent: {}
+  onSetContent: {
+    enterBodyNodeOnLoad: enterBodyNodeOnLoadOnSetContent
+  },
+  onBeforeSetContent: {
+  }
 }
 
 function forceBodyMinHeightOnNodeChange (evt) {
@@ -22,3 +25,21 @@ function forceBodyMinHeightOnNodeChange (evt) {
     headerFooterFactory.forceBodyMinHeigh()
   }
 }
+
+/**
+ * Auto-enter in the body section on document load.
+ * (SetContent or NodeChange with some conditions) event handler.
+ * @method
+ * @mixin
+ * @returns void
+ */
+function enterBodyNodeOnLoadOnSetContent (evt) {
+  var headerFooterFactory = this.headerFooterFactory
+
+  setTimeout(function () {
+    if (headerFooterFactory && headerFooterFactory.hasBody() && !headerFooterFactory.getActiveSection()) {
+      headerFooterFactory.body.enterNode()
+    }
+  }, 500)
+}
+

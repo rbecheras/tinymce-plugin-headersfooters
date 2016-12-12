@@ -81,30 +81,16 @@ function tinymcePluginHeadersFooters (editor, url) {
     onNodeChange(evt)
     eventHandlers.onNodeChange.forceBodyMinHeight.call({headerFooterFactory: headerFooterFactory}, evt)
     fixSelectAllOnNodeChange(evt)
-    enterBodyNodeOnLoad(evt)
+    eventHandlers.onSetContent.enterBodyNodeOnLoad.call({headerFooterFactory: headerFooterFactory}, evt)
   })
   editor.on('BeforeSetContent', saveLastActiveSectionOnBeforeSetContent)
   editor.on('SetContent', function (evt) {
     reloadHeadFootIfNeededOnSetContent(evt)
-    enterBodyNodeOnLoad(evt)
+    eventHandlers.onSetContent.enterBodyNodeOnLoad.call({headerFooterFactory: headerFooterFactory}, evt)
     removeAnyOuterElementOnSetContent(evt)
   })
 
   /**
-   * Auto-enter in the body section on document load.
-   * (SetContent or NodeChange with some conditions) event handler.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function enterBodyNodeOnLoad (evt) {
-    setTimeout(function () {
-      if (headerFooterFactory && headerFooterFactory.hasBody() && !headerFooterFactory.getActiveSection()) {
-        headerFooterFactory.body.enterNode()
-      }
-    }, 500)
-  }
-
   /**
    * Save the last active section on BeforeSetContent to be able to restore it if needed on SetContent event.
    * BeforeSetContent event handler.
@@ -118,7 +104,6 @@ function tinymcePluginHeadersFooters (editor, url) {
     }
   }
 
-  /**
    * Remove any element located out of the allowed sections.
    * SetContent event handler.
    * @function
