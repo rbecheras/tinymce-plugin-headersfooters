@@ -29,6 +29,15 @@ function HeaderFooterFactory (editor, menuItemsList) {
   this._hasFooter = false
   this._menuItemsList = menuItemsList
 
+  this.resetLastActiveSection()
+}
+
+/**
+ * Reset the last active section
+ * @method
+ * @returns {undefined}
+ */
+HeaderFooterFactory.prototype.resetLastActiveSection = function () {
   this.lastActiveSection = null
 }
 
