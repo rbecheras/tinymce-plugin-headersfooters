@@ -70,8 +70,9 @@ function updateLastActiveSectionOnBeforeSetContent (evt) {
  * @returns void
  */
 function removeAnyOuterElementOnSetContent (evt) {
-  var editor = this.editor
   var headerFooterFactory = this.headerFooterFactory
+  var editor = headerFooterFactory._editor
+
   var conditions = [
     !!evt.content,
     evt.content && !!evt.content.length,
@@ -97,8 +98,8 @@ function removeAnyOuterElementOnSetContent (evt) {
  * @returns void
  */
 function fixSelectAllOnNodeChange (evt) {
-  var editor = this.editor
   var headerFooterFactory = this.headerFooterFactory
+  var editor = headerFooterFactory._editor
 
   if (evt.selectionChange && !editor.selection.isCollapsed()) {
     if (editor.selection.getNode() === editor.getBody()) {

@@ -70,21 +70,21 @@ function tinymcePluginHeadersFooters (editor, url) {
 
   editor.on('init', onInitHandler)
   editor.on('NodeChange', function (evt) {
+    var eventCtx = {headerFooterFactory: headerFooterFactory}
     onNodeChange(evt)
-    eventHandlers.onNodeChange.forceBodyMinHeight.call({headerFooterFactory: headerFooterFactory}, evt)
-    eventHandlers.onNodeChange.fixSelectAll.call({ headerFooterFactory: headerFooterFactory, editor: editor }, evt)
-    eventHandlers.onSetContent.enterBodyNodeOnLoad.call({headerFooterFactory: headerFooterFactory}, evt)
+    eventHandlers.onNodeChange.forceBodyMinHeight.call(eventCtx, evt)
+    eventHandlers.onNodeChange.fixSelectAll.call(eventCtx, evt)
+    eventHandlers.onSetContent.enterBodyNodeOnLoad.call(eventCtx, evt)
   })
   editor.on('BeforeSetContent', function (evt) {
     var eventCtx = {headerFooterFactory: headerFooterFactory}
     eventHandlers.onBeforeSetContent.updateLastActiveSection.call(eventCtx, evt)
   })
-  editor.on('BeforeSetContent', eventHandlers.onBeforeSetContent.updateLastActiveSection.bind({headerFooterFactory: headerFooterFactory}))
   editor.on('SetContent', function (evt) {
-    eventHandlers.onSetContent.enterBodyNodeOnLoad.call({headerFooterFactory: headerFooterFactory}, evt)
-    eventHandlers.onSetContent.removeAnyOuterElement.call({ headerFooterFactory: headerFooterFactory, editor: editor }, evt)
     var eventCtx = {headerFooterFactory: headerFooterFactory}
     eventHandlers.onSetContent.reloadHeadFootIfNeeded.call(eventCtx, evt)
+    eventHandlers.onSetContent.enterBodyNodeOnLoad.call(eventCtx, evt)
+    eventHandlers.onSetContent.removeAnyOuterElement.call(eventCtx, evt)
   })
 
   /**
