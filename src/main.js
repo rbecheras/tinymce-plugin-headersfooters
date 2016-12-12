@@ -37,7 +37,7 @@ var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
 var ui = require('./utils/ui')
 var menuItems = require('./components/menu-items')
 var units = require('./utils/units')
-var eventHandlers = require('./eventHandlers')
+var eventHandlers = require('./event-handlers')
 
 // Add the plugin to the tinymce PluginManager
 tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)

@@ -9,7 +9,7 @@
 module.exports = {
   onInit: {},
   onNodeChange: {
-    forceBodyMinHeigh: forceBodyMinHeightOnNodeChange,
+    forceBodyMinHeight: forceBodyMinHeightOnNodeChange,
     fixSelectAll: fixSelectAllOnNodeChange
   },
   onSetContent: {
