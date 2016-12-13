@@ -75,6 +75,7 @@ function updateLastActiveSection () {
  * Load an existing header or footer depending of its nature, from its DOM element.
  * @method
  * @param {DOMElement} element
+ * @throws {Error} when the given element is not a header, footer neither a body element.
  * @returns void
  */
 function loadElement (element) {
@@ -257,8 +258,13 @@ function reload () {
       that._menuItemsList.removeFooter.show()
     }
 
-    // Configure the headfoot DOM section
-    that.loadElement(el)
+    try {
+      // Configure the headfoot DOM section
+      that.loadElement(el)
+    } catch (e) {
+      console.error('headerFooterFactory reloading failed for the following element.')
+      console.log('Failed element (continuing...):', el)
+    }
   })
 
   // Create the body section if it doesn't exist yet
