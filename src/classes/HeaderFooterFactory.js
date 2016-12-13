@@ -75,6 +75,7 @@ function updateLastActiveSection () {
  * Load an existing header or footer depending of its nature, from its DOM element.
  * @method
  * @param {DOMElement} element
+ * @throws {Error} when the given element is not a header, footer neither a body element.
  * @returns void
  */
 function loadElement (element) {
