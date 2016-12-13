@@ -81,6 +81,8 @@ function removeAnyOuterElementOnSetContent (evt) {
     !!this.editor.getContent().length,
     !!this.headerFooterFactory
   ]
+
+  // if all of theses conditions are true (none are false)
   if (!~conditions.indexOf(false)) {
     this.headerFooterFactory.removeAnyOuterElement()
   }

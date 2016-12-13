@@ -65,23 +65,18 @@ function tinymcePluginHeadersFooters (editor, url) {
     editor.insertContent('{{pages}}')
   })
 
-  editor.on('init', function (evt) {
-    eventHandlers.onInit.initHeaderFooterFactory.call(thisPlugin, evt)
-    eventHandlers.onInit.initMenuItemsList.call(thisPlugin, evt)
-    eventHandlers.onInit.initUI.call(thisPlugin, evt)
-  })
-  editor.on('NodeChange', function (evt) {
-    eventHandlers.onNodeChange.forceCursorToAllowedLocation.call(thisPlugin, evt)
-    eventHandlers.onNodeChange.forceBodyMinHeight.call(thisPlugin, evt)
-    eventHandlers.onNodeChange.fixSelectAll.call(thisPlugin, evt)
-    eventHandlers.onSetContent.enterBodyNodeOnLoad.call(thisPlugin, evt)
-  })
-  editor.on('BeforeSetContent', function (evt) {
-    eventHandlers.onBeforeSetContent.updateLastActiveSection.call(thisPlugin, evt)
-  })
-  editor.on('SetContent', function (evt) {
-    eventHandlers.onSetContent.reloadHeadFootIfNeeded.call(thisPlugin, evt)
-    eventHandlers.onSetContent.enterBodyNodeOnLoad.call(thisPlugin, evt)
-    eventHandlers.onSetContent.removeAnyOuterElement.call(thisPlugin, evt)
-  })
+  // Bind event callbacks
+  var callbackName
+  for (callbackName in eventHandlers.onInit) {
+    editor.on('init', eventHandlers.onInit[callbackName].bind(thisPlugin))
+  }
+  for (callbackName in eventHandlers.onNodeChange) {
+    editor.on('NodeChange', eventHandlers.onNodeChange[callbackName].bind(thisPlugin))
+  }
+  for (callbackName in eventHandlers.onBeforeSetContent) {
+    editor.on('BeforeSetContent', eventHandlers.onBeforeSetContent[callbackName].bind(thisPlugin))
+  }
+  for (callbackName in eventHandlers.onSetContent) {
+    editor.on('SetContent', eventHandlers.onSetContent[callbackName].bind(thisPlugin))
+  }
 }
