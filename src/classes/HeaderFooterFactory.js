@@ -342,9 +342,9 @@ function removeAnyOuterElement () {
     if (that.hasFooter()) {
       allowedRootNodes.push(that.footer.node)
     }
-    if (!~allowedRootNodes.indexOf(this)) {
+    if (!~allowedRootNodes.indexOf(this) && !this.getAttribute('data-mce-bogus')) {
       console.error('Removing the following element because it is out of the allowed sections')
-      console.log(this)
+      console.log('Removed element:', this)
       $(this).remove()
     }
   })
