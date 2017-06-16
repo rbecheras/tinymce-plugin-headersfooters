@@ -1,8 +1,8 @@
 'use strict'
 
-var Header = require('./Header')
-var Footer = require('./Footer')
-var Body = require('./Body')
+// var Header = require('./Header')
+// var Footer = require('./Footer')
+// var Body = require('./Body')
 
 var units = require('../utils/units')
 
