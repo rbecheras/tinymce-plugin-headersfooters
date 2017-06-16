@@ -4,7 +4,7 @@
  * plugin.js
  *
  * Released under LGPL License.
- * Copyright (c) 2016 SIRAP Group All rights reserved
+ * Copyright (c) 2017 SIRAP Group All rights reserved
  *
  * License: http://www.tinymce.com/license
  * Contributing: http://www.tinymce.com/contributing
@@ -17,12 +17,10 @@
  * @name tinycmce-plugin-headersfooters
  * @description
  * A plugin for tinymce WYSIWYG HTML editor that allow to insert headers and footers
- * It will may be used with requires tinymce-plugin-paginate the a near future, but not for now.
- * @link https://github.com/sirap-group/tinymce-plugin-headersfooters
+ * @see https://github.com/sirap-group/tinymce-plugin-headersfooters
  * @author Rémi Becheras
  * @author Groupe SIRAP
  * @license GNU GPL-v2 http://www.tinymce.com/license
- * @version 1.0.0
  */
 
 /**
