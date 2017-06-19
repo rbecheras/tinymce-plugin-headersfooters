@@ -31,7 +31,11 @@
 var tinymce = window.tinymce
 
 var menuItems = require('./components/menu-items')
+
 var units = require('./utils/units')
+var events = require('./utils/events')
+var uiUtils = require('./utils/ui')
+
 var eventHandlers = require('./event-handlers')
 
 // Add the plugin to the tinymce PluginManager
@@ -45,16 +49,14 @@ tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
  * @returns void
  */
 function tinymcePluginHeadersFooters (editor, url) {
-  var thisPlugin = this
+  // var thisPlugin = this
   this.headerFooterFactory = null
   this.units = units
   this.editor = editor
-  this.menuItemsList = menuItems.create(editor)
 
-  // add the plugin's menu items
-  for (var itemName in this.menuItemsList) {
-    editor.addMenuItem(itemName, this.menuItemsList[itemName])
-  }
+  var menuItemsList = menuItems.create(editor)
+
+  uiUtils.autoAddMenuItems.call(this, editor, menuItemsList)
 
   editor.addCommand('insertPageNumberCmd', function () {
     editor.insertContent('{{page}}')
@@ -63,18 +65,5 @@ function tinymcePluginHeadersFooters (editor, url) {
     editor.insertContent('{{pages}}')
   })
 
-  // Bind event callbacks
-  var callbackName
-  for (callbackName in eventHandlers.onInit) {
-    editor.on('init', eventHandlers.onInit[callbackName].bind(thisPlugin))
-  }
-  for (callbackName in eventHandlers.onNodeChange) {
-    editor.on('NodeChange', eventHandlers.onNodeChange[callbackName].bind(thisPlugin))
-  }
-  for (callbackName in eventHandlers.onBeforeSetContent) {
-    editor.on('BeforeSetContent', eventHandlers.onBeforeSetContent[callbackName].bind(thisPlugin))
-  }
-  for (callbackName in eventHandlers.onSetContent) {
-    editor.on('SetContent', eventHandlers.onSetContent[callbackName].bind(thisPlugin))
-  }
+  events.autoBindImplementedEventCallbacks.call(this, editor, eventHandlers)
 }

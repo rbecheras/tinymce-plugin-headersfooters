@@ -11,8 +11,8 @@
 // var menuItems = require('./components/menu-items')
 
 module.exports = {
-  onInit: {},
-  onNodeChange: {},
-  onSetContent: {},
-  onBeforeSetContent: {}
+  'Init': {},
+  'NodeChange': {},
+  'SetContent': {},
+  'BeforeSetContent': {}
 }

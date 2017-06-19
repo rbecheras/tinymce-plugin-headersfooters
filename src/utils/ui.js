@@ -13,7 +13,8 @@ module.exports = {
   lockNode: lockNode,
   unlockNode: unlockNode,
   addUnselectableCSSClass: addUnselectableCSSClass,
-  resetMenuItemState: resetMenuItemState
+  resetMenuItemState: resetMenuItemState,
+  autoAddMenuItems: autoAddMenuItems
 }
 
 /**
@@ -68,4 +69,13 @@ function resetMenuItemState (editor, selector) {
   var $sel = $(selectedElement)
   var parents = $sel.parents(selector)
   this.disabled(!parents.length)
+}
+
+/**
+ * Add the plugin's menu items
+ */
+function autoAddMenuItems (editor, menuItemsList) {
+  for (var itemName in menuItemsList) {
+    editor.addMenuItem(itemName, menuItemsList[itemName])
+  }
 }
