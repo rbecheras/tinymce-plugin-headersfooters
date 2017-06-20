@@ -74,8 +74,8 @@ function resetMenuItemState (editor, selector) {
 /**
  * Add the plugin's menu items
  */
-function autoAddMenuItems (editor, menuItemsList) {
-  for (var itemName in menuItemsList) {
-    editor.addMenuItem(itemName, menuItemsList[itemName])
+function autoAddMenuItems () {
+  for (var itemName in this.menuItemsList) {
+    this.editor.addMenuItem(itemName, this.menuItemsList[itemName])
   }
 }

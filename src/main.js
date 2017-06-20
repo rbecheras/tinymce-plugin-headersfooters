@@ -63,9 +63,8 @@ function tinymcePluginHeadersFooters (editor, url) {
     }
   }
 
-  var menuItemsList = menuItems.create(editor)
-
-  uiUtils.autoAddMenuItems.call(this, editor, menuItemsList)
+  this.menuItemsList = menuItems.create(editor)
+  uiUtils.autoAddMenuItems.call(this)
 
   editor.addCommand('insertPageNumberCmd', function () {
     editor.insertContent('{{page}}')
