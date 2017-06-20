@@ -66,6 +66,15 @@ function tinymcePluginHeadersFooters (editor, url) {
       footer: null
     }
   }
+  this.stackedLayout = {
+    root: null,
+    wrapper: null,
+    layout: null,
+    menubar: null,
+    toolbar: null,
+    editarea: null,
+    statusbar: null
+  }
 
   this.menuItemsList = menuItems.create(editor)
   uiUtils.autoAddMenuItems.call(this)
