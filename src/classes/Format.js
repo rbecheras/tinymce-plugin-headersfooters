@@ -2,8 +2,10 @@
 
 module.exports = Format
 
-function Format (label, width, height) {
-
+function Format (name, width, height) {
+  this.name = name
+  this.width = width
+  this.height = height
 }
 
 Format.defaults = []
