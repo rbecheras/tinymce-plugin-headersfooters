@@ -23,3 +23,60 @@ You can create a bower Post-install hook, or make the symlinks manually to bind 
     echo "Installing tinymce-plugin-headersfooters ..."
     rm public/lib/tinymce/plugins/headersfooters 2> /dev/null
     ln -s ../../tinymce-plugin-headersfooters public/lib/tinymce/plugins/headersfooters && echo "> OK."
+
+## Plugin Settings
+
+```js
+const tinymce = require('tinymce')
+
+const commonOptions = {
+  'headersfooters_formats': 'A4', // in ['A1', 'A2', 'A3', 'A4', 'A5']
+  'headersfooters_custom_formats': [
+    {
+      name: 'Custom_Format_1',
+      width: '200mm',
+      height: '150mm'
+    },
+    {
+      name: 'Custom_Format_2',
+      width: '255mm',
+      height: '410mm'
+    }
+  ]
+}
+
+// header setup
+var hOpts = {
+  selector: 'textarea.header', // the selector you use to create the header
+  plugins: 'headersfooters',
+  options: {
+    'headersfooters_type': 'header'
+  }
+}
+
+// body setup
+var bOpts = {
+  selector: 'textarea.body', // the selector you use to create the header
+  plugins: 'headersfooters',
+  options: {
+    'headersfooters_type': 'body'
+  }
+}
+
+// footer setup
+var fOpts = {
+  selector: 'textarea.footer', // the selector you use to create the header
+  plugins: 'headersfooters',
+  options: {
+    'headersfooters_type': 'footer'
+  }
+}
+
+// add common  options then setup each editor
+;[hOpts, bOpts, fOpts].forEach(ed => {
+  ed['headersfooters_formats'] = commonOptions['headersfooters_formats']
+  ed['headersfooters_custom_formats'] = commonOptions['headersfooters_custom_formats']
+
+  tinymce.setup(ed)
+})
+```
