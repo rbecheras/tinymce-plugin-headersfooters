@@ -62,6 +62,10 @@ function tinymcePluginHeadersFooters (editor, url) {
   this.isMaster = this.type === 'body'
   this.isSlave = !this.isMaster
 
+  if (this.isMaster && window.env === 'development') {
+    window.mceHF = this
+  }
+
   this.headerFooterFactory = null
 
   this.units = units
