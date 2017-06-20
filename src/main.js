@@ -89,6 +89,10 @@ function tinymcePluginHeadersFooters (editor, url) {
     statusbar: null
   }
 
+  _setAvailableFormats.call(this)
+  // console.log('availableFormats: ', this.availableFormats)
+  // console.log('defaultFormat: ', this.defaultFormat)
+
   this.menuItemsList = menuItems.create(editor)
   uiUtils.autoAddMenuItems.call(this)
 
@@ -114,6 +118,48 @@ function disable () {
   this.stackedLayout.menubar.hide()
   this.stackedLayout.toolbar.hide()
   this.stackedLayout.statusbar.hide()
+}
+
+function _setAvailableFormats () {
+  var that = this
+  var settings = this.editor.settings
+
+  // set enabled default formats
+  var userEnabledDefaultFormats = this.parseParamList(settings.headersfooters_formats)
+  .map(function (formatName) {
+    return Format.defaults[formatName]
+  })
+  .filter(function (v) {
+    return !!v
+  })
+  if (userEnabledDefaultFormats.length) {
+    this.formats = userEnabledDefaultFormats
+  } else {
+    this.formats = []
+    for (var name in Format.defaults) {
+      that.formats.push(Format.defaults[name])
+    }
+  }
+
+  // set user custom formats
+  this.customFormats = parseParamList(settings.headersfooters_custom_formats)
+  .map(function (f) {
+    return new Format(f.name, f.width, f.height)
+  })
+
+  // set the formats available for the editor
+  this.availableFormats = {}
+  // use enabled default formats
+  this.formats.map(function (f) {
+    that.availableFormats[f.name] = f
+  })
+  // add or override custom formats
+  this.customFormats.map(function (f) {
+    that.availableFormats[f.name] = f
+  })
+
+  // select a default format for new doc
+  this.defaultFormat = this.availableFormats[settings.headersfooters_default_format] || this.formats[0] || this.customFormats[0]
 }
 
 function parseParamList (paramValue) {
