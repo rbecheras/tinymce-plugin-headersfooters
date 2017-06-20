@@ -7,9 +7,9 @@
  */
 
 // var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
-// var ui = require('./utils/ui')
+var uiUtils = require('./utils/ui')
 // var menuItems = require('./components/menu-items')
-var $ = window.jQuery
+// var $ = window.jQuery
 
 module.exports = {
   'Init': {
@@ -30,11 +30,5 @@ function setBodies (evt) {
 }
 
 function setStackedLayout (evt) {
-  this.stackedLayout.root = $('.' + this.bodyClass)
-  this.stackedLayout.wrapper = this.stackedLayout.root.children('.mce-tinymce')
-  this.stackedLayout.layout = this.stackedLayout.wrapper.children('.mce-stack-layout')
-  this.stackedLayout.menubar = this.stackedLayout.layout.children('.mce-stack-layout-item.mce-menubar.mce-toolbar')
-  this.stackedLayout.toolbar = this.stackedLayout.layout.children('.mce-stack-layout-item.mce-toolbar-grp')
-  this.stackedLayout.editarea = this.stackedLayout.layout.children('.mce-stack-layout-item.mce-edit-area')
-  this.stackedLayout.statusbar = this.stackedLayout.layout.children('.mce-stack-layout-item.mce-statusbar')
+  uiUtils.mapMceLayoutElements(this.bodyClass, this.stackedLayout)
 }
