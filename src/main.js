@@ -37,6 +37,7 @@ var events = require('./utils/events')
 var uiUtils = require('./utils/ui')
 
 var eventHandlers = require('./event-handlers')
+var Format = require('./classes/Format')
 
 // Add the plugin to the tinymce PluginManager
 tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
@@ -53,8 +54,10 @@ function tinymcePluginHeadersFooters (editor, url) {
   this.type = editor.settings.headersfooters_type
   this.bodyClass = editor.settings.body_class
 
+  // bind plugin methods
   this.enable = enable
   this.disable = disable
+  this.parseParamList = parseParamList
 
   this.isMaster = this.type === 'body'
   this.isSlave = !this.isMaster
@@ -107,4 +110,14 @@ function disable () {
   this.stackedLayout.menubar.hide()
   this.stackedLayout.toolbar.hide()
   this.stackedLayout.statusbar.hide()
+}
+
+function parseParamList (paramValue) {
+  if (paramValue === undefined) {
+    return []
+  }
+  if (typeof paramValue !== 'string') {
+    throw new TypeError('paramValue must be a String, ' + typeof paramValue + ' given.')
+  }
+  return paramValue.split(' ')
 }
