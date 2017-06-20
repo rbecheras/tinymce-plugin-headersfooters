@@ -26,4 +26,3 @@ function setBodies (evt) {
     this.documentBodies.app = window.document.body
   }
 }
-
