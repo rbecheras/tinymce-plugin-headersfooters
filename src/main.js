@@ -50,6 +50,7 @@ tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
  */
 function tinymcePluginHeadersFooters (editor, url) {
   // var thisPlugin = this
+  this.type = editor.settings.headersfooters_type
   this.headerFooterFactory = null
   this.units = units
   this.editor = editor
