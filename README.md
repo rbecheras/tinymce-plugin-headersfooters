@@ -48,36 +48,31 @@ const commonOptions = {
 
 // header setup
 var hOpts = {
-  selector: 'textarea.header', // the selector you use to create the header
+  selector: 'textarea.header', // change this value according to your HTML to create the header
   plugins: 'headersfooters',
-  options: {
-    'headersfooters_type': 'header'
-  }
+  'headersfooters_type': 'header'
 }
 
 // body setup
 var bOpts = {
-  selector: 'textarea.body', // the selector you use to create the header
+  selector: 'textarea.body', // change this value according to your HTML to create the body
   plugins: 'headersfooters',
-  options: {
-    'headersfooters_type': 'body'
-  }
+  'headersfooters_type': 'body'
 }
 
 // footer setup
 var fOpts = {
-  selector: 'textarea.footer', // the selector you use to create the header
+  selector: 'textarea.footer', // change this value according to your HTML to create the footer
   plugins: 'headersfooters',
-  options: {
-    'headersfooters_type': 'footer'
-  }
+  'headersfooters_type': 'footer'
 }
 
 // add common  options then setup each editor
-;[hOpts, bOpts, fOpts].forEach(ed => {
-  ed['headersfooters_formats'] = commonOptions['headersfooters_formats']
-  ed['headersfooters_custom_formats'] = commonOptions['headersfooters_custom_formats']
+;[hOpts, bOpts, fOpts].forEach(options => {
+  options['headersfooters_formats'] = commonOptions['headersfooters_formats']
+  options['headersfooters_custom_formats'] = commonOptions['headersfooters_custom_formats']
+  options['headersfooters_default_format'] = commonOptions['headersfooters_default_format']
 
-  tinymce.setup(ed)
+  tinymce.init(options)
 })
 ```
