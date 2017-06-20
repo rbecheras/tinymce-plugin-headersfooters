@@ -18,7 +18,13 @@ module.exports = {
   },
   'NodeChange': {},
   'SetContent': {},
-  'BeforeSetContent': {}
+  'BeforeSetContent': {},
+  'Focus': {
+    showEditor: showEditor
+  },
+  'Blur': {
+    hideEditor: hideEditor
+  }
 }
 
 function setBodies (evt) {
@@ -31,4 +37,12 @@ function setBodies (evt) {
 
 function setStackedLayout (evt) {
   uiUtils.mapMceLayoutElements(this.bodyClass, this.stackedLayout)
+}
+
+function showEditor (evt) {
+  this.enable()
+}
+
+function hideEditor (evt) {
+  this.disable()
 }
