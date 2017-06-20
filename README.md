@@ -30,7 +30,7 @@ You can create a bower Post-install hook, or make the symlinks manually to bind 
 const tinymce = require('tinymce')
 
 const commonOptions = {
-  'headersfooters_formats': 'A4', // in ['A1', 'A2', 'A3', 'A4', 'A5']
+  'headersfooters_formats': 'A4 A5', // in 'A1', 'A2', 'A3', 'A4', 'A5'
   'headersfooters_custom_formats': [
     {
       name: 'Custom_Format_1',
@@ -42,7 +42,8 @@ const commonOptions = {
       width: '255mm',
       height: '410mm'
     }
-  ]
+  ],
+  'headersfooters_default_format': 'A4' // the name of the format used by default for a new doc
 }
 
 // header setup
