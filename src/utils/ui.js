@@ -14,7 +14,8 @@ module.exports = {
   unlockNode: unlockNode,
   addUnselectableCSSClass: addUnselectableCSSClass,
   resetMenuItemState: resetMenuItemState,
-  autoAddMenuItems: autoAddMenuItems
+  autoAddMenuItems: autoAddMenuItems,
+  mapMceLayoutElements: mapMceLayoutElements
 }
 
 /**
@@ -78,4 +79,14 @@ function autoAddMenuItems () {
   for (var itemName in this.menuItemsList) {
     this.editor.addMenuItem(itemName, this.menuItemsList[itemName])
   }
+}
+
+function mapMceLayoutElements (bodyClass, stackedLayout) {
+  stackedLayout.root = $('.' + bodyClass)
+  stackedLayout.wrapper = stackedLayout.root.children('.mce-tinymce')
+  stackedLayout.layout = stackedLayout.wrapper.children('.mce-stack-layout')
+  stackedLayout.menubar = stackedLayout.layout.children('.mce-stack-layout-item.mce-menubar.mce-toolbar')
+  stackedLayout.toolbar = stackedLayout.layout.children('.mce-stack-layout-item.mce-toolbar-grp')
+  stackedLayout.editarea = stackedLayout.layout.children('.mce-stack-layout-item.mce-edit-area')
+  stackedLayout.statusbar = stackedLayout.layout.children('.mce-stack-layout-item.mce-statusbar')
 }
