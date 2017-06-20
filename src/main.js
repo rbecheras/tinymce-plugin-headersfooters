@@ -53,6 +53,9 @@ function tinymcePluginHeadersFooters (editor, url) {
   this.type = editor.settings.headersfooters_type
   this.bodyClass = editor.settings.body_class
 
+  this.isMaster = this.type === 'body'
+  this.isSlave = !this.isMaster
+
   this.headerFooterFactory = null
 
   this.units = units
