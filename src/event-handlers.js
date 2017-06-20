@@ -11,8 +11,19 @@
 // var menuItems = require('./components/menu-items')
 
 module.exports = {
-  'Init': {},
+  'Init': {
+    setBodies: setBodies
+  },
   'NodeChange': {},
   'SetContent': {},
   'BeforeSetContent': {}
 }
+
+function setBodies (evt) {
+  var editor = evt.target
+  this.documentBodies.mce[this.type] = editor.getBody()
+  if (!this.documentBodies.app) {
+    this.documentBodies.app = window.document.body
+  }
+}
+
