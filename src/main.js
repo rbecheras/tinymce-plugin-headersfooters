@@ -53,6 +53,9 @@ function tinymcePluginHeadersFooters (editor, url) {
   this.type = editor.settings.headersfooters_type
   this.bodyClass = editor.settings.body_class
 
+  this.enable = enable
+  this.disable = disable
+
   this.isMaster = this.type === 'body'
   this.isSlave = !this.isMaster
 
@@ -90,4 +93,18 @@ function tinymcePluginHeadersFooters (editor, url) {
   })
 
   events.autoBindImplementedEventCallbacks.call(this, editor, eventHandlers)
+}
+
+function enable () {
+  // console.info('Enabling ' + this.type + '...')
+  this.stackedLayout.menubar.show()
+  this.stackedLayout.toolbar.show()
+  this.stackedLayout.statusbar.show()
+}
+
+function disable () {
+  // console.info('Disabling ' + this.type + '...')
+  this.stackedLayout.menubar.hide()
+  this.stackedLayout.toolbar.hide()
+  this.stackedLayout.statusbar.hide()
 }
