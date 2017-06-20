@@ -54,6 +54,14 @@ function tinymcePluginHeadersFooters (editor, url) {
   this.headerFooterFactory = null
   this.units = units
   this.editor = editor
+  this.documentBodies = {
+    app: null,
+    mce: {
+      header: null,
+      body: null,
+      footer: null
+    }
+  }
 
   var menuItemsList = menuItems.create(editor)
 
