@@ -15,7 +15,8 @@ module.exports = {
   addUnselectableCSSClass: addUnselectableCSSClass,
   resetMenuItemState: resetMenuItemState,
   autoAddMenuItems: autoAddMenuItems,
-  mapMceLayoutElements: mapMceLayoutElements
+  mapMceLayoutElements: mapMceLayoutElements,
+  getElementHeight: getElementHeight
 }
 
 /**
@@ -96,4 +97,7 @@ function mapMceLayoutElements (bodyClass, stackedLayout) {
   stackedLayout.statusbar.resizehandle = stackedLayout.layout.children('.mce-resizehandle')
 }
 
+function getElementHeight (element, win) {
+  win = win || window
+  return win.getComputedStyle(element).height
 }
