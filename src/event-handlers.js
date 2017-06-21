@@ -20,10 +20,10 @@ module.exports = {
   'SetContent': {},
   'BeforeSetContent': {},
   'Focus': {
-    showEditor: showEditor
+    enterHeadFoot: enterHeadFoot
   },
   'Blur': {
-    hideEditor: hideEditor
+    leaveHeadFoot: leaveHeadFoot
   }
 }
 
@@ -39,10 +39,10 @@ function setStackedLayout (evt) {
   uiUtils.mapMceLayoutElements(this.bodyClass, this.stackedLayout)
 }
 
-function showEditor (evt) {
+function enterHeadFoot (evt) {
   this.enable()
 }
 
-function hideEditor (evt) {
+function leaveHeadFoot (evt) {
   this.disable()
 }
