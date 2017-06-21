@@ -30,13 +30,13 @@ You can create a bower Post-install hook, or make the symlinks manually to bind 
 
 > Note the required elements:
 >
-> - `class="edit-doc-page-wrapper"` and `class="edit-doc-page` divs
+> - `class="edit-doc-page-outer-wrapper"` and `class="edit-doc-page-inner-wrapper` divs
 > - `class="edit-doc-page-header"`, `class="edit-doc-page-body"` and `class="edit-doc-page-footer"`
 
 ```html
-<div class="edit-doc-page-wrapper">
+<div class="edit-doc-page-outer-wrapper">
 
-  <div class="edit-doc-page">
+  <div class="edit-doc-page-inner-wrapper">
 
     <div  class="edit-doc-page-header">
       <textarea data-ui-tinymce="mceOptions.header" data-ng-model="doc.header"></textarea>
@@ -61,11 +61,15 @@ You can create a bower Post-install hook, or make the symlinks manually to bind 
 >
 > - `plugins: 'headersfooters'`
 > - `'headersfooters_type': 'header'|'body'|'footer'`
+> - `'headersfooters_outerWrapperClass': '<as_used_in_tempate>'`
+> - `'headersfooters_outerWrapperClass': '<as_used_in_tempate>'`
 
 ```js
 const tinymce = require('tinymce')
 
 const commonOptions = {
+  'headersfooters_outerWrapperClass': 'edit-doc-page-outer-wrapper', // as defined in your template
+  'headersfooters_innerWrapperClass': 'edit-doc-page-inner-wrapper', // as defined in your template
   'headersfooters_formats': 'A4 A5', // in 'A1', 'A2', 'A3', 'A4', 'A5'
   'headersfooters_custom_formats': [
     {
