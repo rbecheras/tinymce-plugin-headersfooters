@@ -36,6 +36,7 @@ function setBodies (evt) {
   if (!this.documentBodies.app) {
     this.documentBodies.app = window.document.body
   }
+  this.documentBody = editor.getBody()
 }
 
 function setStackedLayout (evt) {

@@ -71,6 +71,7 @@ function tinymcePluginHeadersFooters (editor, url) {
   this.units = units
   this.editor = editor
 
+  this.documentBody = null
   this.documentBodies = {
     app: null,
     mce: {
