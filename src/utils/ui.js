@@ -91,6 +91,7 @@ function mapMceLayoutElements (bodyClass, stackedLayout) {
   stackedLayout.menubar = stackedLayout.layout.children('.mce-stack-layout-item.mce-menubar.mce-toolbar')
   stackedLayout.toolbar = stackedLayout.layout.children('.mce-stack-layout-item.mce-toolbar-grp')
   stackedLayout.editarea = stackedLayout.layout.children('.mce-stack-layout-item.mce-edit-area')
+  stackedLayout.iframe = stackedLayout.editarea.children('iframe')
   stackedLayout.statusbar = {}
   stackedLayout.statusbar.wrapper = stackedLayout.layout.children('.mce-stack-layout-item.mce-statusbar')
   stackedLayout.statusbar.flowLayout = stackedLayout.statusbar.wrapper.children('.mce-flow-layout')
