@@ -34,6 +34,7 @@ function applyToPlugin (plugin) {
       maxHeight: bodyHeight
     }
 
+    plugin.stackedLayout.editarea.css({border: 0})
     plugin.stackedLayout.iframe.css(rules)
     // console.log(body, bodyHeight, plugin.stackedLayout.iframe, uiUtils.getElementHeight(plugin.stackedLayout.iframe[0]))
   }
