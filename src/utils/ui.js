@@ -88,5 +88,12 @@ function mapMceLayoutElements (bodyClass, stackedLayout) {
   stackedLayout.menubar = stackedLayout.layout.children('.mce-stack-layout-item.mce-menubar.mce-toolbar')
   stackedLayout.toolbar = stackedLayout.layout.children('.mce-stack-layout-item.mce-toolbar-grp')
   stackedLayout.editarea = stackedLayout.layout.children('.mce-stack-layout-item.mce-edit-area')
-  stackedLayout.statusbar = stackedLayout.layout.children('.mce-stack-layout-item.mce-statusbar')
+  stackedLayout.statusbar = {}
+  stackedLayout.statusbar.wrapper = stackedLayout.layout.children('.mce-stack-layout-item.mce-statusbar')
+  stackedLayout.statusbar.flowLayout = stackedLayout.statusbar.wrapper.children('.mce-flow-layout')
+  stackedLayout.statusbar.path = stackedLayout.statusbar.wrapper.children('.mce-path')
+  stackedLayout.statusbar.wordcount = stackedLayout.layout.children('.mce-wordcount')
+  stackedLayout.statusbar.resizehandle = stackedLayout.layout.children('.mce-resizehandle')
+}
+
 }
