@@ -115,6 +115,8 @@ function enable () {
   this.stackedLayout.statusbar.path.show()
   this.stackedLayout.statusbar.wordcount.show()
   this.stackedLayout.statusbar.resizehandle.show()
+
+  this.stackedLayout.statusbar.wrapper.css({left: 0, right: 0, zIndex: 9999})
 }
 
 function disable () {
