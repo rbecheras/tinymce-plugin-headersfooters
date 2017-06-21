@@ -26,7 +26,7 @@ module.exports = {
   'Blur': {
     leaveHeadFoot: leaveHeadFoot
   },
-  'KeyDown Paste SetContent NodeChange': {
+  'Focus Blur KeyDown Paste SetContent NodeChange': {
     applyCurrentFormat: applyCurrentFormat
   }
 }
