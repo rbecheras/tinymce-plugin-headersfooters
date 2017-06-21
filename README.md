@@ -28,6 +28,11 @@ You can create a bower Post-install hook, or make the symlinks manually to bind 
 
 ### Template Layout (`angular/ui-tinymce`)
 
+> Note the required elements:
+>
+> - `class="edit-doc-page-wrapper"` and `class="edit-doc-page` divs
+> - `class="edit-doc-page-header"`, `class="edit-doc-page-body"` and `class="edit-doc-page-footer"`
+
 ```html
 <div class="edit-doc-page-wrapper">
 
@@ -51,6 +56,11 @@ You can create a bower Post-install hook, or make the symlinks manually to bind 
 ```
 
 ### Editor Config
+
+> Note the required params:
+>
+> - `plugins: 'headersfooters'`
+> - `'headersfooters_type': 'header'|'body'|'footer'`
 
 ```js
 const tinymce = require('tinymce')
