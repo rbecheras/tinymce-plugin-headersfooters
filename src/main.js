@@ -151,7 +151,7 @@ function _setAvailableFormats () {
   }
 
   // set user custom formats
-  this.customFormats = parseParamList(settings.headersfooters_custom_formats)
+  this.customFormats = (settings.headersfooters_custom_formats || [])
   .map(function (f) {
     return new Format(f.name, f.width, f.height)
   })
