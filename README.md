@@ -26,6 +26,32 @@ You can create a bower Post-install hook, or make the symlinks manually to bind 
 
 ## Plugin Settings
 
+### Template Layout (`angular/ui-tinymce`)
+
+```html
+<div class="edit-doc-page-wrapper">
+
+  <div class="edit-doc-page">
+
+    <div  class="edit-doc-page-header">
+      <textarea data-ui-tinymce="mceOptions.header" data-ng-model="doc.header"></textarea>
+    </div>
+
+    <div class="edit-doc-page-body">
+      <textarea data-ui-tinymce="mceOptions.body" data-ng-model="doc.body"></textarea>
+    </div>
+
+    <div class="edit-doc-page-footer">
+      <textarea data-ui-tinymce="mceOptions.footer" data-ng-model="doc.footer"></textarea>
+    </div>
+
+  </div>
+
+</div>
+```
+
+### Editor Config
+
 ```js
 const tinymce = require('tinymce')
 
