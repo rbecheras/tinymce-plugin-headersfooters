@@ -111,14 +111,20 @@ function enable () {
   // console.info('Enabling ' + this.type + '...')
   this.stackedLayout.menubar.show()
   this.stackedLayout.toolbar.show()
-  this.stackedLayout.statusbar.show()
+  this.stackedLayout.statusbar.wrapper.show()
+  this.stackedLayout.statusbar.path.show()
+  this.stackedLayout.statusbar.wordcount.show()
+  this.stackedLayout.statusbar.resizehandle.show()
 }
 
 function disable () {
   // console.info('Disabling ' + this.type + '...')
   this.stackedLayout.menubar.hide()
   this.stackedLayout.toolbar.hide()
-  this.stackedLayout.statusbar.hide()
+  this.stackedLayout.statusbar.wrapper.hide()
+  this.stackedLayout.statusbar.path.hide()
+  this.stackedLayout.statusbar.wordcount.hide()
+  this.stackedLayout.statusbar.resizehandle.hide()
 }
 
 function _setAvailableFormats () {
