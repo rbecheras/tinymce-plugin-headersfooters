@@ -1,5 +1,6 @@
 'use strict'
 
+var units = require('./units')
 var $ = window.jQuery
 
 /**
@@ -10,6 +11,7 @@ var $ = window.jQuery
  */
 
 module.exports = {
+  jQuery: $,
   lockNode: lockNode,
   unlockNode: unlockNode,
   addUnselectableCSSClass: addUnselectableCSSClass,
@@ -99,5 +101,13 @@ function mapMceLayoutElements (bodyClass, stackedLayout) {
 
 function getElementHeight (element, win) {
   win = win || window
-  return win.getComputedStyle(element).height
+  var style = win.getComputedStyle(element)
+  var height = px(style.height) +
+    px(style.paddingTop) + px(style.paddingBottom) +
+    px(style.marginTop) + px(style.marginBottom)
+  return height
+
+  function px (style) {
+    return Number(units.getValueFromStyle(style))
+  }
 }
