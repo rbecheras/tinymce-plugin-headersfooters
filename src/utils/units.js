@@ -10,17 +10,27 @@
 
 var document = window.document
 
-createDpiTestElements()
+_createDpiTestElements()
 
 module.exports = {
   getValueFromStyle: getValueFromStyle,
   getUnitFromStyle: getUnitFromStyle,
-  px2mm: px2mm,
-  px2pt: px2pt,
-  px2in: px2in,
-  in2pt: in2pt,
+  getDpi: getDpi,
+
   in2mm: in2mm,
-  getDpi: getDpi
+  mm2in: mm2in,
+
+  px2in: px2in,
+  in2px: in2px,
+
+  px2mm: px2mm,
+  mm2px: mm2px,
+
+  in2pt: in2pt,
+  pt2in: pt2in,
+
+  px2pt: px2pt,
+  pt2px: pt2px
 }
 
 /**
@@ -48,16 +58,35 @@ function getUnitFromStyle (styleValue) {
 }
 
 /**
- * Converts a quantity of pixels to a quantity of milimeters
- * 1 in = 25.4 mm
- * Calculate pixels to inches then inches to milimeters
- * @method
- * @static
- * @param {Number} qPx The quantity of pixels to convert to milimeters
- * @returns {Number} qMm The resuluting quantity of milimeters
- */
-function px2mm (qPx) {
-  return in2mm(px2in(qPx))
+* Evaluate the DPI of the device's screen (pixels per inche).
+* It creates and inpect a dedicated and hidden `data-dpi-test` DOM element to
+* deduct the screen DPI.
+* @method
+* @static
+* @returns {number} - The current screen DPI, so in pixels per inch.
+*/
+function getDpi () {
+  return document.getElementById('dpi-test').offsetHeight
+}
+
+/**
+* @function
+* @inner
+*/
+function _createDpiTestElements () {
+  var getDpiHtmlStyle = 'data-dpi-test { height: 1in; left: -100%; position: absolute; top: -100%; width: 1in; }'
+
+  var head = document.getElementsByTagName('head')[0]
+  var getDPIElement = document.createElement('style')
+  getDPIElement.setAttribute('type', 'text/css')
+  getDPIElement.setAttribute('rel', 'stylesheet')
+  getDPIElement.innerHTML = getDpiHtmlStyle
+  head.appendChild(getDPIElement)
+
+  var body = document.getElementsByTagName('body')[0]
+  var dpiTestElement = document.createElement('data-dpi-test')
+  dpiTestElement.setAttribute('id', 'dpi-test')
+  body.appendChild(dpiTestElement)
 }
 
 /**
@@ -73,8 +102,97 @@ function in2mm (qIn) {
 }
 
 /**
+ * Converts milimeters (mm) to inches (in)
+ * 1 in = 25.4 mm
+ * @method
+ * @static
+ * @param {number} mm Number of milimeters to convert to inches
+ * @returns {number} - Resulting number of inches (in)
+ */
+function mm2in (qmm) {
+  return Number(qmm) / 25.4
+}
+
+/**
+* Converts pixels (px) to inches (in)
+* dpi = px / in
+* => in = px / dpi
+* @method
+* @static
+* @param {number} px Number of pixels to convert to inches
+* @returns {number} - Resulting number of inches (in)
+*/
+function px2in (px) {
+  var dpi = getDpi()
+  return Number(px) / Number(dpi)
+}
+
+/**
+* Converts pixels (px) to inches (in)
+* dpi = px / in
+* => px = in * dpi
+* @method
+* @static
+* @param {number} in Number of inches to convert to pixels
+* @returns {number} - Resulting number of pixels (px)
+*/
+function in2px (qin) {
+  var dpi = getDpi()
+  return Number(qin) * Number(dpi)
+}
+
+/**
+* Converts a quantity of pixels to a quantity of milimeters
+* 1 in = 25.4 mm
+* Calculate pixels to inches then inches to milimeters
+* @method
+* @static
+* @param {Number} qPx The quantity of pixels to convert to milimeters
+* @returns {Number} qMm The resuluting quantity of milimeters
+*/
+function px2mm (qPx) {
+  return in2mm(px2in(qPx))
+}
+
+/**
+ * Converts milimeters (mm) to pixels (px)
+ * mm2in -> in2px
+ * @method
+ * @static
+ * @param {number} qmm Number of milimeters to convert to pixels
+ * @returns {number} - Resulting number of pixels (px)
+ */
+function mm2px (qmm) {
+  return in2px(mm2in(qmm))
+}
+
+/**
+* Converts inches (in) to points (pt)
+* 72 = pt / in -> pt = 72 * in
+* @method
+* @static
+* @param {number} inches Number of inches (in) to convet to points (pt)
+* @returns {number} - Resulting number of points (pt)
+*/
+function in2pt (inches) {
+  return Number(inches) * 72
+}
+
+/**
+* Converts point (pt) to inches (in)
+* 72 = pt / in -> in = pt / 72
+* @method
+* @static
+* @param {number} inches Number of inches (in) to convet to points (pt)
+* @returns {number} - Resulting number of points (pt)
+*/
+function pt2in (qpt) {
+  return qpt / 72
+}
+
+/**
  * Converts pixels (px) to points (pt)
- * px -> in -> pt
+ * px2in -> in2pt
  * @method
  * @static
  * @param {number} px Number of pixels to convert to points
@@ -86,58 +204,13 @@ function px2pt (px) {
 }
 
 /**
- * Converts pixels (px) to inches (in)
- * dpi = px / in -> in = px / dpi
+ * Converts point (pt) to pixels (px)
+ * pt2in -> in2px
  * @method
  * @static
- * @param {number} px Number of pixels to convert to inches
- * @returns {number} - Resulting number of inches (in)
+ * @param {number} pt Number of points to convert to pixels
+ * @returns {number} - Resulting number of pixels (px)
  */
-function px2in (px) {
-  var dpi = getDpi()
-  return Number(px) / Number(dpi)
-}
-
-/**
- * Converts inches (in) to points (pt)
- * 72 = pt / in -> pt = 72 * in
- * @method
- * @static
- * @param {number} inches Number of inches (in) to convet to points (pt)
- * @returns {number} - Resulting number of points (pt)
- */
-function in2pt (inches) {
-  return Number(inches) * 72
-}
-
-/**
- * Evaluate the DPI of the device's screen (pixels per inche).
- * It creates and inpect a dedicated and hidden `data-dpi-test` DOM element to
- * deduct the screen DPI.
- * @method
- * @static
- * @returns {number} - The current screen DPI, so in pixels per inch.
- */
-function getDpi () {
-  return document.getElementById('dpi-test').offsetHeight
-}
-
-/**
- * @function
- * @inner
- */
-function createDpiTestElements () {
-  var getDpiHtmlStyle = 'data-dpi-test { height: 1in; left: -100%; position: absolute; top: -100%; width: 1in; }'
-
-  var head = document.getElementsByTagName('head')[0]
-  var getDPIElement = document.createElement('style')
-  getDPIElement.setAttribute('type', 'text/css')
-  getDPIElement.setAttribute('rel', 'stylesheet')
-  getDPIElement.innerHTML = getDpiHtmlStyle
-  head.appendChild(getDPIElement)
-
-  var body = document.getElementsByTagName('body')[0]
-  var dpiTestElement = document.createElement('data-dpi-test')
-  dpiTestElement.setAttribute('id', 'dpi-test')
-  body.appendChild(dpiTestElement)
+function pt2px (qpt) {
+  return in2px(pt2in(qpt))
 }
