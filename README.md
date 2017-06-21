@@ -63,6 +63,7 @@ You can create a bower Post-install hook, or make the symlinks manually to bind 
 > - `'headersfooters_type': 'header'|'body'|'footer'`
 > - `'headersfooters_outerWrapperClass': '<as_used_in_tempate>'`
 > - `'headersfooters_outerWrapperClass': '<as_used_in_tempate>'`
+> - `'content_css': "body { margin: '0 auto' })"`
 
 ```js
 const tinymce = require('tinymce')
