@@ -40,6 +40,9 @@ if (window.env === 'development') {
       height: 'auto',
       margins: { right: '0', top: '1cm', left: '0' },
       border: { color: 'red', style: 'dashed', width: '1pt' }
+    },
+    body: {
+      border: { color: 'red', style: 'dashed', width: '1pt' }
     }
   })
 }
