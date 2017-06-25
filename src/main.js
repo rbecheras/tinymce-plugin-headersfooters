@@ -90,6 +90,18 @@ function tinymcePluginHeadersFooters (editor, url) {
     statusbar: null
   }
 
+  if (this.isMaster) {
+    this.pageLayout = {
+      pageWrapper: null,
+      pagePanel: null,
+      headerWrapper: null,
+      headerPanel: null,
+      bodyPanel: null,
+      footerWrapper: null,
+      footerPanel: null
+    }
+  }
+
   _setAvailableFormats.call(this)
   // console.log('availableFormats: ', this.availableFormats)
   // console.log('defaultFormat: ', this.defaultFormat)
