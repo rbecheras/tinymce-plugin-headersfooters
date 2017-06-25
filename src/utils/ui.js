@@ -18,6 +18,7 @@ module.exports = {
   resetMenuItemState: resetMenuItemState,
   autoAddMenuItems: autoAddMenuItems,
   mapMceLayoutElements: mapMceLayoutElements,
+  mapPageLayoutElements: mapPageLayoutElements,
   getElementHeight: getElementHeight
 }
 
@@ -100,12 +101,22 @@ function mapMceLayoutElements (bodyClass, stackedLayout) {
   stackedLayout.statusbar.resizehandle = stackedLayout.layout.children('.mce-resizehandle')
 }
 
-function getElementHeight (element, win) {
+function mapPageLayoutElements (pageLayout) {
+  pageLayout.pageWrapper = $('.page-wrapper')
+  pageLayout.pagePanel = $('.page-panel')
+  pageLayout.headerWrapper = $('.header-wrapper')
+  pageLayout.headerPanel = $('.header-panel')
+  pageLayout.bodyPanel = $('.body-panel')
+  pageLayout.footerWrapper = $('.footer-wrapper')
+  pageLayout.footerPanel = $('.footer-panel')
+}
+
+function getElementHeight (element, win, isBorderBox) {
   win = win || window
   var style = win.getComputedStyle(element)
-  var height = px(style.height) +
-    px(style.paddingTop) + px(style.paddingBottom) +
-    px(style.marginTop) + px(style.marginBottom)
+  var height = px(style.height) // +
+    // px(style.paddingTop) + px(style.paddingBottom) +
+    // px(style.marginTop) + px(style.marginBottom)
   return height
 
   function px (style) {
