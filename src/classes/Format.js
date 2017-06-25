@@ -10,7 +10,21 @@ Format.defaults = {}
 Format.defaults['A4'] = new Format('A4', '210mm', '297mm')
 
 if (window.env === 'development') {
-  Format.defaults['dev-small'] = new Format('dev-small', '150mm', '100mm')
+  Format.defaults['dev-small'] = new Format('dev-small', {
+    height: '150mm',
+    width: '100mm',
+    margins: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' },
+    header: {
+      height: 'auto',
+      margins: { right: '15mm', bottom: '10mm', left: '5mm' },
+      border: { color: 'red', style: 'dashed', width: '1pt' }
+    },
+    footer: {
+      height: 'auto',
+      margins: { right: '0', top: '1cm', left: '0' },
+      border: { color: 'red', style: 'dashed', width: '1pt' }
+    }
+  })
 }
 
 /**
