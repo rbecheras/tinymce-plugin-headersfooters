@@ -15,6 +15,7 @@ module.exports = {
   'Init': {
     setBodies: setBodies,
     setStackedLayout: setStackedLayout,
+    setPageLayout: setPageLayout,
     applyDefaultFormat: applyDefaultFormat
   },
   'NodeChange': {},
@@ -42,6 +43,12 @@ function setBodies (evt) {
 
 function setStackedLayout (evt) {
   uiUtils.mapMceLayoutElements(this.bodyClass, this.stackedLayout)
+}
+
+function setPageLayout (evt) {
+  if (this.isMaster) {
+    uiUtils.mapPageLayoutElements(this.pageLayout)
+  }
 }
 
 function enterHeadFoot (evt) {
