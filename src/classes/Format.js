@@ -7,7 +7,24 @@ module.exports = Format
 Format.prototype.applyToPlugin = applyToPlugin
 
 Format.defaults = {}
-Format.defaults['A4'] = new Format('A4', '210mm', '297mm')
+Format.defaults['A4'] = new Format('A4', {
+  height: '297mm',
+  width: '210mm',
+  margins: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' },
+  header: {
+    height: 'auto',
+    margins: { right: '0', bottom: '10mm', left: '0' },
+    border: { color: 'black', style: 'solid', width: '0' }
+  },
+  footer: {
+    height: 'auto',
+    margins: { right: '0', top: '10mm', left: '0' },
+    border: { color: 'black', style: 'solid', width: '0' }
+  },
+  body: {
+    border: { color: 'black', style: 'solid', width: '0' }
+  }
+})
 
 if (window.env === 'development') {
   Format.defaults['dev-small'] = new Format('dev-small', {
