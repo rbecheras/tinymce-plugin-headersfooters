@@ -153,7 +153,7 @@ function _setAvailableFormats () {
   // set user custom formats
   this.customFormats = (settings.headersfooters_custom_formats || [])
   .map(function (f) {
-    return new Format(f.name, f.width, f.height)
+    return new Format(f.name, f.config)
   })
 
   // set the formats available for the editor
