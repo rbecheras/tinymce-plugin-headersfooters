@@ -104,9 +104,13 @@ function mapMceLayoutElements (bodyClass, stackedLayout) {
 function mapPageLayoutElements (pageLayout) {
   pageLayout.pageWrapper = $('.page-wrapper')
   pageLayout.pagePanel = $('.page-panel')
+
   pageLayout.headerWrapper = $('.header-wrapper')
   pageLayout.headerPanel = $('.header-panel')
+
+  pageLayout.bodyWrapper = $('.body-wrapper')
   pageLayout.bodyPanel = $('.body-panel')
+
   pageLayout.footerWrapper = $('.footer-wrapper')
   pageLayout.footerPanel = $('.footer-panel')
 }
