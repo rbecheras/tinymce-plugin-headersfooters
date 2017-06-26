@@ -120,7 +120,6 @@ function tinymcePluginHeadersFooters (editor, url) {
 }
 
 function enable () {
-  // console.info('Enabling ' + this.type + '...')
   this.stackedLayout.menubar.show()
   this.stackedLayout.toolbar.show()
   this.stackedLayout.statusbar.wrapper.show()
@@ -132,7 +131,6 @@ function enable () {
 }
 
 function disable () {
-  // console.info('Disabling ' + this.type + '...')
   this.stackedLayout.menubar.hide()
   this.stackedLayout.toolbar.hide()
   this.stackedLayout.statusbar.wrapper.hide()
