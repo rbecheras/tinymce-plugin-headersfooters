@@ -136,7 +136,7 @@ function applyToPlugin (plugin) {
     // var bodyHeight = uiUtils.getElementHeight(body, win)
     if (plugin.isMaster) {
       plugin.pageLayout.pageWrapper.css({
-        overflow: 'hidden', // TODO: update model spec
+        overflow: 'auto', // TODO: update model spec
         background: '#464646',
         // height: 'auto', // TODO: update model spec
         position: 'fixed', // TODO: update model spec
