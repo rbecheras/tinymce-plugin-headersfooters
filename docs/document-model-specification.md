@@ -2,6 +2,8 @@
 
 ## Abstract Layout Model
 
+> @todo: inser box model reference: https://developer.mozilla.org/fr/Apprendre/CSS/Introduction_%C3%A0_CSS/Le_mod%C3%A8le_de_bo%C3%AEte
+
 > @todo insert image: abstract model layout
 
 ## Abstract's layout elements
