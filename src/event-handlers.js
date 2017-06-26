@@ -27,7 +27,7 @@ module.exports = {
   'Blur': {
     leaveHeadFoot: leaveHeadFoot
   },
-  'Focus Blur KeyDown Paste SetContent NodeChange': {
+  'Focus Blur Paste SetContent NodeChange': {
     applyCurrentFormat: applyCurrentFormat
   }
 }
@@ -60,8 +60,16 @@ function leaveHeadFoot (evt) {
 }
 
 function applyCurrentFormat (evt) {
+  var that = this
   if (this.currentFormat) {
-    this.currentFormat.applyToPlugin(this)
+    // console.info('evt', that.type, evt.type)
+    if (evt.type === 'blur' || evt.type === 'focus') {
+      setTimeout(function () {
+        that.currentFormat.applyToPlugin(that)
+      }, 200)
+    } else {
+      that.currentFormat.applyToPlugin(that)
+    }
   }
 }
 
