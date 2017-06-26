@@ -37,12 +37,14 @@ if (window.env === 'development') {
     width: '100mm',
     margins: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' },
     header: {
-      height: 'auto',
+      height: '10mm',
+      // height: 'auto',
       margins: { right: '15mm', bottom: '10mm', left: '5mm' },
       border: { color: 'red', style: 'dashed', width: '1pt' }
     },
     footer: {
-      height: 'auto',
+      height: '10mm',
+      // height: 'auto',
       margins: { right: '0', top: '1cm', left: '0' },
       border: { color: 'red', style: 'dashed', width: '1pt' }
     },
