@@ -82,6 +82,8 @@
 
 Summary of the dimensions defined by the user and predefined with a default value, configurable by custom formats :
 
+> NOTE: Only 'mm' is currently supported for all format dimensions
+
 ```js
 var pageFormat = {
   height, width,
@@ -148,6 +150,15 @@ div.header-panel {
   margin-right: '<format.header.margins.right>';
   margin-bottom: '<format.header.margins.bottom>';
   margin-left: '<format.header.margins.left>';
+  padding: 0;
+  width: 100%;
+}
+
+div.body-wrapper {
+  border: 0;
+  box-sizing: border-box;
+  height: auto;
+  margin: 0;
   padding: 0;
   width: 100%;
 }
