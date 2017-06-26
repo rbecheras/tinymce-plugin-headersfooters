@@ -33,6 +33,11 @@ module.exports = {
   pt2px: pt2px
 }
 
+// expose the module to the global scope in development environment
+if (window.env === 'development' && !window._units) {
+  window._units = module.exports
+}
+
 /**
  * Get the numerc value of a style value with unit (remove the 2-digits unit and cast as number)
  * For example, returns `11` from a style value of `11px`
