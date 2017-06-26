@@ -154,7 +154,7 @@ function applyToPlugin (plugin) {
         border: 0,
         boxSizing: 'border-box',
         height: that.height,
-        margin: '4cm auto',
+        margin: '4cm auto 2cm auto',
         paddingTop: that.margins.top,
         paddingRight: that.margins.right,
         paddingBottom: that.margins.bottom,
