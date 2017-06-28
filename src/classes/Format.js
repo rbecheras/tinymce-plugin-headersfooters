@@ -250,11 +250,19 @@ function applyToPlugin (plugin) {
 function calculateBodyHeight () {
   // console.log('format: ', this)
   var ret
-  var value = units.getValueFromStyle(this.height) -
-    units.getValueFromStyle(this.margins.top) - units.getValueFromStyle(this.margins.bottom) -
-    units.getValueFromStyle(this.header.height) - units.getValueFromStyle(this.header.margins.bottom) -
-    units.getValueFromStyle(this.footer.height) - units.getValueFromStyle(this.footer.margins.top)
+  var height = units.getValueFromStyle(this.height)
+  var marginTop = units.getValueFromStyle(this.margins.top)
+  var marginBottom = units.getValueFromStyle(this.margins.bottom)
+  var headerHeight = units.getValueFromStyle(this.header.height)
+  var headerMarginBottom = units.getValueFromStyle(this.header.margins.bottom)
+  var footerHeight = units.getValueFromStyle(this.footer.height)
+  var footerMarginTop = units.getValueFromStyle(this.footer.margins.top)
+
+  var value = height - marginTop - marginBottom -
+    headerHeight - headerMarginBottom -
+    footerHeight - footerMarginTop
+
   ret = value + 'mm'
-  console.log('calculateBodyHeight() => ', ret)
+  // console.log('calculateBodyHeight() => ', ret)
   return ret
 }
