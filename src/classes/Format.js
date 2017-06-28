@@ -105,12 +105,18 @@ function Format (name, config) {
 
 function applyToPlugin (plugin) {
   var that = this
+  var editor = plugin.editor
+
   if (plugin.documentBody) {
     var win = plugin.editor.getWin()
     var body = plugin.documentBody
 
     applyToStackedLayout()
     applyToBody()
+
+    editor.fire('HeadersFooters:Format:AppliedToBody', {
+      documentFormat: this
+    })
   }
 
   function applyToStackedLayout () {
