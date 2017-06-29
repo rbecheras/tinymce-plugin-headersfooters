@@ -13,9 +13,12 @@
 
 'use strict'
 
+var tinymce = window.tinymce
+
 module.exports = {
   createTextBox: createTextBox,
   createUnitSelectBox: createUnitSelectBox,
+  createSelectBox: createSelectBox,
   createTab: createTab,
   createFieldset: createFieldset,
   createForm: createForm,
@@ -69,6 +72,21 @@ function createUnitSelectBox (inputName, defaultUnit, maxWidth, minWidth) {
     text: defaultUnit,
     value: defaultUnit
   }
+}
+
+function createSelectBox (label, inputName, values, maxWidth, minWidth) {
+  return new tinymce.ui.ListBox({
+    label: label,
+    name: inputName,
+    type: 'listbox',
+    minWidth: minWidth || 55,
+    maxWidth: maxWidth || null,
+    text: label,
+    values: values,
+    onselect: function (e) {
+      // console.log('SelectBox Selected', e)
+    }
+  })
 }
 
 /**
