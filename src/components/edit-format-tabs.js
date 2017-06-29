@@ -6,19 +6,17 @@ var uiHelpers = require('../utils/ui-helpers')
 var tinymce = window.tinymce
 
 module.exports = {
-  // createBordersTab: createBordersTab,
-  // createSpacingTab: createSpacingTab,
-  createGeneralTab: createGeneralTab
+  createFormatTab: createFormatTab
 }
 
 /**
  * Create the general tab component that show form inputs for:
- * - text indent,
- * - line spacing
+ * - paper labeled formats,
+ * - paper custom size
  * @method
- * @returns {TabPanel} generalTab
+ * @returns {TabPanel} formatTab
  */
-function createGeneralTab (format) {
+function createFormatTab (format) {
   // format select box
   var formats = tinymce.activeEditor.plugins.headersfooters.availableFormats
   var formatValues = []

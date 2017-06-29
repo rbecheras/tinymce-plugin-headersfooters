@@ -26,16 +26,14 @@ function openMainWinFunction (editor) {
    * @returns {undefined}
    */
   function openMainWin (format) {
-    var generalTab = editFormatTabs.createGeneralTab(format)
-    // var spacingsTab = uiComponents.createSpacingTab()
-    // var bordersTab = uiComponents.createBordersTab(editor, paragraphStyleData)
+    var formatTab = editFormatTabs.createFormatTab(format)
 
     // console.log('format', format)
 
     editor.windowManager.open({
       bodyType: 'tabpanel',
       title: 'Edit Document Format',
-      body: [ generalTab ],
+      body: [ formatTab ],
       data: {
         newformat: format.name,
         orientation: 'portrait',
