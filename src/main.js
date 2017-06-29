@@ -109,8 +109,6 @@ function tinymcePluginHeadersFooters (editor, url) {
   this.format = null
 
   _setAvailableFormats.call(this)
-  // console.log('availableFormats: ', this.availableFormats)
-  // console.log('defaultFormat: ', this.defaultFormat)
 
   this.menuItemsList = menuItems.create(editor)
   uiUtils.autoAddMenuItems.call(this)
