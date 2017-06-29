@@ -41,8 +41,9 @@ module.exports = {
 // _createInsertFooterMenuItem()
 // _createRemoveHeaderMenuItem()
 // _createRemoveFooterMenuItem()
-// _createInsertPageNumber(editor)
-// _createinsertNumberOfPages(editor)
+// _createInsertPageNumberMenuItem(editor)
+// _createinsertNumberOfPagesMenuItem(editor)
+// _createEditFormatMenuItem(editor)
 
 /**
  * Create a hash of all the menu items for the plugin
@@ -56,8 +57,9 @@ function create (editor) {
     insertFooter: _createInsertFooterMenuItem(),
     removeHeader: _createRemoveHeaderMenuItem(),
     removeFooter: _createRemoveFooterMenuItem(),
-    insertPageNumber: _createInsertPageNumber(editor),
-    insertNumberOfPages: _createinsertNumberOfPages(editor)
+    insertPageNumber: _createInsertPageNumberMenuItem(editor),
+    insertNumberOfPages: _createinsertNumberOfPagesMenuItem(editor),
+    editFormat: _createEditFormatMenuItem(editor)
   }
 }
 
@@ -172,7 +174,7 @@ function _createRemoveFooterMenuItem () {
  * @inner
  * @returns {MenuItem}
  */
-function _createInsertPageNumber (editor) {
+function _createInsertPageNumberMenuItem (editor) {
   return new MenuItem('insertPageNumber', {
     text: 'Insérer le numéro de page',
     context: 'document',
@@ -190,7 +192,7 @@ function _createInsertPageNumber (editor) {
  * @inner
  * @returns {MenuItem}
  */
-function _createinsertNumberOfPages (editor) {
+function _createinsertNumberOfPagesMenuItem (editor) {
   return new MenuItem('insertNumberOfPages', {
     text: 'Insérer le nombre de page',
     // icon: 'text',
@@ -200,5 +202,20 @@ function _createinsertNumberOfPages (editor) {
       editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, HEADER_FOOTER_ONLY_SELECTOR))
     },
     cmd: 'insertNumberOfPagesCmd'
+  })
+}
+
+/**
+ * Create a menu item to edit the current format
+ * @function
+ * @inner
+ * @returns {MenuItem}
+ */
+function _createEditFormatMenuItem (editor) {
+  return new MenuItem('editFormat', {
+    text: 'Format',
+    // icon: 'text',
+    context: 'document',
+    cmd: 'editFormatCmd'
   })
 }
