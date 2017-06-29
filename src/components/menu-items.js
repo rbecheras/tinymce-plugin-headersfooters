@@ -28,7 +28,7 @@ var ui = require('../utils/ui')
  * @const
  * @inner
  */
-var HEADER_FOOTER_ONLY_SELECTOR = 'section[data-headfoot-header], section[data-headfoot-footer]'
+var HEADER_FOOTER_ONLY_SELECTOR = '.header-panel, .footer-panel'
 
 // Static API
 module.exports = {
