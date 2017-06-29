@@ -136,13 +136,13 @@ function createFieldset (title, items, maxWidth, minWidth) {
  * @param
  * @returns
  */
-function createForm (items) {
+function createForm (items, columns) {
   return {
     type: 'form',
     labelGapCalc: false,
     padding: 0,
     layout: 'grid',
-    columns: 2,
+    columns: columns || 2,
     defaults: {
       type: 'textbox',
       maxWidth: 100
