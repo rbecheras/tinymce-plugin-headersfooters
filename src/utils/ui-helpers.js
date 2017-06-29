@@ -41,10 +41,13 @@ function createTextBox (label, name, maxWidth, minWidth) {
     label: label,
     name: name,
     maxWidth: maxWidth || null,
-    minWidth: minWidth || 55
+    minWidth: minWidth || null,
+    onchange: function (e) {
+      // console.log('createTextBox on action', e)
+    }
   }
 
-  return textBox
+  return new tinymce.ui.TextBox(textBox)
 }
 
 /**
