@@ -137,6 +137,10 @@ function disable () {
   this.stackedLayout.statusbar.path.hide()
   this.stackedLayout.statusbar.wordcount.hide()
   this.stackedLayout.statusbar.resizehandle.hide()
+
+  if (!this.editor.selection.isCollapsed()) {
+    this.editor.selection.collapse()
+  }
 }
 
 function _setAvailableFormats () {
