@@ -48,18 +48,18 @@ function createGeneralTab (format) {
   formatSelectBox.on('select', function (e) {
     var selectValue = e.control.value()
     var _format = formats[selectValue]
-    pageHeightTextBox.value(_format.height)
-    pageWidthTextBox.value(_format.width)
+    pageHeightTextBox.value(_format.height.slice(0, -2)) // using raw 'mm' value
+    pageWidthTextBox.value(_format.width.slice(0, -2)) // using raw 'mm' value
   })
   orientationSelectBox.on('select', function (e) {
     var selectValue = formatSelectBox.value()
     var _format = formats[selectValue]
     if (orientationSelectBox.value() === 'portrait') {
-      pageHeightTextBox.value(_format.width)
-      pageWidthTextBox.value(_format.height)
+      pageHeightTextBox.value(_format.width.slice(0, -2)) // using raw 'mm' value
+      pageWidthTextBox.value(_format.height.slice(0, -2)) // using raw 'mm' value
     } else {
-      pageHeightTextBox.value(_format.height)
-      pageWidthTextBox.value(_format.width)
+      pageHeightTextBox.value(_format.height.slice(0, -2)) // using raw 'mm' value
+      pageWidthTextBox.value(_format.width.slice(0, -2)) // using raw 'mm' value
     }
   })
 
