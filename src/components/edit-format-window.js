@@ -1,12 +1,8 @@
 'use strict'
 
-// var eventHandlers = require('../event-handlers')
 // var units = require('../units')
 var editFormatTabs = require('./edit-format-tabs')
-// var findNodes = require('../dom/find-nodes')
-// var uiHelpers = require('./helpers')
-
-// var $ = window.jQuery
+var Format = require('../classes/Format')
 
 module.exports = openMainWinFunction
 
@@ -43,16 +39,54 @@ function openMainWinFunction (editor) {
       onsubmit: onMainWindowSubmit
     })
 
-    // function setEachFormPropertyWithUnit (i, item) {
-    //   units.setFormPropertyWithUnit(editor.dom, paragraphes, paragraphStyleData, item[0], item[1])
-    // }
-    //
-    // function setEachFormPropertyWithoutUnit (i, item) {
-    //   units.setFormPropertyWithoutUnit(editor.dom, paragraphes, paragraphStyleData, item[0], item[1])
-    // }
-
-    function onMainWindowSubmit () {
-      console.log('editor', editor)
+    function onMainWindowSubmit (evt) {
+      var d = evt.data
+      var formatToApply = {
+        name: 'custom',
+        orientation: d.orientation,
+        height: d.pageHeight + 'mm', // @TODO implement heightUnit
+        width: d.pageWidth + 'mm', // @TODO implement widthUnit (etc...)
+        margins: {
+          bottom: d.marginsBottom,
+          left: d.marginsLeft,
+          right: d.marginsRight,
+          top: d.marginsTop
+        },
+        header: {
+          border: {
+            color: d.headerBordersColor,
+            style: d.headerBordersStyle,
+            width: d.headerBordersWidth
+          },
+          height: d.headerHeight,
+          margins: {
+            bottom: d.headerMarginsBottom,
+            left: d.headerMarginsLeft,
+            right: d.headerMarginsRight
+          }
+        },
+        footer: {
+          border: {
+            color: d.footerBordersColor,
+            style: d.footerBordersStyle,
+            width: d.footerBordersWidth
+          },
+          height: d.footerHeight,
+          margins: {
+            top: d.footerMarginsTop,
+            left: d.footerMarginsLeft,
+            right: d.footerMarginsRight
+          }
+        },
+        body: {
+          border: {
+            color: d.bodyBordersColor,
+            style: d.bodyBordersStyle,
+            width: d.bodyBordersWidth
+          }
+        }
+      }
+      editor.plugins.headersfooters.format = new Format('custom', formatToApply)
       editor.plugins.headersfooters.format.applyToPlugin(editor.plugins.headersfooters)
     }
   }
