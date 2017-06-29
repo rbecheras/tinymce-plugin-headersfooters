@@ -120,12 +120,13 @@ function createTab (title, fieldsets, direction) {
  * @param {number} [maxWidth=null] The maximum with for the fieldset, in pixels
  * @returns {Fieldset} fieldset The new field set
  */
-function createFieldset (title, items, maxWidth) {
+function createFieldset (title, items, maxWidth, minWidth) {
   var fieldset = {
     type: 'fieldset',
     title: title,
     items: items,
-    maxWidth: maxWidth || null
+    maxWidth: maxWidth || null,
+    minWidth: minWidth || null
   }
   return fieldset
 }
