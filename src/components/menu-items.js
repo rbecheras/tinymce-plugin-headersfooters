@@ -30,6 +30,13 @@ var ui = require('../utils/ui')
  */
 var HEADER_FOOTER_ONLY_SELECTOR = '.header-panel, .footer-panel'
 
+/**
+ * A selector to select the body but not the header and the footer
+ * @const
+ * @inner
+ */
+var BODY_ONLY_SELECTOR = '.body-panel'
+
 // Static API
 module.exports = {
   create: create,
@@ -216,6 +223,10 @@ function _createEditFormatMenuItem (editor) {
     text: 'Format',
     // icon: 'text',
     context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+    },
     cmd: 'editFormatCmd'
   })
 }
