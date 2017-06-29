@@ -177,6 +177,7 @@ function _createInsertPageNumber (editor) {
     text: 'Insérer le numéro de page',
     context: 'document',
     onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, HEADER_FOOTER_ONLY_SELECTOR)
       editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, HEADER_FOOTER_ONLY_SELECTOR))
     },
     cmd: 'insertPageNumberCmd'
@@ -195,6 +196,7 @@ function _createinsertNumberOfPages (editor) {
     // icon: 'text',
     context: 'document',
     onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, HEADER_FOOTER_ONLY_SELECTOR)
       editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, HEADER_FOOTER_ONLY_SELECTOR))
     },
     cmd: 'insertNumberOfPagesCmd'
