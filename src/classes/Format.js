@@ -169,8 +169,7 @@ function applyToPlugin (plugin) {
       })
       plugin.pageLayout.headerWrapper.css({
         overflow: 'hidden', // TODO: update model spec
-        border: 0,
-        borderBottom: 'dashed 1px gray', // TODO update model spec?
+        // border: 0,
         boxSizing: 'border-box',
         height: that.header.height + that.header.margins.bottom,
         margin: 0,
@@ -180,7 +179,6 @@ function applyToPlugin (plugin) {
       /* TODO: split border to top/right/bottom/left */
       plugin.pageLayout.headerPanel.css({
         overflow: 'hidden', // TODO: update model spec
-        background: 'yellow',
         borderColor: that.header.border.color,
         borderStyle: that.header.border.style,
         borderWidth: that.header.border.width,
@@ -190,7 +188,8 @@ function applyToPlugin (plugin) {
         marginRight: that.header.margins.right,
         marginBottom: that.header.margins.bottom,
         marginLeft: that.header.margins.left,
-        padding: 0
+        padding: 0,
+        borderBottom: 'dashed 1px gray' // TODO update model spec?
         // width: '100%' // TODO: update model spec
       })
       plugin.pageLayout.bodyWrapper.css({
@@ -204,7 +203,6 @@ function applyToPlugin (plugin) {
       })
       plugin.pageLayout.bodyPanel.css({
         overflow: 'hidden', // TODO: update model spec
-        background: '#eee',
         borderColor: that.body.border.color,
         borderStyle: that.body.border.style,
         borderWidth: that.body.border.width,
@@ -216,7 +214,6 @@ function applyToPlugin (plugin) {
       })
       plugin.pageLayout.footerWrapper.css({
         overflow: 'hidden', // TODO: update model spec
-        background: 'yellow',
         border: 0,
         borderTop: 'dashed 1px gray', // TODO update model spec?
         boxSizing: 'border-box',
@@ -237,7 +234,8 @@ function applyToPlugin (plugin) {
         marginRight: that.footer.margins.right,
         marginBottom: 0,
         marginLeft: that.footer.margins.left,
-        padding: 0
+        padding: 0,
+        borderTop: 'dashed 1px gray' // TODO update model spec?
         // width: '100%' // TODO: update model spec
       })
     }
