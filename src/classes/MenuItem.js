@@ -74,7 +74,7 @@ function getUIControl () {
  * // to override this placehoder callback, juste assign a new one
  * var menuItem = new MenuItem('my menu item', options)
  * menuItem.onclick = function () {
- * 	// implement your own
+ * => implement your own
  * }
  */
 function onclick () {
