@@ -102,6 +102,12 @@ function tinymcePluginHeadersFooters (editor, url) {
     }
   }
 
+  this.availableFormats = {}
+  this.formats = []
+  this.customFormats = []
+  this.defaultFormat = null
+  this.format = null
+
   _setAvailableFormats.call(this)
   // console.log('availableFormats: ', this.availableFormats)
   // console.log('defaultFormat: ', this.defaultFormat)
