@@ -38,6 +38,7 @@ var uiUtils = require('./utils/ui')
 
 var eventHandlers = require('./event-handlers')
 var Format = require('./classes/Format')
+var editFormatOpenMainWin = require('./components/edit-format-window')
 
 // Add the plugin to the tinymce PluginManager
 tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
@@ -50,7 +51,8 @@ tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
  * @returns void
  */
 function tinymcePluginHeadersFooters (editor, url) {
-  // var thisPlugin = this
+  var thisPlugin = this
+
   this.type = editor.settings.headersfooters_type
   this.bodyClass = editor.settings.body_class
 
@@ -119,8 +121,17 @@ function tinymcePluginHeadersFooters (editor, url) {
   editor.addCommand('insertNumberOfPagesCmd', function () {
     editor.insertContent('{{pages}}')
   })
+  editor.addCommand('editFormatCmd', function () {
+    editFormatOpenMainWin(editor)(thisPlugin.format)
+  })
 
   events.autoBindImplementedEventCallbacks.call(this, editor, eventHandlers)
+
+  if (window.env === 'development' && this.isMaster) {
+    setTimeout(function () {
+      editor.execCommand('editFormatCmd')
+    })
+  }
 }
 
 function enable () {
