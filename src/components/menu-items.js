@@ -133,7 +133,7 @@ function _createInsertHeaderMenuItem () {
 function _createRemoveHeaderMenuItem () {
   return new MenuItem('removeHeader', {
     text: "Supprimer l'entête",
-    icon: 'text',
+    icon: 'undo',
     context: 'insert',
     onclick: function () {
       window.alert('remove header')
@@ -167,7 +167,7 @@ function _createInsertFooterMenuItem () {
 function _createRemoveFooterMenuItem () {
   return new MenuItem('removeFooter', {
     text: 'Supprimer le pied de page',
-    icon: 'text',
+    icon: 'undo',
     context: 'insert',
     onclick: function () {
       window.alert('remove footer')
