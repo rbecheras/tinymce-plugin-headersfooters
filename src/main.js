@@ -165,6 +165,7 @@ function disable () {
   if (!this.editor.selection.isCollapsed()) {
     this.editor.selection.collapse()
   }
+  this.editor.$('body').css({opacity: 0.25})
 }
 
 function _setAvailableFormats () {
