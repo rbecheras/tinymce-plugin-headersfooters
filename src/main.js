@@ -152,6 +152,8 @@ function enable () {
   this.stackedLayout.statusbar.resizehandle.show()
 
   this.stackedLayout.statusbar.wrapper.css({left: 0, right: 0, zIndex: 9999})
+
+  this.editor.$('body').css({opacity: 1})
 }
 
 function disable () {
