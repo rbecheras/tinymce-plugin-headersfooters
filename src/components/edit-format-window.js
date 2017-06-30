@@ -47,42 +47,42 @@ function openMainWinFunction (editor) {
         height: d.pageHeight + 'mm', // @TODO implement heightUnit
         width: d.pageWidth + 'mm', // @TODO implement widthUnit (etc...)
         margins: {
-          bottom: d.marginsBottom,
-          left: d.marginsLeft,
-          right: d.marginsRight,
-          top: d.marginsTop
+          bottom: d.marginsBottom + 'mm',
+          left: d.marginsLeft + 'mm',
+          right: d.marginsRig + 'mm',
+          top: d.marginsTop + 'mm'
         },
         header: {
           border: {
             color: d.headerBordersColor,
             style: d.headerBordersStyle,
-            width: d.headerBordersWidth
+            width: d.headerBordersWidth + 'mm'
           },
-          height: d.headerHeight,
+          height: d.headerHeight + 'mm',
           margins: {
-            bottom: d.headerMarginsBottom,
-            left: d.headerMarginsLeft,
-            right: d.headerMarginsRight
+            bottom: d.headerMarginsBottom + 'mm',
+            left: d.headerMarginsLeft + 'mm',
+            right: d.headerMarginsRight + 'mm'
           }
         },
         footer: {
           border: {
             color: d.footerBordersColor,
             style: d.footerBordersStyle,
-            width: d.footerBordersWidth
+            width: d.footerBordersWidth + 'mm'
           },
-          height: d.footerHeight,
+          height: d.footerHeight + 'mm',
           margins: {
-            top: d.footerMarginsTop,
-            left: d.footerMarginsLeft,
-            right: d.footerMarginsRight
+            top: d.footerMarginsTop + 'mm',
+            left: d.footerMarginsLeft + 'mm',
+            right: d.footerMarginsRight + 'mm'
           }
         },
         body: {
           border: {
             color: d.bodyBordersColor,
             style: d.bodyBordersStyle,
-            width: d.bodyBordersWidth
+            width: d.bodyBordersWidth + 'mm'
           }
         }
       }
