@@ -112,7 +112,7 @@ function applyToPlugin (plugin) {
     var body = plugin.documentBody
 
     applyToStackedLayout()
-    applyToBody()
+    applyToBody(plugin)
 
     editor.fire('HeadersFooters:Format:AppliedToBody', {
       documentFormat: this
@@ -138,7 +138,23 @@ function applyToPlugin (plugin) {
     plugin.stackedLayout.iframe.css(rules)
   }
 
-  function applyToBody () {
+  function applyToBody (plugin) {
+    // NOTE: set padding to zero to fix unknown bug
+    // where all iframe's body paddings are set to '2cm'...
+    // TODO: remove this statement if the 2cm padding source is found.
+    $(body, win).css({
+      margin: 0,
+      padding: 0,
+      overflow: 'hidden'
+    })
+
+    // Allow body panel overflow
+    if (plugin.isMaster) {
+      $(body, win).css({
+        overflowY: 'auto'
+      })
+    }
+
     // var bodyHeight = uiUtils.getElementHeight(body, win)
     if (plugin.isMaster) {
       plugin.pageLayout.pageWrapper.css({
@@ -159,7 +175,7 @@ function applyToPlugin (plugin) {
         background: 'white',
         border: 0,
         boxSizing: 'border-box',
-        height: that.height,
+        minHeight: that.height, // @TODO update for pagination
         margin: '4cm auto 2cm auto',
         paddingTop: that.margins.top,
         paddingRight: that.margins.right,
@@ -193,7 +209,8 @@ function applyToPlugin (plugin) {
         // width: '100%' // TODO: update model spec
       })
       plugin.pageLayout.bodyWrapper.css({
-        overflow: 'hidden', // TODO: update model spec
+        // overflow: 'hidden', // TODO: update model spec
+        overflow: 'auto', // TODO: update for pagination
         border: 0,
         boxSizing: 'border-box',
         height: 'auto',
@@ -202,12 +219,13 @@ function applyToPlugin (plugin) {
         width: '100%'
       })
       plugin.pageLayout.bodyPanel.css({
-        overflow: 'hidden', // TODO: update model spec
+        // overflow: 'hidden', // TODO: update model spec
+        overflow: 'auto', // TODO: update for pagination
         borderColor: that.body.border.color,
         borderStyle: that.body.border.style,
         borderWidth: that.body.border.width,
         boxSizing: 'border-box',
-        height: that.calculateBodyHeight(),
+        minHeight: that.calculateBodyHeight(), // @TODO update for pagination
         margin: 0,
         padding: 0,
         width: '100%'
@@ -239,15 +257,6 @@ function applyToPlugin (plugin) {
         // width: '100%' // TODO: update model spec
       })
     }
-
-    // NOTE: set padding to zero to fix unknown bug
-    // where all iframe's body paddings are set to '2cm'...
-    // TODO: remove this statement if the 2cm padding source is found.
-    $(body, win).css({
-      // margin: 0,
-      padding: 0,
-      overflow: 'hidden'
-    })
   }
 }
 
