@@ -6,7 +6,8 @@ var uiHelpers = require('../utils/ui-helpers')
 var tinymce = window.tinymce
 
 module.exports = {
-  createFormatTab: createFormatTab
+  createFormatTab: createFormatTab,
+  createMarginsTab: createMarginsTab
 }
 
 /**
@@ -81,6 +82,41 @@ function createFormatTab (format) {
 
   // tab
   var tab = uiHelpers.createTab('Paper Format', [formatFieldSet, paperSizeFieldSet])
+
+  return tab
+}
+
+/**
+ * Create the margins tab component that show form inputs for:
+ * - paper margins
+ * @method
+ * @returns {TabPanel} marginTab
+ */
+function createMarginsTab (format) {
+  var marginTopTextBox = uiHelpers.createTextBox('Margin top', 'marginTop', 65)
+  var marginTopUnitSelect = uiHelpers.createUnitSelectBox('marginTopUnit', 'mm')
+
+  var marginRightTextBox = uiHelpers.createTextBox('Margin right', 'marginRight', 65)
+  var marginRightUnitSelect = uiHelpers.createUnitSelectBox('marginRightUnit', 'mm')
+
+  var marginBottomTextBox = uiHelpers.createTextBox('Margin bottom', 'marginBottom', 65)
+  var marginBottomUnitSelect = uiHelpers.createUnitSelectBox('marginBottomUnit', 'mm')
+
+  var marginLeftTextBox = uiHelpers.createTextBox('Margin left', 'marginLeft', 65)
+  var marginLeftUnitSelect = uiHelpers.createUnitSelectBox('marginLeftUnit', 'mm')
+
+  // paperSize fieldset form
+  var form = uiHelpers.createForm([
+    marginTopTextBox, marginTopUnitSelect,
+    marginRightTextBox, marginRightUnitSelect,
+    marginBottomTextBox, marginBottomUnitSelect,
+    marginLeftTextBox, marginLeftUnitSelect
+  ], 2)
+
+  var fieldSet = uiHelpers.createFieldset('Margins', [form], 460)
+
+  // tab
+  var tab = uiHelpers.createTab('Page Margins', [fieldSet])
 
   return tab
 }
