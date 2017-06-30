@@ -115,7 +115,7 @@ function init (factory, menuItems) {
 function _createInsertHeaderMenuItem () {
   return new MenuItem('insertHeader', {
     text: 'Insérer une entête',
-    icon: 'abc',
+    icon: 'template',
     id: 'plugin-headersfooters-menuitem-insert-header',
     context: 'insert',
     onclick: function () {
@@ -150,7 +150,7 @@ function _createRemoveHeaderMenuItem () {
 function _createInsertFooterMenuItem () {
   return new MenuItem('insertFooter', {
     text: 'Insérer un pied de page',
-    icon: 'abc',
+    icon: 'template',
     context: 'insert',
     onclick: function () {
       window.alert('insert footer')
