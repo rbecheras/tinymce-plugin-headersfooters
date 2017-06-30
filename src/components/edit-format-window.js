@@ -58,10 +58,10 @@ function openMainWinFunction (editor) {
         height: (d.pageHeight) ? d.pageHeight + 'mm' : format.height,
         width: (d.pageWidth) ? d.pageWidth + 'mm' : format.width,
         margins: {
-          bottom: d.marginsBottom + 'mm',
-          left: d.marginsLeft + 'mm',
-          right: d.marginsRig + 'mm',
-          top: d.marginsTop + 'mm'
+          bottom: (d.marginBottom) ? d.marginBottom + 'mm' : format.margins.bottom,
+          left: (d.marginLeft) ? d.marginLeft + 'mm' : format.margins.left,
+          right: (d.marginRight) ? d.marginRight + 'mm' : format.margins.right,
+          top: (d.marginTop) ? d.marginTop + 'mm' : format.margins.top
         },
         header: {
           border: {
