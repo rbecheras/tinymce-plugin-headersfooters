@@ -131,7 +131,7 @@ function tinymcePluginHeadersFooters (editor, url) {
     editor.insertContent('{{pages}}')
   })
   editor.addCommand('editFormatCmd', function () {
-    editFormatOpenMainWin(editor)(thisPlugin.format)
+    editFormatOpenMainWin(editor)(thisPlugin.currentFormat)
   })
 
   events.autoBindImplementedEventCallbacks.call(this, editor, eventHandlers)
