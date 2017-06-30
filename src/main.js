@@ -117,7 +117,7 @@ function tinymcePluginHeadersFooters (editor, url) {
   this.formats = []
   this.customFormats = []
   this.defaultFormat = null
-  this.format = null
+  this.currentFormat = null
 
   _setAvailableFormats.call(this)
 
@@ -211,8 +211,7 @@ function _setAvailableFormats () {
   // select a default format for new doc
   this.defaultFormat = this.availableFormats[settings.headersfooters_default_format] || this.formats[0] || this.customFormats[0]
 
-  // set the current format
-  this.format = this.defaultFormat
+  // current format is set on editor init callback
 }
 
 function parseParamList (paramValue) {

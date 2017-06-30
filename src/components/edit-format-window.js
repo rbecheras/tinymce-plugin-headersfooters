@@ -97,8 +97,8 @@ function openMainWinFunction (editor) {
           }
         }
       }
-      editor.plugins.headersfooters.format = new Format('custom', formatToApply)
-      editor.plugins.headersfooters.format.applyToPlugin(editor.plugins.headersfooters)
+      editor.plugins.headersfooters.currentFormat = new Format('custom', formatToApply)
+      editor.plugins.headersfooters.currentFormat.applyToPlugin(editor.plugins.headersfooters)
     }
   }
 }
