@@ -35,7 +35,11 @@ function openMainWinFunction (editor) {
         newformat: format.name,
         orientation: 'portrait',
         pageHeight: format.height.slice(0, -2),
-        pageWidth: format.width.slice(0, -2)
+        pageWidth: format.width.slice(0, -2),
+        marginTop: format.margins.top.slice(0, -2),
+        marginRight: format.margins.right.slice(0, -2),
+        marginBottom: format.margins.bottom.slice(0, -2),
+        marginLeft: format.margins.left.slice(0, -2)
       },
       onsubmit: onMainWindowSubmit
     })
