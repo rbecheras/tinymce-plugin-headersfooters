@@ -44,13 +44,19 @@ function openMainWinFunction (editor) {
       onsubmit: onMainWindowSubmit
     })
 
+    /**
+     * Open edit format window submit callback
+     *
+     * @TODO implement heightUnit
+     * @TODO implement widthUnit (etc...)
+     */
     function onMainWindowSubmit (evt) {
       var d = evt.data
       var formatToApply = {
         name: 'custom',
-        orientation: d.orientation,
-        height: d.pageHeight + 'mm', // @TODO implement heightUnit
-        width: d.pageWidth + 'mm', // @TODO implement widthUnit (etc...)
+        orientation: (d.orientation) ? d.orientation : 'portrait',
+        height: (d.pageHeight) ? d.pageHeight + 'mm' : format.height,
+        width: (d.pageWidth) ? d.pageWidth + 'mm' : format.width,
         margins: {
           bottom: d.marginsBottom + 'mm',
           left: d.marginsLeft + 'mm',
