@@ -64,6 +64,15 @@ function tinymcePluginHeadersFooters (editor, url) {
   this.isMaster = this.type === 'body'
   this.isSlave = !this.isMaster
 
+  if (this.isMaster) {
+    tinymce.getMasterHeadersFootersPlugin = function () {
+      return thisPlugin
+    }
+  }
+  this.getMaster = function () {
+    return tinymce.getMasterHeadersFootersPlugin()
+  }
+
   if (this.isMaster && window.env === 'development') {
     window.mceHF = this
   }
