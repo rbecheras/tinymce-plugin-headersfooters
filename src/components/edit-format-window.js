@@ -23,13 +23,14 @@ function openMainWinFunction (editor) {
    */
   function openMainWin (format) {
     var formatTab = editFormatTabs.createFormatTab(format)
+    var marginsTab = editFormatTabs.createMarginsTab(format)
 
     // console.log('format', format)
 
     editor.windowManager.open({
       bodyType: 'tabpanel',
       title: 'Edit Document Format',
-      body: [ formatTab ],
+      body: [ formatTab, marginsTab ],
       data: {
         newformat: format.name,
         orientation: 'portrait',
