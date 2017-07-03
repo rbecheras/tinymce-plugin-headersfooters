@@ -143,9 +143,6 @@ function createHeaderTab (format) {
 
   // header margins
 
-  // var marginTopTextBox = uiHelpers.createTextBox('Margin top', 'headerMarginTop', 65)
-  // var marginTopUnitSelect = uiHelpers.createUnitSelectBox('headerMarginTopUnit', 'mm')
-
   var marginRightTextBox = uiHelpers.createTextBox('Margin right', 'headerMarginRight', 65)
   var marginRightUnitSelect = uiHelpers.createUnitSelectBox('headerMarginRightUnit', 'mm')
 
@@ -156,7 +153,6 @@ function createHeaderTab (format) {
   var marginLeftUnitSelect = uiHelpers.createUnitSelectBox('headerMarginLeftUnit', 'mm')
 
   var form = uiHelpers.createForm([
-    // marginTopTextBox, marginTopUnitSelect,
     marginRightTextBox, marginRightUnitSelect,
     marginBottomTextBox, marginBottomUnitSelect,
     marginLeftTextBox, marginLeftUnitSelect
