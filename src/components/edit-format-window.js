@@ -28,8 +28,6 @@ function openMainWinFunction (editor) {
     var footerTab = editFormatTabs.createFooterTab(format)
     var bodyTab = editFormatTabs.createBodyTab(format)
 
-    // console.log('format', format)
-
     editor.windowManager.open({
       bodyType: 'tabpanel',
       title: 'Edit Document Format',
