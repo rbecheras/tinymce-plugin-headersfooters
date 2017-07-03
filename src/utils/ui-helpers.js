@@ -97,12 +97,14 @@ function createSelectBox (label, inputName, values, maxWidth, minWidth) {
  * @param
  * @returns
  */
-function createTab (title, fieldsets, direction) {
+function createTab (title, fieldsets, direction, columns) {
   return {
     title: title,
     type: 'form',
     items: {
       type: 'form',
+      layout: 'grid',
+      columns: columns || 1,
       // layout: 'flex',
       direction: direction || 'collumn',
       labelGapCalc: 'children',
