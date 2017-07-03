@@ -8,7 +8,8 @@ var tinymce = window.tinymce
 module.exports = {
   createFormatTab: createFormatTab,
   createMarginsTab: createMarginsTab,
-  createHeaderTab: createHeaderTab
+  createHeaderTab: createHeaderTab,
+  createFooterTab: createFooterTab
 }
 
 /**
@@ -196,6 +197,82 @@ function createHeaderTab (format) {
 
   // tab
   var tab = uiHelpers.createTab('Header', [heightFieldSet, marginsFieldSet, borderFieldset])
+
+  return tab
+}
+
+/**
+ * Create the footer tab component that show form inputs for:
+ * - footer height
+ * - footer margins
+ * - footer borders
+ * @method
+ * @returns {TabPanel} footerTab
+ */
+function createFooterTab (format) {
+  // header height
+  var heightTextBox = uiHelpers.createTextBox('Footer height', 'footerHeight', 65)
+  var heightUnitSelect = uiHelpers.createUnitSelectBox('footerHeightUnit', 'mm')
+
+  var heightForm = uiHelpers.createForm([
+    heightTextBox, heightUnitSelect
+  ], 2)
+
+  var heightFieldSet = uiHelpers.createFieldset('Footer margins', [heightForm], 460)
+
+  // header margins
+
+  var marginTopTextBox = uiHelpers.createTextBox('Margin top', 'footerMarginTop', 65)
+  var marginTopUnitSelect = uiHelpers.createUnitSelectBox('footerMarginTopUnit', 'mm')
+
+  var marginRightTextBox = uiHelpers.createTextBox('Margin right', 'footerMarginRight', 65)
+  var marginRightUnitSelect = uiHelpers.createUnitSelectBox('footerMarginRightUnit', 'mm')
+
+  var marginLeftTextBox = uiHelpers.createTextBox('Margin left', 'footerMarginLeft', 65)
+  var marginLeftUnitSelect = uiHelpers.createUnitSelectBox('footerMarginLeftUnit', 'mm')
+
+  var form = uiHelpers.createForm([
+    marginTopTextBox, marginTopUnitSelect,
+    marginRightTextBox, marginRightUnitSelect,
+    marginLeftTextBox, marginLeftUnitSelect
+  ], 2)
+
+  var marginsFieldSet = uiHelpers.createFieldset('Footer margins', [form], 460)
+
+  // footer borders
+  var borderWidthTextBox = uiHelpers.createTextBox('Border width', 'footerBorderWidth', 65)
+  var borderWidthUnitSelect = uiHelpers.createUnitSelectBox('footerBorderWidthUnit', 'mm')
+
+  // border style
+  var borderStyleItemNone = uiHelpers.createListBoxItem('none')
+  var borderStyleItemHidden = uiHelpers.createListBoxItem('hidden')
+  var borderStyleItemDotted = uiHelpers.createListBoxItem('dotted')
+  var borderStyleItemDashed = uiHelpers.createListBoxItem('dashed')
+  var borderStyleItemSolid = uiHelpers.createListBoxItem('solid')
+  var borderStyleItemDouble = uiHelpers.createListBoxItem('double')
+  var borderStyleItemGroove = uiHelpers.createListBoxItem('groove')
+  var borderStyleItemRidge = uiHelpers.createListBoxItem('ridge')
+  var borderStyleItemInset = uiHelpers.createListBoxItem('inset')
+  var borderStyleItemOutset = uiHelpers.createListBoxItem('outset')
+  var borderStyleValues = [
+    borderStyleItemNone, borderStyleItemHidden, borderStyleItemDotted,
+    borderStyleItemDashed, borderStyleItemSolid, borderStyleItemDouble,
+    borderStyleItemGroove, borderStyleItemRidge, borderStyleItemInset,
+    borderStyleItemOutset
+  ]
+  var borderStyleListBox = uiHelpers.createListBox('Border style', 'footerBorderStyle', borderStyleValues, borderStyleItemNone, 90)
+
+  // border color picker
+  var borderColorPicker = uiHelpers.createColorPicker('Border color', 'footerBorderColor', function () {})
+
+  // create form
+  var borderForm1 = uiHelpers.createForm([ borderWidthTextBox, borderWidthUnitSelect ])
+  var borderForm2 = uiHelpers.createForm([ borderStyleListBox, borderColorPicker ], 1)
+  // create field set
+  var borderFieldset = uiHelpers.createFieldset('Borders', [ borderForm1, borderForm2 ], 460)
+
+  // tab
+  var tab = uiHelpers.createTab('Footer', [heightFieldSet, marginsFieldSet, borderFieldset])
 
   return tab
 }
