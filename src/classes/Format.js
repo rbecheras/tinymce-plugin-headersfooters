@@ -60,6 +60,7 @@ if (window.env === 'development') {
  */
 function Format (name, config) {
   this.name = name
+  this.orientation = (config.height > config.width) ? 'portrait' : 'paysage'
   this.width = config.width
   this.height = config.height
   this.margins = {
