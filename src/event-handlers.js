@@ -6,10 +6,7 @@
  * @name eventHandlers
  */
 
-// var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
 var uiUtils = require('./utils/ui')
-// var menuItems = require('./components/menu-items')
-// var $ = window.jQuery
 
 module.exports = {
   'Init': {
