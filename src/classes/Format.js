@@ -96,9 +96,9 @@ function Format (name, config) {
   }
   this.body = {
     border: {
-      color: config.body.color,
-      style: config.body.style,
-      width: config.body.width
+      color: config.body.border.color,
+      style: config.body.border.style,
+      width: config.body.border.width
     }
   }
 }
