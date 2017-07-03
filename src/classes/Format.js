@@ -40,16 +40,16 @@ if (window.env === 'development') {
       height: '10mm',
       // height: 'auto',
       margins: { right: '15mm', bottom: '10mm', left: '5mm' },
-      border: { color: 'red', style: 'dashed', width: '1pt' }
+      border: { color: 'red', style: 'dashed', width: '1mm' }
     },
     footer: {
       height: '10mm',
       // height: 'auto',
       margins: { right: '0', top: '1cm', left: '0' },
-      border: { color: 'red', style: 'dashed', width: '1pt' }
+      border: { color: 'red', style: 'dashed', width: '1mm' }
     },
     body: {
-      border: { color: 'red', style: 'dashed', width: '1pt' }
+      border: { color: 'red', style: 'dashed', width: '1mm' }
     }
   })
 }
