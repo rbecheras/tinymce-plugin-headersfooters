@@ -34,7 +34,7 @@ function openMainWinFunction (editor) {
       body: [ formatTab, marginsTab, headerTab, footerTab, bodyTab ],
       data: {
         newformat: format.name,
-        orientation: 'portrait',
+        orientation: format.orientation,
         pageHeight: format.height.slice(0, -2),
         pageWidth: format.width.slice(0, -2),
         marginTop: format.margins.top.slice(0, -2),
