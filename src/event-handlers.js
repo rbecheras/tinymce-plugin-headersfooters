@@ -12,8 +12,7 @@ module.exports = {
   'Init': {
     setBodies: setBodies,
     setStackedLayout: setStackedLayout,
-    setPageLayout: setPageLayout,
-    applyDefaultFormat: applyDefaultFormat
+    setPageLayout: setPageLayout
   },
   'NodeChange': {},
   'SetContent': {},
@@ -68,9 +67,4 @@ function applyCurrentFormat (evt) {
       that.currentFormat.applyToPlugin(that)
     }
   }
-}
-
-function applyDefaultFormat (evt) {
-  this.currentFormat = this.defaultFormat
-  this.currentFormat.applyToPlugin(this)
 }
