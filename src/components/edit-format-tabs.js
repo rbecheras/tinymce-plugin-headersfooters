@@ -132,14 +132,14 @@ function createMarginsTab (format) {
  */
 function createHeaderTab (format) {
   // header height
-  var heightTextBox = uiHelpers.createTextBox('Header height', 'headerHeight', 65)
+  var heightTextBox = uiHelpers.createTextBox('Height', 'headerHeight', 65)
   var heightUnitSelect = uiHelpers.createUnitSelectBox('headerHeightUnit', 'mm')
 
   var heightForm = uiHelpers.createForm([
     heightTextBox, heightUnitSelect
   ], 2)
 
-  var heightFieldSet = uiHelpers.createFieldset('Header margins', [heightForm], 460)
+  var heightFieldSet = uiHelpers.createFieldset('Header dimensions', [heightForm], 460)
 
   // header margins
 
@@ -194,7 +194,7 @@ function createHeaderTab (format) {
   var borderForm1 = uiHelpers.createForm([ borderWidthTextBox, borderWidthUnitSelect ])
   var borderForm2 = uiHelpers.createForm([ borderStyleListBox, borderColorPicker ], 1)
   // create field set
-  var borderFieldset = uiHelpers.createFieldset('Borders', [ borderForm1, borderForm2 ], 460)
+  var borderFieldset = uiHelpers.createFieldset('Header borders', [ borderForm1, borderForm2 ], 460)
 
   // tab
   var tab = uiHelpers.createTab('Header', [heightFieldSet, marginsFieldSet, borderFieldset])
@@ -212,14 +212,14 @@ function createHeaderTab (format) {
  */
 function createFooterTab (format) {
   // header height
-  var heightTextBox = uiHelpers.createTextBox('Footer height', 'footerHeight', 65)
+  var heightTextBox = uiHelpers.createTextBox('Height', 'footerHeight', 65)
   var heightUnitSelect = uiHelpers.createUnitSelectBox('footerHeightUnit', 'mm')
 
   var heightForm = uiHelpers.createForm([
     heightTextBox, heightUnitSelect
   ], 2)
 
-  var heightFieldSet = uiHelpers.createFieldset('Footer margins', [heightForm], 460)
+  var heightFieldSet = uiHelpers.createFieldset('Footer dimensions', [heightForm], 460)
 
   // header margins
 
@@ -270,7 +270,7 @@ function createFooterTab (format) {
   var borderForm1 = uiHelpers.createForm([ borderWidthTextBox, borderWidthUnitSelect ])
   var borderForm2 = uiHelpers.createForm([ borderStyleListBox, borderColorPicker ], 1)
   // create field set
-  var borderFieldset = uiHelpers.createFieldset('Borders', [ borderForm1, borderForm2 ], 460)
+  var borderFieldset = uiHelpers.createFieldset('Footer borders', [ borderForm1, borderForm2 ], 460)
 
   // tab
   var tab = uiHelpers.createTab('Footer', [heightFieldSet, marginsFieldSet, borderFieldset])
@@ -309,7 +309,7 @@ function createBodyTab (format) {
   var borderForm1 = uiHelpers.createForm([ borderWidthTextBox, borderWidthUnitSelect ])
   var borderForm2 = uiHelpers.createForm([ borderStyleListBox, borderColorPicker ], 1)
   // create field set
-  var borderFieldset = uiHelpers.createFieldset('Borders', [ borderForm1, borderForm2 ], 460)
+  var borderFieldset = uiHelpers.createFieldset('Body borders', [ borderForm1, borderForm2 ], 460)
 
   // tab
   var tab = uiHelpers.createTab('Body', [borderFieldset])
