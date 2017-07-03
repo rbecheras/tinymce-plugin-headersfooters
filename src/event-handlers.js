@@ -27,7 +27,7 @@ module.exports = {
   'Blur': {
     leaveHeadFoot: leaveHeadFoot
   },
-  'Focus Blur Paste SetContent NodeChange': {
+  'Focus Blur Paste SetContent NodeChange HeadersFooters:SetFormat': {
     applyCurrentFormat: applyCurrentFormat
   }
 }
