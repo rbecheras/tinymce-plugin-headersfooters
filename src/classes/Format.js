@@ -205,8 +205,7 @@ function applyToPlugin (plugin) {
         marginRight: that.header.margins.right,
         marginBottom: that.header.margins.bottom,
         marginLeft: that.header.margins.left,
-        padding: 0,
-        borderBottom: 'dashed 1px gray' // TODO update model spec?
+        padding: 0
         // width: '100%' // TODO: update model spec
       })
       plugin.pageLayout.bodyWrapper.css({
@@ -254,8 +253,7 @@ function applyToPlugin (plugin) {
         marginRight: that.footer.margins.right,
         marginBottom: 0,
         marginLeft: that.footer.margins.left,
-        padding: 0,
-        borderTop: 'dashed 1px gray' // TODO update model spec?
+        padding: 0
         // width: '100%' // TODO: update model spec
       })
     }
