@@ -73,35 +73,35 @@ function openMainWinFunction (editor) {
         },
         header: {
           border: {
-            color: d.headerBordersColor,
-            style: d.headerBordersStyle,
-            width: d.headerBordersWidth + 'mm'
+            color: d.headerBorderColor,
+            style: d.headerBorderStyle,
+            width: d.headerBorderWidth + 'mm'
           },
           height: d.headerHeight + 'mm',
           margins: {
-            bottom: d.headerMarginsBottom + 'mm',
-            left: d.headerMarginsLeft + 'mm',
-            right: d.headerMarginsRight + 'mm'
+            bottom: d.headerMarginBottom + 'mm',
+            left: d.headerMarginLeft + 'mm',
+            right: d.headerMarginRight + 'mm'
           }
         },
         footer: {
           border: {
-            color: d.footerBordersColor,
-            style: d.footerBordersStyle,
-            width: d.footerBordersWidth + 'mm'
+            color: d.footerBorderColor,
+            style: d.footerBorderStyle,
+            width: d.footerBorderWidth + 'mm'
           },
           height: d.footerHeight + 'mm',
           margins: {
-            top: d.footerMarginsTop + 'mm',
-            left: d.footerMarginsLeft + 'mm',
-            right: d.footerMarginsRight + 'mm'
+            top: d.footerMarginTop + 'mm',
+            left: d.footerMarginLeft + 'mm',
+            right: d.footerMarginRight + 'mm'
           }
         },
         body: {
           border: {
-            color: d.bodyBordersColor,
-            style: d.bodyBordersStyle,
-            width: d.bodyBordersWidth + 'mm'
+            color: d.bodyBorderColor,
+            style: d.bodyBorderStyle,
+            width: d.bodyBorderWidth + 'mm'
           }
         }
       }
