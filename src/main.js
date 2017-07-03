@@ -59,6 +59,7 @@ function tinymcePluginHeadersFooters (editor, url) {
   // bind plugin methods
   this.enable = enable
   this.disable = disable
+  this.setFormat = setFormat
   this.parseParamList = parseParamList
 
   this.isMaster = this.type === 'body'
@@ -212,6 +213,11 @@ function _setAvailableFormats () {
   this.defaultFormat = this.availableFormats[settings.headersfooters_default_format] || this.formats[0] || this.customFormats[0]
 
   // current format is set on editor init callback
+}
+
+function setFormat (format) {
+  this.currentFormat = new Format(format.name, format)
+  this.editor.fire('HeadersFooters:SetFormat')
 }
 
 function parseParamList (paramValue) {
