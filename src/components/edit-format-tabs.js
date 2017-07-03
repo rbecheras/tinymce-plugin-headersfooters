@@ -54,11 +54,11 @@ function createFormatTab (format) {
     var selectValue = formatSelectBox.value()
     var _format = formats[selectValue]
     if (orientationSelectBox.value() === 'portrait') {
-      pageHeightTextBox.value(_format.width.slice(0, -2)) // using raw 'mm' value
-      pageWidthTextBox.value(_format.height.slice(0, -2)) // using raw 'mm' value
-    } else {
       pageHeightTextBox.value(_format.height.slice(0, -2)) // using raw 'mm' value
       pageWidthTextBox.value(_format.width.slice(0, -2)) // using raw 'mm' value
+    } else {
+      pageHeightTextBox.value(_format.width.slice(0, -2)) // using raw 'mm' value
+      pageWidthTextBox.value(_format.height.slice(0, -2)) // using raw 'mm' value
     }
   })
 
