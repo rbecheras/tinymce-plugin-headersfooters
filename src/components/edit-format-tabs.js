@@ -9,7 +9,8 @@ module.exports = {
   createFormatTab: createFormatTab,
   createMarginsTab: createMarginsTab,
   createHeaderTab: createHeaderTab,
-  createFooterTab: createFooterTab
+  createFooterTab: createFooterTab,
+  createBodyTab: createBodyTab
 }
 
 /**
@@ -273,6 +274,45 @@ function createFooterTab (format) {
 
   // tab
   var tab = uiHelpers.createTab('Footer', [heightFieldSet, marginsFieldSet, borderFieldset])
+
+  return tab
+}
+
+function createBodyTab (format) {
+  // body borders
+  var borderWidthTextBox = uiHelpers.createTextBox('Border width', 'bodyBorderWidth', 65)
+  var borderWidthUnitSelect = uiHelpers.createUnitSelectBox('bodyBorderWidthUnit', 'mm')
+
+  // border style
+  var borderStyleItemNone = uiHelpers.createListBoxItem('none')
+  var borderStyleItemHidden = uiHelpers.createListBoxItem('hidden')
+  var borderStyleItemDotted = uiHelpers.createListBoxItem('dotted')
+  var borderStyleItemDashed = uiHelpers.createListBoxItem('dashed')
+  var borderStyleItemSolid = uiHelpers.createListBoxItem('solid')
+  var borderStyleItemDouble = uiHelpers.createListBoxItem('double')
+  var borderStyleItemGroove = uiHelpers.createListBoxItem('groove')
+  var borderStyleItemRidge = uiHelpers.createListBoxItem('ridge')
+  var borderStyleItemInset = uiHelpers.createListBoxItem('inset')
+  var borderStyleItemOutset = uiHelpers.createListBoxItem('outset')
+  var borderStyleValues = [
+    borderStyleItemNone, borderStyleItemHidden, borderStyleItemDotted,
+    borderStyleItemDashed, borderStyleItemSolid, borderStyleItemDouble,
+    borderStyleItemGroove, borderStyleItemRidge, borderStyleItemInset,
+    borderStyleItemOutset
+  ]
+  var borderStyleListBox = uiHelpers.createListBox('Border style', 'bodyBorderStyle', borderStyleValues, borderStyleItemNone, 90)
+
+  // border color picker
+  var borderColorPicker = uiHelpers.createColorPicker('Border color', 'bodyBorderColor', function () {})
+
+  // create form
+  var borderForm1 = uiHelpers.createForm([ borderWidthTextBox, borderWidthUnitSelect ])
+  var borderForm2 = uiHelpers.createForm([ borderStyleListBox, borderColorPicker ], 1)
+  // create field set
+  var borderFieldset = uiHelpers.createFieldset('Borders', [ borderForm1, borderForm2 ], 460)
+
+  // tab
+  var tab = uiHelpers.createTab('Body', [borderFieldset])
 
   return tab
 }

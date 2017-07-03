@@ -26,13 +26,14 @@ function openMainWinFunction (editor) {
     var marginsTab = editFormatTabs.createMarginsTab(format)
     var headerTab = editFormatTabs.createHeaderTab(format)
     var footerTab = editFormatTabs.createFooterTab(format)
+    var bodyTab = editFormatTabs.createBodyTab(format)
 
     // console.log('format', format)
 
     editor.windowManager.open({
       bodyType: 'tabpanel',
       title: 'Edit Document Format',
-      body: [ formatTab, marginsTab, headerTab, footerTab ],
+      body: [ formatTab, marginsTab, headerTab, footerTab, bodyTab ],
       data: {
         newformat: format.name,
         orientation: 'portrait',
@@ -55,7 +56,10 @@ function openMainWinFunction (editor) {
         footerMarginLeft: format.footer.margins.left.slice(0, -2),
         footerMarginTop: format.footer.margins.top.slice(0, -2),
         footerMarginRight: format.footer.margins.right.slice(0, -2),
-        footerHeight: format.footer.height.slice(0, -2)
+        footerHeight: format.footer.height.slice(0, -2),
+        bodyBorderWidth: format.body.border.width.slice(0, -2),
+        bodyBorderColor: format.body.border.color,
+        bodyBorderStyle: format.body.border.style
       },
       onsubmit: onMainWindowSubmit
     })
