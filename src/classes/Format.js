@@ -175,7 +175,8 @@ function applyToPlugin (plugin) {
         background: 'white',
         border: 0,
         boxSizing: 'border-box',
-        minHeight: that.height, // @TODO update for pagination
+        // minHeight: that.height, // @TODO update for pagination
+        height: that.height, // @TODO update for pagination
         margin: '4cm auto 2cm auto',
         paddingTop: that.margins.top,
         paddingRight: that.margins.right,
@@ -225,7 +226,8 @@ function applyToPlugin (plugin) {
         borderStyle: that.body.border.style,
         borderWidth: that.body.border.width,
         boxSizing: 'border-box',
-        minHeight: that.calculateBodyHeight(), // @TODO update for pagination
+        // minHeight: that.calculateBodyHeight(), // @TODO update for pagination
+        height: that.calculateBodyHeight(), // @TODO update for pagination
         margin: 0,
         padding: 0,
         width: '100%'
