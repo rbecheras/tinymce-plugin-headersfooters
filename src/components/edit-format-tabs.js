@@ -7,7 +7,8 @@ var tinymce = window.tinymce
 
 module.exports = {
   createFormatTab: createFormatTab,
-  createMarginsTab: createMarginsTab
+  createMarginsTab: createMarginsTab,
+  createHeaderTab: createHeaderTab
 }
 
 /**
@@ -117,6 +118,84 @@ function createMarginsTab (format) {
 
   // tab
   var tab = uiHelpers.createTab('Page Margins', [fieldSet])
+
+  return tab
+}
+
+/**
+ * Create the margins tab component that show form inputs for:
+ * - paper margins
+ * @method
+ * @returns {TabPanel} marginTab
+ */
+function createHeaderTab (format) {
+  // header height
+  var heightTextBox = uiHelpers.createTextBox('Header height', 'headerHeight', 65)
+  var heightUnitSelect = uiHelpers.createUnitSelectBox('headerHeightUnit', 'mm')
+
+  var heightForm = uiHelpers.createForm([
+    heightTextBox, heightUnitSelect
+  ], 2)
+
+  var heightFieldSet = uiHelpers.createFieldset('Header margins', [heightForm], 460)
+
+  // header margins
+
+  // var marginTopTextBox = uiHelpers.createTextBox('Margin top', 'headerMarginTop', 65)
+  // var marginTopUnitSelect = uiHelpers.createUnitSelectBox('headerMarginTopUnit', 'mm')
+
+  var marginRightTextBox = uiHelpers.createTextBox('Margin right', 'headerMarginRight', 65)
+  var marginRightUnitSelect = uiHelpers.createUnitSelectBox('headerMarginRightUnit', 'mm')
+
+  var marginBottomTextBox = uiHelpers.createTextBox('Margin bottom', 'headerMarginBottom', 65)
+  var marginBottomUnitSelect = uiHelpers.createUnitSelectBox('headerMarginBottomUnit', 'mm')
+
+  var marginLeftTextBox = uiHelpers.createTextBox('Margin left', 'headerMarginLeft', 65)
+  var marginLeftUnitSelect = uiHelpers.createUnitSelectBox('headerMarginLeftUnit', 'mm')
+
+  var form = uiHelpers.createForm([
+    // marginTopTextBox, marginTopUnitSelect,
+    marginRightTextBox, marginRightUnitSelect,
+    marginBottomTextBox, marginBottomUnitSelect,
+    marginLeftTextBox, marginLeftUnitSelect
+  ], 2)
+
+  var marginsFieldSet = uiHelpers.createFieldset('Header margins', [form], 460)
+
+  // header borders
+  var borderWidthTextBox = uiHelpers.createTextBox('Border width', 'headerBorderWidth', 65)
+  var borderWidthUnitSelect = uiHelpers.createUnitSelectBox('headerBorderWidthUnit', 'mm')
+
+  // border style
+  var borderStyleItemNone = uiHelpers.createListBoxItem('none')
+  var borderStyleItemHidden = uiHelpers.createListBoxItem('hidden')
+  var borderStyleItemDotted = uiHelpers.createListBoxItem('dotted')
+  var borderStyleItemDashed = uiHelpers.createListBoxItem('dashed')
+  var borderStyleItemSolid = uiHelpers.createListBoxItem('solid')
+  var borderStyleItemDouble = uiHelpers.createListBoxItem('double')
+  var borderStyleItemGroove = uiHelpers.createListBoxItem('groove')
+  var borderStyleItemRidge = uiHelpers.createListBoxItem('ridge')
+  var borderStyleItemInset = uiHelpers.createListBoxItem('inset')
+  var borderStyleItemOutset = uiHelpers.createListBoxItem('outset')
+  var borderStyleValues = [
+    borderStyleItemNone, borderStyleItemHidden, borderStyleItemDotted,
+    borderStyleItemDashed, borderStyleItemSolid, borderStyleItemDouble,
+    borderStyleItemGroove, borderStyleItemRidge, borderStyleItemInset,
+    borderStyleItemOutset
+  ]
+  var borderStyleListBox = uiHelpers.createListBox('Border style', 'headerBorderStyle', borderStyleValues, borderStyleItemNone, 90)
+
+  // border color picker
+  var borderColorPicker = uiHelpers.createColorPicker('Border color', 'headerBorderColor', function () {})
+
+  // create form
+  var borderForm1 = uiHelpers.createForm([ borderWidthTextBox, borderWidthUnitSelect ])
+  var borderForm2 = uiHelpers.createForm([ borderStyleListBox, borderColorPicker ], 1)
+  // create field set
+  var borderFieldset = uiHelpers.createFieldset('Borders', [ borderForm1, borderForm2 ], 460)
+
+  // tab
+  var tab = uiHelpers.createTab('Header', [heightFieldSet, marginsFieldSet, borderFieldset])
 
   return tab
 }
