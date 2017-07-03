@@ -104,6 +104,15 @@ function Format (name, config) {
   }
 }
 
+/**
+ * Apply the current format to the DOM and fires the `AppliedToBody` event to
+ * permit the main app to bind the format object definition to the document
+ * object to be saved with.
+ * @method
+ * @param {HeadersFooters} plugin The current HeaderFooters plugin instance
+ * @fires `HeadersFooters:Format:AppliedToBody`
+ * @returns {undefined}
+ */
 function applyToPlugin (plugin) {
   var that = this
   var editor = plugin.editor
