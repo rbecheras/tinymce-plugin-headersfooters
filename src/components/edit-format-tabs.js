@@ -83,7 +83,7 @@ function createFormatTab (format) {
   var paperSizeFieldSet = uiHelpers.createFieldset('Paper Size', [paperSizeForm], 460)
 
   // tab
-  var tab = uiHelpers.createTab('Paper Format', [formatFieldSet, paperSizeFieldSet])
+  var tab = uiHelpers.createTab('Paper', [formatFieldSet, paperSizeFieldSet])
 
   return tab
 }
@@ -118,7 +118,7 @@ function createMarginsTab (format) {
   var fieldSet = uiHelpers.createFieldset('Margins', [form], 460)
 
   // tab
-  var tab = uiHelpers.createTab('Page Margins', [fieldSet])
+  var tab = uiHelpers.createTab('Margin', [fieldSet])
 
   return tab
 }
