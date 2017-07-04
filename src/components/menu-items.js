@@ -228,7 +228,7 @@ function _createinsertNumberOfPagesMenuItem (editor) {
 function _createEditFormatMenuItem (editor) {
   return new MenuItem('editFormat', {
     text: 'Format',
-    // icon: 'text',
+    icon: 'newdocument',
     context: 'document',
     onPostRender: function () {
       ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
