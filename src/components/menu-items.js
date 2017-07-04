@@ -62,10 +62,10 @@ module.exports = {
  */
 function create (editor) {
   return {
-    insertHeader: _createInsertHeaderMenuItem(),
-    insertFooter: _createInsertFooterMenuItem(),
-    removeHeader: _createRemoveHeaderMenuItem(),
-    removeFooter: _createRemoveFooterMenuItem(),
+    insertHeader: _createInsertHeaderMenuItem(editor),
+    insertFooter: _createInsertFooterMenuItem(editor),
+    removeHeader: _createRemoveHeaderMenuItem(editor),
+    removeFooter: _createRemoveFooterMenuItem(editor),
     insertPageNumber: _createInsertPageNumberMenuItem(editor),
     insertNumberOfPages: _createinsertNumberOfPagesMenuItem(editor),
     editFormat: _createEditFormatMenuItem(editor)
@@ -78,14 +78,24 @@ function create (editor) {
  * @inner
  * @returns {MenuItem}
  */
-function _createInsertHeaderMenuItem () {
+function _createInsertHeaderMenuItem (editor) {
   return new MenuItem('insertHeader', {
     text: 'Insérer une entête',
     icon: 'template',
     id: 'plugin-headersfooters-menuitem-insert-header' + timestamp(),
-    context: 'insert',
+    context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+    },
     onclick: function () {
-      window.alert('insert header')
+      var master = editor.plugins.headersfooters.getMaster()
+      master.currentFormat.header.height = '20mm'
+      master.currentFormat.header.border.width = '1mm'
+      master.currentFormat.header.margins.bottom = '5mm'
+      master.currentFormat.applyToPlugin(master)
+      master.menuItemsList.insertHeader.hide()
+      master.menuItemsList.removeHeader.show()
     }
   })
 }
@@ -96,12 +106,16 @@ function _createInsertHeaderMenuItem () {
  * @inner
  * @returns {MenuItem}
  */
-function _createRemoveHeaderMenuItem () {
+function _createRemoveHeaderMenuItem (editor) {
   return new MenuItem('removeHeader', {
     text: "Supprimer l'entête",
     icon: 'undo',
     id: 'plugin-headersfooters-menuitem-remove-header' + timestamp(),
-    context: 'insert',
+    context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+    },
     onclick: function () {
       window.alert('remove header')
     }
@@ -114,11 +128,15 @@ function _createRemoveHeaderMenuItem () {
  * @inner
  * @returns {MenuItem}
  */
-function _createInsertFooterMenuItem () {
+function _createInsertFooterMenuItem (editor) {
   return new MenuItem('insertFooter', {
     text: 'Insérer un pied de page',
     icon: 'template',
-    context: 'insert',
+    context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+    },
     onclick: function () {
       window.alert('insert footer')
     }
@@ -131,11 +149,15 @@ function _createInsertFooterMenuItem () {
  * @inner
  * @returns {MenuItem}
  */
-function _createRemoveFooterMenuItem () {
+function _createRemoveFooterMenuItem (editor) {
   return new MenuItem('removeFooter', {
     text: 'Supprimer le pied de page',
     icon: 'undo',
-    context: 'insert',
+    context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+    },
     onclick: function () {
       window.alert('remove footer')
     }
