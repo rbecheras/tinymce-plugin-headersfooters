@@ -134,7 +134,7 @@ function applyToPlugin (plugin) {
     // var bodyHeight = uiUtils.getElementHeight(body)
     var bodyHeight
     if (plugin.type === 'body') {
-      bodyHeight = that.calculateBodyHeight()
+      bodyHeight = that.calculateBodyHeight(editor)
     } else {
       bodyHeight = that[plugin.type].height
     }
@@ -271,8 +271,15 @@ function applyToPlugin (plugin) {
   }
 }
 
-function calculateBodyHeight () {
-  // console.log('format: ', this)
+/**
+ * Caluculate the document Body height depending the Format propeties
+ * @param {Editor}
+ * @returns {String} the body height (in mm for now)
+ * @fires HeadersFooters:Error:NegativeBodyHeight
+ * @TODO support other size units (cm, pt)
+ */
+function calculateBodyHeight (editor) {
+  var that = this
   var ret
   var height = units.getValueFromStyle(this.height)
   var marginTop = units.getValueFromStyle(this.margins.top)
