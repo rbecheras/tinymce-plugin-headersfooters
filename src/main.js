@@ -72,7 +72,11 @@ function tinymcePluginHeadersFooters (editor, url) {
     }
   }
   this.getMaster = function () {
-    return tinymce.getMasterHeadersFootersPlugin()
+    if (tinymce.getMasterHeadersFootersPlugin) {
+      return tinymce.getMasterHeadersFootersPlugin()
+    } else {
+      return null
+    }
   }
 
   if (this.isMaster && window.env === 'development') {
