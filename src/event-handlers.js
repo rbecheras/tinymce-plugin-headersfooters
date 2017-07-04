@@ -68,3 +68,18 @@ function applyCurrentFormat (evt) {
     }
   }
 }
+
+/**
+ * @param {Event} evt HeadersFooters:Error:NegativeBodyHeight event
+ * @TODO document setting `editor.settings.SILENT_INCONSISTANT_FORMAT_WARNING`
+ * @TODO document event `HeadersFooters:Error:NegativeBodyHeight`
+ */
+function alertErrorNegativeBodyHeight (evt) {
+  var editor = evt.target
+  if (!editor.settings.SILENT_INCONSISTANT_FORMAT_WARNING) {
+    // editor.execCommand('editFormatCmd')
+    // throw new Error('Inconsistant custom format: body height is negative. Please fix format properties')
+    console.error('Inconsistant custom format: body height is negative. Please fix format properties')
+  }
+}
+

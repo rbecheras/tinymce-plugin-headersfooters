@@ -102,6 +102,7 @@ function Format (name, config) {
       width: config.body.border.width
     }
   }
+  this.showAlert = true
 }
 
 /**
@@ -287,5 +288,20 @@ function calculateBodyHeight () {
 
   ret = value + 'mm'
   // console.log('calculateBodyHeight() => ', ret)
+  if (value <= 0) {
+    if (this.showAlert) {
+      var message
+      this.showAlert = false
+      message = 'Inconsistant Custom Format: « Body height < 0 ». Do you want to fix it ?'
+
+      editor.fire('HeadersFooters:Error:NegativeBodyHeight')
+      editor.windowManager.confirm(message, function (conf) {
+        if (conf) {
+          editor.execCommand('editFormatCmd')
+        }
+        that.showAlert = true
+      })
+    }
+  }
   return ret
 }
