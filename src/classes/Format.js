@@ -219,12 +219,16 @@ function applyToPlugin (plugin) {
         padding: 0
         // width: '100%' // TODO: update model spec
       })
+      var bodyHeight = that.calculateBodyHeight(editor)
+      // var bodyWrapperHeight = Number(units.getValueFromStyle(bodyHeight)) +
+      //   Number(units.getValueFromStyle(that.body.border.width)) * 2
+      // bodyWrapperHeight += 'mm'
       plugin.pageLayout.bodyWrapper.css({
         // overflow: 'hidden', // TODO: update model spec
         overflow: 'auto', // TODO: update for pagination
         border: 0,
         boxSizing: 'border-box',
-        height: 'auto',
+        height: bodyHeight, // bodyWrapperHeight
         margin: 0,
         padding: 0,
         width: '100%'
@@ -237,7 +241,7 @@ function applyToPlugin (plugin) {
         borderWidth: that.body.border.width,
         boxSizing: 'border-box',
         // minHeight: that.calculateBodyHeight(), // @TODO update for pagination
-        height: that.calculateBodyHeight(), // @TODO update for pagination
+        height: bodyHeight, // @TODO update for pagination
         margin: 0,
         padding: 0,
         width: '100%'
