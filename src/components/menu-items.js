@@ -23,6 +23,9 @@ var MenuItem = require('../classes/MenuItem')
  */
 var ui = require('../utils/ui')
 
+var timeUtils = require('../utils/time')
+var timestamp = timeUtils.timestamp
+
 /**
  * A selector to select the header and the footer but not the body
  * @const
@@ -116,7 +119,7 @@ function _createInsertHeaderMenuItem () {
   return new MenuItem('insertHeader', {
     text: 'Insérer une entête',
     icon: 'template',
-    id: 'plugin-headersfooters-menuitem-insert-header',
+    id: 'plugin-headersfooters-menuitem-insert-header' + timestamp(),
     context: 'insert',
     onclick: function () {
       window.alert('insert header')
@@ -134,6 +137,7 @@ function _createRemoveHeaderMenuItem () {
   return new MenuItem('removeHeader', {
     text: "Supprimer l'entête",
     icon: 'undo',
+    id: 'plugin-headersfooters-menuitem-remove-header' + timestamp(),
     context: 'insert',
     onclick: function () {
       window.alert('remove header')
