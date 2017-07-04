@@ -54,14 +54,23 @@ function createFormatTab (format) {
     pageWidthTextBox.value(_format.width.slice(0, -2)) // using raw 'mm' value
   })
   orientationSelectBox.on('select', function (e) {
-    var selectValue = formatSelectBox.value()
-    var _format = formats[selectValue]
-    if (orientationSelectBox.value() === 'portrait') {
-      pageHeightTextBox.value(_format.height.slice(0, -2)) // using raw 'mm' value
-      pageWidthTextBox.value(_format.width.slice(0, -2)) // using raw 'mm' value
+    var orientation = orientationSelectBox.value()
+    var height = pageHeightTextBox.value()
+    var width = pageWidthTextBox.value()
+    var max, min
+    if (height >= width) {
+      max = height
+      min = width
     } else {
-      pageHeightTextBox.value(_format.width.slice(0, -2)) // using raw 'mm' value
-      pageWidthTextBox.value(_format.height.slice(0, -2)) // using raw 'mm' value
+      max = width
+      min = height
+    }
+    if (orientation === 'portrait') {
+      pageHeightTextBox.value(max) // using raw 'mm' value
+      pageWidthTextBox.value(min) // using raw 'mm' value
+    } else {
+      pageHeightTextBox.value(min) // using raw 'mm' value
+      pageWidthTextBox.value(max) // using raw 'mm' value
     }
   })
 
