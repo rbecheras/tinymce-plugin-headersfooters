@@ -117,7 +117,13 @@ function _createRemoveHeaderMenuItem (editor) {
       editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
     },
     onclick: function () {
-      window.alert('remove header')
+      var master = editor.plugins.headersfooters.getMaster()
+      master.currentFormat.header.height = '0'
+      master.currentFormat.header.border.width = '0'
+      master.currentFormat.header.margins.bottom = '0'
+      master.currentFormat.applyToPlugin(master)
+      master.menuItemsList.removeHeader.hide()
+      master.menuItemsList.insertHeader.show()
     }
   })
 }
@@ -138,7 +144,13 @@ function _createInsertFooterMenuItem (editor) {
       editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
     },
     onclick: function () {
-      window.alert('insert footer')
+      var master = editor.plugins.headersfooters.getMaster()
+      master.currentFormat.footer.height = '20mm'
+      master.currentFormat.footer.border.width = '1mm'
+      master.currentFormat.footer.margins.top = '5mm'
+      master.currentFormat.applyToPlugin(master)
+      master.menuItemsList.insertFooter.hide()
+      master.menuItemsList.removeFooter.show()
     }
   })
 }
@@ -159,7 +171,13 @@ function _createRemoveFooterMenuItem (editor) {
       editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
     },
     onclick: function () {
-      window.alert('remove footer')
+      var master = editor.plugins.headersfooters.getMaster()
+      master.currentFormat.footer.height = '0'
+      master.currentFormat.footer.border.width = '0'
+      master.currentFormat.footer.margins.top = '0'
+      master.currentFormat.applyToPlugin(master)
+      master.menuItemsList.removeFooter.hide()
+      master.menuItemsList.insertFooter.show()
     }
   })
 }
