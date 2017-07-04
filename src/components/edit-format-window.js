@@ -83,35 +83,35 @@ function openMainWinFunction (editor) {
         },
         header: {
           border: {
-            color: d.headerBorderColor,
-            style: d.headerBorderStyle,
-            width: d.headerBorderWidth + 'mm'
+            color: d.headerBorderColor || format.header.border.color,
+            style: d.headerBorderStyle || format.header.border.style,
+            width: (d.headerBorderWidth) ? d.headerBorderWidth + 'mm' : format.header.border.width
           },
-          height: d.headerHeight + 'mm',
+          height: (d.headerHeight) ? d.headerHeight + 'mm' : format.header.height,
           margins: {
-            bottom: d.headerMarginBottom + 'mm',
-            left: d.headerMarginLeft + 'mm',
-            right: d.headerMarginRight + 'mm'
+            bottom: (d.headerMarginBottom) ? d.headerMarginBottom + 'mm' : format.header.margins.bottom,
+            left: (d.headerMarginLeft) ? d.headerMarginLeft + 'mm' : format.header.margins.left,
+            right: (d.headerMarginRight) ? d.headerMarginRight + 'mm' : format.header.margins.right
           }
         },
         footer: {
           border: {
-            color: d.footerBorderColor,
-            style: d.footerBorderStyle,
-            width: d.footerBorderWidth + 'mm'
+            color: d.footerBorderColor || format.footer.border.color,
+            style: d.footerBorderStyle || format.footer.border.style,
+            width: (d.footerBorderWidth) ? d.footerBorderWidth + 'mm' : format.footer.border.width
           },
-          height: d.footerHeight + 'mm',
+          height: (d.footerHeight) ? d.footerHeight + 'mm' : format.footer.height,
           margins: {
-            top: d.footerMarginTop + 'mm',
-            left: d.footerMarginLeft + 'mm',
-            right: d.footerMarginRight + 'mm'
+            top: (d.footerMarginTop) ? d.footerMarginTop + 'mm' : format.footer.margins.top,
+            left: (d.footerMarginLeft) ? d.footerMarginLeft + 'mm' : format.footer.margins.left,
+            right: (d.footerMarginRight) ? d.footerMarginRight + 'mm' : format.footer.margins.right
           }
         },
         body: {
           border: {
-            color: d.bodyBorderColor,
-            style: d.bodyBorderStyle,
-            width: d.bodyBorderWidth + 'mm'
+            color: d.bodyBorderColor || format.body.border.color,
+            style: d.bodyBorderStyle || format.body.border.style,
+            width: (d.bodyBorderWidth) ? d.bodyBorderWidth + 'mm' : format.body.border.width
           }
         }
       }
