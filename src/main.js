@@ -61,6 +61,7 @@ function tinymcePluginHeadersFooters (editor, url) {
   this.disable = disable
   this.setFormat = setFormat
   this.parseParamList = parseParamList
+  this.reloadMenuItems = reloadMenuItems
 
   this.isMaster = this.type === 'body'
   this.isSlave = !this.isMaster
@@ -228,4 +229,28 @@ function parseParamList (paramValue) {
     throw new TypeError('paramValue must be a String, ' + typeof paramValue + ' given.')
   }
   return paramValue.split(' ')
+}
+
+/**
+ * Helper function. Do the reload of headers and footers
+ * @method
+ * @returns {undefined}
+ */
+function reloadMenuItems () {
+  if (this.currentFormat) {
+    if (this.currentFormat.header.height && this.currentFormat.header.height !== '0') {
+      this.menuItemsList.insertHeader.hide()
+      this.menuItemsList.removeHeader.show()
+    } else {
+      this.menuItemsList.insertHeader.show()
+      this.menuItemsList.removeHeader.hide()
+    }
+    if (this.currentFormat.footer.height && this.currentFormat.footer.height !== '0') {
+      this.menuItemsList.insertFooter.hide()
+      this.menuItemsList.removeFooter.show()
+    } else {
+      this.menuItemsList.insertFooter.show()
+      this.menuItemsList.removeFooter.hide()
+    }
+  }
 }

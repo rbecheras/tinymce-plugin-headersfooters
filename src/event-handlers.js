@@ -12,7 +12,8 @@ module.exports = {
   'Init': {
     setBodies: setBodies,
     setStackedLayout: setStackedLayout,
-    setPageLayout: setPageLayout
+    setPageLayout: setPageLayout,
+    reloadMenuItems: reloadMenuItems
   },
   'NodeChange': {},
   'SetContent': {},
@@ -24,7 +25,11 @@ module.exports = {
     leaveHeadFoot: leaveHeadFoot
   },
   'Focus Blur Paste SetContent NodeChange HeadersFooters:SetFormat': {
-    applyCurrentFormat: applyCurrentFormat
+    applyCurrentFormat: applyCurrentFormat,
+    reloadMenuItems: reloadMenuItems
+  },
+  'HeadersFooters:Error:NegativeBodyHeight': {
+    alertErrorNegativeBodyHeight: alertErrorNegativeBodyHeight
   }
 }
 
@@ -83,3 +88,7 @@ function alertErrorNegativeBodyHeight (evt) {
   }
 }
 
+function reloadMenuItems (evt) {
+  var editor = evt.target
+  editor.plugins.headersfooters.reloadMenuItems()
+}
