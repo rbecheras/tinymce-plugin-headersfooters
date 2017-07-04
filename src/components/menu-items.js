@@ -42,8 +42,7 @@ var BODY_ONLY_SELECTOR = '.body-panel'
 
 // Static API
 module.exports = {
-  create: create,
-  init: init
+  create: create
 }
 
 // Inner API
@@ -70,42 +69,6 @@ function create (editor) {
     insertPageNumber: _createInsertPageNumberMenuItem(editor),
     insertNumberOfPages: _createinsertNumberOfPagesMenuItem(editor),
     editFormat: _createEditFormatMenuItem(editor)
-  }
-}
-
-/**
- * Initialize menu items states (show, hide, ...) and implements onclick handlers
- * @method
- * @static
- * @param {HeaderFooterFactory} factory The header and footer factory
- * @param {object} menuItems The set of plugin's menu items
- * @returns undefined
- */
-function init (factory, menuItems) {
-  // on startup, hide remove buttons
-  menuItems.removeHeader.hide()
-  menuItems.removeFooter.hide()
-
-  // override insertHeader, insertFooter, removeHeader and removeFooter onclick handlers
-  menuItems.insertHeader.onclick = function () {
-    factory.insertHeader()
-    menuItems.insertHeader.hide()
-    menuItems.removeHeader.show()
-  }
-  menuItems.insertFooter.onclick = function () {
-    factory.insertFooter()
-    menuItems.insertFooter.hide()
-    menuItems.removeFooter.show()
-  }
-  menuItems.removeHeader.onclick = function () {
-    factory.removeHeader()
-    menuItems.insertHeader.show()
-    menuItems.removeHeader.hide()
-  }
-  menuItems.removeFooter.onclick = function () {
-    factory.removeFooter()
-    menuItems.insertFooter.show()
-    menuItems.removeFooter.hide()
   }
 }
 
