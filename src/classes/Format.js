@@ -188,7 +188,7 @@ function applyToPlugin (plugin) {
         boxSizing: 'border-box',
         // minHeight: that.height, // @TODO update for pagination
         height: that.height, // @TODO update for pagination
-        margin: '4cm auto 2cm auto',
+        margin: '25mm auto 2cm auto',
         paddingTop: that.margins.top,
         paddingRight: that.margins.right,
         paddingBottom: that.margins.bottom,
