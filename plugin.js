@@ -1,7 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 require('./src/main');
 
-},{"./src/main":7}],2:[function(require,module,exports){
+},{"./src/main":10}],2:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -2238,8 +2238,331 @@ return Q;
 },{"_process":2}],4:[function(require,module,exports){
 'use strict'
 
+var uiUtils = require('../utils/ui')
+var units = require('../utils/units')
+var $ = uiUtils.jQuery
+
+module.exports = Format
+
+Format.prototype.applyToPlugin = applyToPlugin
+Format.prototype.calculateBodyHeight = calculateBodyHeight
+
+Format.defaults = {}
+Format.defaults['A4'] = new Format('A4', {
+  height: '297mm',
+  width: '210mm',
+  margins: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' },
+  header: {
+    height: '20mm',
+    // height: 'auto',
+    margins: { right: '0', bottom: '10mm', left: '0' },
+    border: { color: 'black', style: 'solid', width: '0' }
+  },
+  footer: {
+    height: '20mm',
+    // height: 'auto',
+    margins: { right: '0', top: '10mm', left: '0' },
+    border: { color: 'black', style: 'solid', width: '0' }
+  },
+  body: {
+    border: { color: 'black', style: 'solid', width: '0' }
+  }
+})
+
+if (window.env === 'development') {
+  Format.defaults['dev-small'] = new Format('dev-small', {
+    height: '150mm',
+    width: '100mm',
+    margins: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' },
+    header: {
+      height: '10mm',
+      // height: 'auto',
+      margins: { right: '15mm', bottom: '10mm', left: '5mm' },
+      border: { color: 'red', style: 'dashed', width: '1mm' }
+    },
+    footer: {
+      height: '10mm',
+      // height: 'auto',
+      margins: { right: '0', top: '1cm', left: '0' },
+      border: { color: 'red', style: 'dashed', width: '1mm' }
+    },
+    body: {
+      border: { color: 'red', style: 'dashed', width: '1mm' }
+    }
+  })
+}
+
+/**
+ * @param {string} name
+ * @param {object} config
+ */
+function Format (name, config) {
+  this.name = name
+  this.orientation = (config.height > config.width) ? 'portrait' : 'paysage'
+  this.width = config.width
+  this.height = config.height
+  this.margins = {
+    top: config.margins.top,
+    right: config.margins.right,
+    bottom: config.margins.bottom,
+    left: config.margins.left
+  }
+  this.header = {
+    height: config.header.height,
+    margins: {
+      right: config.header.margins.right,
+      bottom: config.header.margins.bottom,
+      left: config.header.margins.left
+    },
+    border: {
+      color: config.header.border.color,
+      style: config.header.border.style,
+      width: config.header.border.width
+    }
+  }
+  this.footer = {
+    height: config.footer.height,
+    margins: {
+      top: config.footer.margins.top,
+      right: config.footer.margins.right,
+      left: config.footer.margins.left
+    },
+    border: {
+      color: config.footer.border.color,
+      style: config.footer.border.style,
+      width: config.footer.border.width
+    }
+  }
+  this.body = {
+    border: {
+      color: config.body.border.color,
+      style: config.body.border.style,
+      width: config.body.border.width
+    }
+  }
+  this.showAlert = true
+}
+
+/**
+ * Apply the current format to the DOM and fires the `AppliedToBody` event to
+ * permit the main app to bind the format object definition to the document
+ * object to be saved with.
+ * @method
+ * @param {HeadersFooters} plugin The current HeaderFooters plugin instance
+ * @fires `HeadersFooters:Format:AppliedToBody`
+ * @returns {undefined}
+ */
+function applyToPlugin (plugin) {
+  var that = this
+  var editor = plugin.editor
+
+  if (plugin.documentBody) {
+    var win = plugin.editor.getWin()
+    var body = plugin.documentBody
+
+    applyToStackedLayout()
+    applyToBody(plugin)
+
+    editor.fire('HeadersFooters:Format:AppliedToBody', {
+      documentFormat: this
+    })
+  }
+
+  function applyToStackedLayout () {
+    // var bodyHeight = uiUtils.getElementHeight(body)
+    var bodyHeight
+    if (plugin.type === 'body') {
+      bodyHeight = that.calculateBodyHeight(editor)
+    } else {
+      bodyHeight = that[plugin.type].height
+    }
+    var rules = {
+      boxSizing: 'border-box',
+      height: bodyHeight,
+      minHeight: bodyHeight,
+      maxHeight: bodyHeight
+    }
+
+    plugin.stackedLayout.editarea.css({border: 0})
+    plugin.stackedLayout.iframe.css(rules)
+  }
+
+  function applyToBody (plugin) {
+    // NOTE: set padding to zero to fix unknown bug
+    // where all iframe's body paddings are set to '2cm'...
+    // TODO: remove this statement if the 2cm padding source is found.
+    $(body, win).css({
+      margin: 0,
+      padding: 0,
+      overflow: 'hidden'
+    })
+
+    // Allow body panel overflow
+    if (plugin.isMaster) {
+      $(body, win).css({
+        overflowY: 'auto'
+      })
+    }
+
+    // var bodyHeight = uiUtils.getElementHeight(body, win)
+    if (plugin.isMaster) {
+      plugin.pageLayout.pageWrapper.css({
+        overflow: 'auto', // TODO: update model spec
+        background: '#464646',
+        // height: 'auto', // TODO: update model spec
+        position: 'absolute', // TODO: update model spec
+        top: 0, // TODO: update model spec
+        right: 0, // TODO: update model spec
+        left: 0, // TODO: update model spec
+        bottom: 0, // TODO: update model spec
+        margin: 0
+        // padding: '3cm 0 3cm 0',
+        // width: '100%'
+      })
+      plugin.pageLayout.pagePanel.css({
+        overflow: 'hidden', // TODO: update model spec
+        background: 'white',
+        border: 0,
+        boxSizing: 'border-box',
+        // minHeight: that.height, // @TODO update for pagination
+        height: that.height, // @TODO update for pagination
+        margin: '25mm auto 2cm auto',
+        paddingTop: that.margins.top,
+        paddingRight: that.margins.right,
+        paddingBottom: that.margins.bottom,
+        paddingLeft: that.margins.left,
+        width: that.width
+      })
+      plugin.pageLayout.headerWrapper.css({
+        overflow: 'hidden', // TODO: update model spec
+        // border: 0,
+        boxSizing: 'border-box',
+        height: that.header.height + that.header.margins.bottom,
+        margin: 0,
+        padding: 0
+        // width: '100%' // TODO: update model spec
+      })
+      /* TODO: split border to top/right/bottom/left */
+      plugin.pageLayout.headerPanel.css({
+        overflow: 'hidden', // TODO: update model spec
+        borderColor: that.header.border.color,
+        borderStyle: that.header.border.style,
+        borderWidth: that.header.border.width,
+        boxSizing: 'border-box',
+        height: that.header.height,
+        marginTop: 0,
+        marginRight: that.header.margins.right,
+        marginBottom: that.header.margins.bottom,
+        marginLeft: that.header.margins.left,
+        padding: 0
+        // width: '100%' // TODO: update model spec
+      })
+      var bodyHeight = that.calculateBodyHeight(editor)
+      // var bodyWrapperHeight = Number(units.getValueFromStyle(bodyHeight)) +
+      //   Number(units.getValueFromStyle(that.body.border.width)) * 2
+      // bodyWrapperHeight += 'mm'
+      plugin.pageLayout.bodyWrapper.css({
+        // overflow: 'hidden', // TODO: update model spec
+        overflow: 'auto', // TODO: update for pagination
+        border: 0,
+        boxSizing: 'border-box',
+        height: bodyHeight, // bodyWrapperHeight
+        margin: 0,
+        padding: 0,
+        width: '100%'
+      })
+      plugin.pageLayout.bodyPanel.css({
+        // overflow: 'hidden', // TODO: update model spec
+        overflow: 'auto', // TODO: update for pagination
+        borderColor: that.body.border.color,
+        borderStyle: that.body.border.style,
+        borderWidth: that.body.border.width,
+        boxSizing: 'border-box',
+        // minHeight: that.calculateBodyHeight(), // @TODO update for pagination
+        height: bodyHeight, // @TODO update for pagination
+        margin: 0,
+        padding: 0,
+        width: '100%'
+      })
+      plugin.pageLayout.footerWrapper.css({
+        overflow: 'hidden', // TODO: update model spec
+        border: 0,
+        borderTop: 'dashed 1px gray', // TODO update model spec?
+        boxSizing: 'border-box',
+        height: that.footer.height + that.footer.margins.top,
+        margin: 0,
+        padding: 0
+        // width: '100%' // TODO: update model spec
+      })
+      /* TODO: split border to top/right/bottom/left */
+      plugin.pageLayout.footerPanel.css({
+        overflow: 'hidden', // TODO: update model spec
+        borderColor: that.footer.border.color,
+        borderStyle: that.footer.border.style,
+        borderWidth: that.footer.border.width,
+        boxSizing: 'border-box',
+        height: that.footer.height,
+        marginTop: that.footer.margins.top,
+        marginRight: that.footer.margins.right,
+        marginBottom: 0,
+        marginLeft: that.footer.margins.left,
+        padding: 0
+        // width: '100%' // TODO: update model spec
+      })
+    }
+  }
+}
+
+/**
+ * Caluculate the document Body height depending the Format propeties
+ * @param {Editor}
+ * @returns {String} the body height (in mm for now)
+ * @fires HeadersFooters:Error:NegativeBodyHeight
+ * @TODO support other size units (cm, pt)
+ */
+function calculateBodyHeight (editor) {
+  var that = this
+  var ret
+  var height = units.getValueFromStyle(this.height)
+  var marginTop = units.getValueFromStyle(this.margins.top)
+  var marginBottom = units.getValueFromStyle(this.margins.bottom)
+  var headerHeight = units.getValueFromStyle(this.header.height)
+  var headerMarginBottom = units.getValueFromStyle(this.header.margins.bottom)
+  var footerHeight = units.getValueFromStyle(this.footer.height)
+  var footerMarginTop = units.getValueFromStyle(this.footer.margins.top)
+
+  var value = height - marginTop - marginBottom -
+    headerHeight - headerMarginBottom -
+    footerHeight - footerMarginTop
+
+  ret = value + 'mm'
+  // console.log('calculateBodyHeight() => ', ret)
+  if (value <= 0) {
+    if (this.showAlert) {
+      var message
+      this.showAlert = false
+      message = 'Inconsistant Custom Format: « Body height < 0 ». Do you want to fix it ?'
+
+      editor.fire('HeadersFooters:Error:NegativeBodyHeight')
+      editor.windowManager.confirm(message, function (conf) {
+        if (conf) {
+          editor.execCommand('editFormatCmd')
+        }
+        that.showAlert = true
+      })
+    }
+  }
+  return ret
+}
+
+},{"../utils/ui":14,"../utils/units":15}],5:[function(require,module,exports){
+'use strict'
+
 var q = require('q')
+var timeUtils = require('../utils/time')
 var $ = window.jQuery
+
+var timestamp = timeUtils.timestamp
 
 module.exports = MenuItem
 
@@ -2282,7 +2605,7 @@ function MenuItem (name, options) {
     }
   }
   if (!options.id) {
-    this.id = 'mce-plugin-headersfooters-' + _camel2Dash(name)
+    this.id = 'mce-plugin-headersfooters-' + _camel2Dash(name) + timestamp()
   }
   if (options.visible === false) this.hide()
   if (options.disabled) this.disable()
@@ -2312,7 +2635,7 @@ function getUIControl () {
  * // to override this placehoder callback, juste assign a new one
  * var menuItem = new MenuItem('my menu item', options)
  * menuItem.onclick = function () {
- * 	// implement your own
+ * => implement your own
  * }
  */
 function onclick () {
@@ -2443,7 +2766,456 @@ function _camel2Dash (inputStr) {
   return inputStr.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
 }
 
-},{"q":3}],5:[function(require,module,exports){
+},{"../utils/time":12,"q":3}],6:[function(require,module,exports){
+'use strict'
+
+var uiHelpers = require('../utils/ui-helpers')
+// var eventHandlers = require('../event-handlers')
+
+var tinymce = window.tinymce
+
+module.exports = {
+  createFormatTab: createFormatTab,
+  createMarginsTab: createMarginsTab,
+  createHeaderTab: createHeaderTab,
+  createFooterTab: createFooterTab,
+  createBodyTab: createBodyTab
+}
+
+/**
+ * Create the general tab component that show form inputs for:
+ * - paper labeled formats,
+ * - paper custom size
+ * @method
+ * @returns {TabPanel} formatTab
+ */
+function createFormatTab (format) {
+  // format select box
+  var formats = tinymce.activeEditor.plugins.headersfooters.availableFormats
+  var formatValues = []
+  for (var name in formats) {
+    var f = formats[name]
+    formatValues.push({
+      text: f.name,
+      value: f.name
+    })
+  }
+  var formatSelectBox = uiHelpers.createSelectBox('Format', 'newformat', formatValues, 150)
+
+  // orientation select box
+  var orientationSelectBox = uiHelpers.createSelectBox('Orientation', 'orientation', [
+    {text: 'paysage', value: 'paysage'},
+    {text: 'portrait', value: 'portrait'}
+  ], 150)
+
+  // page height form inputs
+  var pageHeightTextBox = uiHelpers.createTextBox('Page height', 'pageHeight', 65)
+  var pageHeightUnitSelect = uiHelpers.createUnitSelectBox('pageHeightUnit', 'mm')
+
+  // page width form inputs
+  var pageWidthTextBox = uiHelpers.createTextBox('Page width', 'pageWidth', 65)
+  var pageWidthUnitSelect = uiHelpers.createUnitSelectBox('pageWidthUnit', 'mm')
+
+  formatSelectBox.on('select', function (e) {
+    var selectValue = e.control.value()
+    var _format = formats[selectValue]
+    pageHeightTextBox.value(_format.height.slice(0, -2)) // using raw 'mm' value
+    pageWidthTextBox.value(_format.width.slice(0, -2)) // using raw 'mm' value
+  })
+  orientationSelectBox.on('select', function (e) {
+    var orientation = orientationSelectBox.value()
+    var height = pageHeightTextBox.value()
+    var width = pageWidthTextBox.value()
+    var max, min
+    if (height >= width) {
+      max = height
+      min = width
+    } else {
+      max = width
+      min = height
+    }
+    if (orientation === 'portrait') {
+      pageHeightTextBox.value(max) // using raw 'mm' value
+      pageWidthTextBox.value(min) // using raw 'mm' value
+    } else {
+      pageHeightTextBox.value(min) // using raw 'mm' value
+      pageWidthTextBox.value(max) // using raw 'mm' value
+    }
+  })
+
+  // paperSize fieldset form
+  var formatForm = uiHelpers.createForm([
+    formatSelectBox,
+    orientationSelectBox
+  ], 1)
+
+  // paperSize fieldset form
+  var paperSizeForm = uiHelpers.createForm([
+    pageHeightTextBox, pageHeightUnitSelect,
+    pageWidthTextBox, pageWidthUnitSelect
+  ], 2)
+
+  // format fieldset
+  var formatFieldSet = uiHelpers.createFieldset('Format', [formatForm], null, 300)
+
+  // format fieldset
+  var paperSizeFieldSet = uiHelpers.createFieldset('Paper Size', [paperSizeForm], 460)
+
+  // tab
+  var tab = uiHelpers.createTab('Paper', [formatFieldSet, paperSizeFieldSet])
+
+  return tab
+}
+
+/**
+ * Create the margins tab component that show form inputs for:
+ * - paper margins
+ * @method
+ * @returns {TabPanel} marginTab
+ */
+function createMarginsTab (format) {
+  var marginTopTextBox = uiHelpers.createTextBox('Margin top', 'marginTop', 65)
+  var marginTopUnitSelect = uiHelpers.createUnitSelectBox('marginTopUnit', 'mm')
+
+  var marginRightTextBox = uiHelpers.createTextBox('Margin right', 'marginRight', 65)
+  var marginRightUnitSelect = uiHelpers.createUnitSelectBox('marginRightUnit', 'mm')
+
+  var marginBottomTextBox = uiHelpers.createTextBox('Margin bottom', 'marginBottom', 65)
+  var marginBottomUnitSelect = uiHelpers.createUnitSelectBox('marginBottomUnit', 'mm')
+
+  var marginLeftTextBox = uiHelpers.createTextBox('Margin left', 'marginLeft', 65)
+  var marginLeftUnitSelect = uiHelpers.createUnitSelectBox('marginLeftUnit', 'mm')
+
+  // paperSize fieldset form
+  var form = uiHelpers.createForm([
+    marginTopTextBox, marginTopUnitSelect,
+    marginRightTextBox, marginRightUnitSelect,
+    marginBottomTextBox, marginBottomUnitSelect,
+    marginLeftTextBox, marginLeftUnitSelect
+  ], 2)
+
+  var fieldSet = uiHelpers.createFieldset('Margins', [form], 460)
+
+  // tab
+  var tab = uiHelpers.createTab('Margin', [fieldSet])
+
+  return tab
+}
+
+/**
+ * Create the margins tab component that show form inputs for:
+ * - paper margins
+ * @method
+ * @returns {TabPanel} marginTab
+ */
+function createHeaderTab (format) {
+  // header height
+  var heightTextBox = uiHelpers.createTextBox('Height', 'headerHeight', 65)
+  var heightUnitSelect = uiHelpers.createUnitSelectBox('headerHeightUnit', 'mm')
+
+  var heightForm = uiHelpers.createForm([
+    heightTextBox, heightUnitSelect
+  ], 2)
+
+  var heightFieldSet = uiHelpers.createFieldset('Header dimensions', [heightForm], 460)
+
+  // header margins
+
+  var marginRightTextBox = uiHelpers.createTextBox('Margin right', 'headerMarginRight', 65)
+  var marginRightUnitSelect = uiHelpers.createUnitSelectBox('headerMarginRightUnit', 'mm')
+
+  var marginBottomTextBox = uiHelpers.createTextBox('Margin bottom', 'headerMarginBottom', 65)
+  var marginBottomUnitSelect = uiHelpers.createUnitSelectBox('headerMarginBottomUnit', 'mm')
+
+  var marginLeftTextBox = uiHelpers.createTextBox('Margin left', 'headerMarginLeft', 65)
+  var marginLeftUnitSelect = uiHelpers.createUnitSelectBox('headerMarginLeftUnit', 'mm')
+
+  var form = uiHelpers.createForm([
+    marginRightTextBox, marginRightUnitSelect,
+    marginBottomTextBox, marginBottomUnitSelect,
+    marginLeftTextBox, marginLeftUnitSelect
+  ], 2)
+
+  var marginsFieldSet = uiHelpers.createFieldset('Header margins', [form], 460)
+
+  // header borders
+  var borderWidthTextBox = uiHelpers.createTextBox('Border width', 'headerBorderWidth', 65)
+  var borderWidthUnitSelect = uiHelpers.createUnitSelectBox('headerBorderWidthUnit', 'mm')
+
+  // border style
+  var borderStyleItemNone = uiHelpers.createListBoxItem('none')
+  var borderStyleItemHidden = uiHelpers.createListBoxItem('hidden')
+  var borderStyleItemDotted = uiHelpers.createListBoxItem('dotted')
+  var borderStyleItemDashed = uiHelpers.createListBoxItem('dashed')
+  var borderStyleItemSolid = uiHelpers.createListBoxItem('solid')
+  var borderStyleItemDouble = uiHelpers.createListBoxItem('double')
+  var borderStyleItemGroove = uiHelpers.createListBoxItem('groove')
+  var borderStyleItemRidge = uiHelpers.createListBoxItem('ridge')
+  var borderStyleItemInset = uiHelpers.createListBoxItem('inset')
+  var borderStyleItemOutset = uiHelpers.createListBoxItem('outset')
+  var borderStyleValues = [
+    borderStyleItemNone, borderStyleItemHidden, borderStyleItemDotted,
+    borderStyleItemDashed, borderStyleItemSolid, borderStyleItemDouble,
+    borderStyleItemGroove, borderStyleItemRidge, borderStyleItemInset,
+    borderStyleItemOutset
+  ]
+  var borderStyleListBox = uiHelpers.createListBox('Border style', 'headerBorderStyle', borderStyleValues, borderStyleItemNone, 90)
+
+  // border color picker
+  var borderColorPicker = uiHelpers.createColorPicker('Border color', 'headerBorderColor', function () {})
+
+  // create form
+  var borderForm1 = uiHelpers.createForm([ borderWidthTextBox, borderWidthUnitSelect ])
+  var borderForm2 = uiHelpers.createForm([ borderStyleListBox, borderColorPicker ], 1)
+  // create field set
+  var borderFieldset = uiHelpers.createFieldset('Header borders', [ borderForm1, borderForm2 ], 460)
+
+  // tab
+  var tab = uiHelpers.createTab('Header', [heightFieldSet, marginsFieldSet, borderFieldset])
+
+  return tab
+}
+
+/**
+ * Create the footer tab component that show form inputs for:
+ * - footer height
+ * - footer margins
+ * - footer borders
+ * @method
+ * @returns {TabPanel} footerTab
+ */
+function createFooterTab (format) {
+  // header height
+  var heightTextBox = uiHelpers.createTextBox('Height', 'footerHeight', 65)
+  var heightUnitSelect = uiHelpers.createUnitSelectBox('footerHeightUnit', 'mm')
+
+  var heightForm = uiHelpers.createForm([
+    heightTextBox, heightUnitSelect
+  ], 2)
+
+  var heightFieldSet = uiHelpers.createFieldset('Footer dimensions', [heightForm], 460)
+
+  // header margins
+
+  var marginTopTextBox = uiHelpers.createTextBox('Margin top', 'footerMarginTop', 65)
+  var marginTopUnitSelect = uiHelpers.createUnitSelectBox('footerMarginTopUnit', 'mm')
+
+  var marginRightTextBox = uiHelpers.createTextBox('Margin right', 'footerMarginRight', 65)
+  var marginRightUnitSelect = uiHelpers.createUnitSelectBox('footerMarginRightUnit', 'mm')
+
+  var marginLeftTextBox = uiHelpers.createTextBox('Margin left', 'footerMarginLeft', 65)
+  var marginLeftUnitSelect = uiHelpers.createUnitSelectBox('footerMarginLeftUnit', 'mm')
+
+  var form = uiHelpers.createForm([
+    marginTopTextBox, marginTopUnitSelect,
+    marginRightTextBox, marginRightUnitSelect,
+    marginLeftTextBox, marginLeftUnitSelect
+  ], 2)
+
+  var marginsFieldSet = uiHelpers.createFieldset('Footer margins', [form], 460)
+
+  // footer borders
+  var borderWidthTextBox = uiHelpers.createTextBox('Border width', 'footerBorderWidth', 65)
+  var borderWidthUnitSelect = uiHelpers.createUnitSelectBox('footerBorderWidthUnit', 'mm')
+
+  // border style
+  var borderStyleItemNone = uiHelpers.createListBoxItem('none')
+  var borderStyleItemHidden = uiHelpers.createListBoxItem('hidden')
+  var borderStyleItemDotted = uiHelpers.createListBoxItem('dotted')
+  var borderStyleItemDashed = uiHelpers.createListBoxItem('dashed')
+  var borderStyleItemSolid = uiHelpers.createListBoxItem('solid')
+  var borderStyleItemDouble = uiHelpers.createListBoxItem('double')
+  var borderStyleItemGroove = uiHelpers.createListBoxItem('groove')
+  var borderStyleItemRidge = uiHelpers.createListBoxItem('ridge')
+  var borderStyleItemInset = uiHelpers.createListBoxItem('inset')
+  var borderStyleItemOutset = uiHelpers.createListBoxItem('outset')
+  var borderStyleValues = [
+    borderStyleItemNone, borderStyleItemHidden, borderStyleItemDotted,
+    borderStyleItemDashed, borderStyleItemSolid, borderStyleItemDouble,
+    borderStyleItemGroove, borderStyleItemRidge, borderStyleItemInset,
+    borderStyleItemOutset
+  ]
+  var borderStyleListBox = uiHelpers.createListBox('Border style', 'footerBorderStyle', borderStyleValues, borderStyleItemNone, 90)
+
+  // border color picker
+  var borderColorPicker = uiHelpers.createColorPicker('Border color', 'footerBorderColor', function () {})
+
+  // create form
+  var borderForm1 = uiHelpers.createForm([ borderWidthTextBox, borderWidthUnitSelect ])
+  var borderForm2 = uiHelpers.createForm([ borderStyleListBox, borderColorPicker ], 1)
+  // create field set
+  var borderFieldset = uiHelpers.createFieldset('Footer borders', [ borderForm1, borderForm2 ], 460)
+
+  // tab
+  var tab = uiHelpers.createTab('Footer', [heightFieldSet, marginsFieldSet, borderFieldset])
+
+  return tab
+}
+
+function createBodyTab (format) {
+  // body borders
+  var borderWidthTextBox = uiHelpers.createTextBox('Border width', 'bodyBorderWidth', 65)
+  var borderWidthUnitSelect = uiHelpers.createUnitSelectBox('bodyBorderWidthUnit', 'mm')
+
+  // border style
+  var borderStyleItemNone = uiHelpers.createListBoxItem('none')
+  var borderStyleItemHidden = uiHelpers.createListBoxItem('hidden')
+  var borderStyleItemDotted = uiHelpers.createListBoxItem('dotted')
+  var borderStyleItemDashed = uiHelpers.createListBoxItem('dashed')
+  var borderStyleItemSolid = uiHelpers.createListBoxItem('solid')
+  var borderStyleItemDouble = uiHelpers.createListBoxItem('double')
+  var borderStyleItemGroove = uiHelpers.createListBoxItem('groove')
+  var borderStyleItemRidge = uiHelpers.createListBoxItem('ridge')
+  var borderStyleItemInset = uiHelpers.createListBoxItem('inset')
+  var borderStyleItemOutset = uiHelpers.createListBoxItem('outset')
+  var borderStyleValues = [
+    borderStyleItemNone, borderStyleItemHidden, borderStyleItemDotted,
+    borderStyleItemDashed, borderStyleItemSolid, borderStyleItemDouble,
+    borderStyleItemGroove, borderStyleItemRidge, borderStyleItemInset,
+    borderStyleItemOutset
+  ]
+  var borderStyleListBox = uiHelpers.createListBox('Border style', 'bodyBorderStyle', borderStyleValues, borderStyleItemNone, 90)
+
+  // border color picker
+  var borderColorPicker = uiHelpers.createColorPicker('Border color', 'bodyBorderColor', function () {})
+
+  // create form
+  var borderForm1 = uiHelpers.createForm([ borderWidthTextBox, borderWidthUnitSelect ])
+  var borderForm2 = uiHelpers.createForm([ borderStyleListBox, borderColorPicker ], 1)
+  // create field set
+  var borderFieldset = uiHelpers.createFieldset('Body borders', [ borderForm1, borderForm2 ], 460)
+
+  // tab
+  var tab = uiHelpers.createTab('Body', [borderFieldset])
+
+  return tab
+}
+
+},{"../utils/ui-helpers":13}],7:[function(require,module,exports){
+'use strict'
+
+// var units = require('../units')
+var editFormatTabs = require('./edit-format-tabs')
+var Format = require('../classes/Format')
+
+module.exports = openMainWinFunction
+
+/**
+ * Make the openMainWin function as a closure
+ * @method
+ * @param {Editor} editor The tinymce active editor instance
+ * @returns {function} openMainWin The openMainWin closure function
+ */
+function openMainWinFunction (editor) {
+  return openMainWin
+
+  /**
+   * Open the main paragraph properties window
+   * @function
+   * @inner
+   * @returns {undefined}
+   */
+  function openMainWin (format) {
+    var formatTab = editFormatTabs.createFormatTab(format)
+    var marginsTab = editFormatTabs.createMarginsTab(format)
+    var headerTab = editFormatTabs.createHeaderTab(format)
+    var footerTab = editFormatTabs.createFooterTab(format)
+    var bodyTab = editFormatTabs.createBodyTab(format)
+
+    editor.windowManager.open({
+      bodyType: 'tabpanel',
+      title: 'Edit Document Format',
+      body: [ formatTab, marginsTab, headerTab, footerTab, bodyTab ],
+      data: {
+        newformat: format.name,
+        orientation: format.orientation,
+        pageHeight: format.height.slice(0, -2),
+        pageWidth: format.width.slice(0, -2),
+        marginTop: format.margins.top.slice(0, -2),
+        marginRight: format.margins.right.slice(0, -2),
+        marginBottom: format.margins.bottom.slice(0, -2),
+        marginLeft: format.margins.left.slice(0, -2),
+        headerBorderWidth: format.header.border.width.slice(0, -2),
+        headerBorderColor: format.header.border.color,
+        headerBorderStyle: format.header.border.style,
+        headerMarginLeft: format.header.margins.left.slice(0, -2),
+        headerMarginBottom: format.header.margins.bottom.slice(0, -2),
+        headerMarginRight: format.header.margins.right.slice(0, -2),
+        headerHeight: format.header.height.slice(0, -2),
+        footerBorderWidth: format.footer.border.width.slice(0, -2),
+        footerBorderColor: format.footer.border.color,
+        footerBorderStyle: format.footer.border.style,
+        footerMarginLeft: format.footer.margins.left.slice(0, -2),
+        footerMarginTop: format.footer.margins.top.slice(0, -2),
+        footerMarginRight: format.footer.margins.right.slice(0, -2),
+        footerHeight: format.footer.height.slice(0, -2),
+        bodyBorderWidth: format.body.border.width.slice(0, -2),
+        bodyBorderColor: format.body.border.color,
+        bodyBorderStyle: format.body.border.style
+      },
+      onsubmit: onMainWindowSubmit
+    })
+
+    /**
+     * Open edit format window submit callback
+     *
+     * @TODO implement heightUnit
+     * @TODO implement widthUnit (etc...)
+     */
+    function onMainWindowSubmit (evt) {
+      var d = evt.data
+      var formatToApply = {
+        name: 'custom',
+        orientation: (d.orientation) ? d.orientation : 'portrait',
+        height: (d.pageHeight) ? d.pageHeight + 'mm' : format.height,
+        width: (d.pageWidth) ? d.pageWidth + 'mm' : format.width,
+        margins: {
+          bottom: (d.marginBottom) ? d.marginBottom + 'mm' : format.margins.bottom,
+          left: (d.marginLeft) ? d.marginLeft + 'mm' : format.margins.left,
+          right: (d.marginRight) ? d.marginRight + 'mm' : format.margins.right,
+          top: (d.marginTop) ? d.marginTop + 'mm' : format.margins.top
+        },
+        header: {
+          border: {
+            color: d.headerBorderColor || format.header.border.color,
+            style: d.headerBorderStyle || format.header.border.style,
+            width: (d.headerBorderWidth) ? d.headerBorderWidth + 'mm' : format.header.border.width
+          },
+          height: (d.headerHeight) ? d.headerHeight + 'mm' : format.header.height,
+          margins: {
+            bottom: (d.headerMarginBottom) ? d.headerMarginBottom + 'mm' : format.header.margins.bottom,
+            left: (d.headerMarginLeft) ? d.headerMarginLeft + 'mm' : format.header.margins.left,
+            right: (d.headerMarginRight) ? d.headerMarginRight + 'mm' : format.header.margins.right
+          }
+        },
+        footer: {
+          border: {
+            color: d.footerBorderColor || format.footer.border.color,
+            style: d.footerBorderStyle || format.footer.border.style,
+            width: (d.footerBorderWidth) ? d.footerBorderWidth + 'mm' : format.footer.border.width
+          },
+          height: (d.footerHeight) ? d.footerHeight + 'mm' : format.footer.height,
+          margins: {
+            top: (d.footerMarginTop) ? d.footerMarginTop + 'mm' : format.footer.margins.top,
+            left: (d.footerMarginLeft) ? d.footerMarginLeft + 'mm' : format.footer.margins.left,
+            right: (d.footerMarginRight) ? d.footerMarginRight + 'mm' : format.footer.margins.right
+          }
+        },
+        body: {
+          border: {
+            color: d.bodyBorderColor || format.body.border.color,
+            style: d.bodyBorderStyle || format.body.border.style,
+            width: (d.bodyBorderWidth) ? d.bodyBorderWidth + 'mm' : format.body.border.width
+          }
+        }
+      }
+      editor.plugins.headersfooters.currentFormat = new Format('custom', formatToApply)
+      editor.plugins.headersfooters.currentFormat.applyToPlugin(editor.plugins.headersfooters)
+    }
+  }
+}
+
+},{"../classes/Format":4,"./edit-format-tabs":6}],8:[function(require,module,exports){
 'use strict'
 
 /**
@@ -2469,17 +3241,26 @@ var MenuItem = require('../classes/MenuItem')
  */
 var ui = require('../utils/ui')
 
+var timeUtils = require('../utils/time')
+var timestamp = timeUtils.timestamp
+
 /**
  * A selector to select the header and the footer but not the body
  * @const
  * @inner
  */
-var HEADER_FOOTER_ONLY_SELECTOR = 'section[data-headfoot-header], section[data-headfoot-footer]'
+var HEADER_FOOTER_ONLY_SELECTOR = '.header-panel, .footer-panel'
+
+/**
+ * A selector to select the body but not the header and the footer
+ * @const
+ * @inner
+ */
+var BODY_ONLY_SELECTOR = '.body-panel'
 
 // Static API
 module.exports = {
-  create: create,
-  init: init
+  create: create
 }
 
 // Inner API
@@ -2487,8 +3268,9 @@ module.exports = {
 // _createInsertFooterMenuItem()
 // _createRemoveHeaderMenuItem()
 // _createRemoveFooterMenuItem()
-// _createInsertPageNumber(editor)
-// _createinsertNumberOfPages(editor)
+// _createInsertPageNumberMenuItem(editor)
+// _createinsertNumberOfPagesMenuItem(editor)
+// _createEditFormatMenuItem(editor)
 
 /**
  * Create a hash of all the menu items for the plugin
@@ -2498,48 +3280,13 @@ module.exports = {
  */
 function create (editor) {
   return {
-    insertHeader: _createInsertHeaderMenuItem(),
-    insertFooter: _createInsertFooterMenuItem(),
-    removeHeader: _createRemoveHeaderMenuItem(),
-    removeFooter: _createRemoveFooterMenuItem(),
-    insertPageNumber: _createInsertPageNumber(editor),
-    insertNumberOfPages: _createinsertNumberOfPages(editor)
-  }
-}
-
-/**
- * Initialize menu items states (show, hide, ...) and implements onclick handlers
- * @method
- * @static
- * @param {HeaderFooterFactory} factory The header and footer factory
- * @param {object} menuItems The set of plugin's menu items
- * @returns undefined
- */
-function init (factory, menuItems) {
-  // on startup, hide remove buttons
-  menuItems.removeHeader.hide()
-  menuItems.removeFooter.hide()
-
-  // override insertHeader, insertFooter, removeHeader and removeFooter onclick handlers
-  menuItems.insertHeader.onclick = function () {
-    factory.insertHeader()
-    menuItems.insertHeader.hide()
-    menuItems.removeHeader.show()
-  }
-  menuItems.insertFooter.onclick = function () {
-    factory.insertFooter()
-    menuItems.insertFooter.hide()
-    menuItems.removeFooter.show()
-  }
-  menuItems.removeHeader.onclick = function () {
-    factory.removeHeader()
-    menuItems.insertHeader.show()
-    menuItems.removeHeader.hide()
-  }
-  menuItems.removeFooter.onclick = function () {
-    factory.removeFooter()
-    menuItems.insertFooter.show()
-    menuItems.removeFooter.hide()
+    insertHeader: _createInsertHeaderMenuItem(editor),
+    insertFooter: _createInsertFooterMenuItem(editor),
+    removeHeader: _createRemoveHeaderMenuItem(editor),
+    removeFooter: _createRemoveFooterMenuItem(editor),
+    insertPageNumber: _createInsertPageNumberMenuItem(editor),
+    insertNumberOfPages: _createinsertNumberOfPagesMenuItem(editor),
+    editFormat: _createEditFormatMenuItem(editor)
   }
 }
 
@@ -2549,14 +3296,24 @@ function init (factory, menuItems) {
  * @inner
  * @returns {MenuItem}
  */
-function _createInsertHeaderMenuItem () {
+function _createInsertHeaderMenuItem (editor) {
   return new MenuItem('insertHeader', {
     text: 'Insérer une entête',
-    icon: 'abc',
-    id: 'plugin-headersfooters-menuitem-insert-header',
-    context: 'insert',
+    icon: 'template',
+    id: 'plugin-headersfooters-menuitem-insert-header' + timestamp(),
+    context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+    },
     onclick: function () {
-      window.alert('insert header')
+      var master = editor.plugins.headersfooters.getMaster()
+      master.currentFormat.header.height = '20mm'
+      master.currentFormat.header.border.width = '1mm'
+      master.currentFormat.header.margins.bottom = '5mm'
+      master.currentFormat.applyToPlugin(master)
+      master.menuItemsList.insertHeader.hide()
+      master.menuItemsList.removeHeader.show()
     }
   })
 }
@@ -2567,13 +3324,24 @@ function _createInsertHeaderMenuItem () {
  * @inner
  * @returns {MenuItem}
  */
-function _createRemoveHeaderMenuItem () {
+function _createRemoveHeaderMenuItem (editor) {
   return new MenuItem('removeHeader', {
     text: "Supprimer l'entête",
-    icon: 'text',
-    context: 'insert',
+    icon: 'undo',
+    id: 'plugin-headersfooters-menuitem-remove-header' + timestamp(),
+    context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+    },
     onclick: function () {
-      window.alert('remove header')
+      var master = editor.plugins.headersfooters.getMaster()
+      master.currentFormat.header.height = '0'
+      master.currentFormat.header.border.width = '0'
+      master.currentFormat.header.margins.bottom = '0'
+      master.currentFormat.applyToPlugin(master)
+      master.menuItemsList.removeHeader.hide()
+      master.menuItemsList.insertHeader.show()
     }
   })
 }
@@ -2584,13 +3352,23 @@ function _createRemoveHeaderMenuItem () {
  * @inner
  * @returns {MenuItem}
  */
-function _createInsertFooterMenuItem () {
+function _createInsertFooterMenuItem (editor) {
   return new MenuItem('insertFooter', {
     text: 'Insérer un pied de page',
-    icon: 'abc',
-    context: 'insert',
+    icon: 'template',
+    context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+    },
     onclick: function () {
-      window.alert('insert footer')
+      var master = editor.plugins.headersfooters.getMaster()
+      master.currentFormat.footer.height = '20mm'
+      master.currentFormat.footer.border.width = '1mm'
+      master.currentFormat.footer.margins.top = '5mm'
+      master.currentFormat.applyToPlugin(master)
+      master.menuItemsList.insertFooter.hide()
+      master.menuItemsList.removeFooter.show()
     }
   })
 }
@@ -2601,13 +3379,23 @@ function _createInsertFooterMenuItem () {
  * @inner
  * @returns {MenuItem}
  */
-function _createRemoveFooterMenuItem () {
+function _createRemoveFooterMenuItem (editor) {
   return new MenuItem('removeFooter', {
     text: 'Supprimer le pied de page',
-    icon: 'text',
-    context: 'insert',
+    icon: 'undo',
+    context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+    },
     onclick: function () {
-      window.alert('remove footer')
+      var master = editor.plugins.headersfooters.getMaster()
+      master.currentFormat.footer.height = '0'
+      master.currentFormat.footer.border.width = '0'
+      master.currentFormat.footer.margins.top = '0'
+      master.currentFormat.applyToPlugin(master)
+      master.menuItemsList.removeFooter.hide()
+      master.menuItemsList.insertFooter.show()
     }
   })
 }
@@ -2618,11 +3406,12 @@ function _createRemoveFooterMenuItem () {
  * @inner
  * @returns {MenuItem}
  */
-function _createInsertPageNumber (editor) {
+function _createInsertPageNumberMenuItem (editor) {
   return new MenuItem('insertPageNumber', {
     text: 'Insérer le numéro de page',
     context: 'document',
     onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, HEADER_FOOTER_ONLY_SELECTOR)
       editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, HEADER_FOOTER_ONLY_SELECTOR))
     },
     cmd: 'insertPageNumberCmd'
@@ -2635,19 +3424,39 @@ function _createInsertPageNumber (editor) {
  * @inner
  * @returns {MenuItem}
  */
-function _createinsertNumberOfPages (editor) {
+function _createinsertNumberOfPagesMenuItem (editor) {
   return new MenuItem('insertNumberOfPages', {
     text: 'Insérer le nombre de page',
     // icon: 'text',
     context: 'document',
     onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, HEADER_FOOTER_ONLY_SELECTOR)
       editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, HEADER_FOOTER_ONLY_SELECTOR))
     },
     cmd: 'insertNumberOfPagesCmd'
   })
 }
 
-},{"../classes/MenuItem":4,"../utils/ui":8}],6:[function(require,module,exports){
+/**
+ * Create a menu item to edit the current format
+ * @function
+ * @inner
+ * @returns {MenuItem}
+ */
+function _createEditFormatMenuItem (editor) {
+  return new MenuItem('editFormat', {
+    text: 'Format',
+    icon: 'newdocument',
+    context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+    },
+    cmd: 'editFormatCmd'
+  })
+}
+
+},{"../classes/MenuItem":5,"../utils/time":12,"../utils/ui":14}],9:[function(require,module,exports){
 'use strict'
 
 /**
@@ -2656,18 +3465,94 @@ function _createinsertNumberOfPages (editor) {
  * @name eventHandlers
  */
 
-// var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
-// var ui = require('./utils/ui')
-// var menuItems = require('./components/menu-items')
+var uiUtils = require('./utils/ui')
 
 module.exports = {
-  onInit: {},
-  onNodeChange: {},
-  onSetContent: {},
-  onBeforeSetContent: {}
+  'Init': {
+    setBodies: setBodies,
+    setStackedLayout: setStackedLayout,
+    setPageLayout: setPageLayout,
+    reloadMenuItems: reloadMenuItems
+  },
+  'NodeChange': {},
+  'SetContent': {},
+  'BeforeSetContent': {},
+  'Focus': {
+    enterHeadFoot: enterHeadFoot
+  },
+  'Blur': {
+    leaveHeadFoot: leaveHeadFoot
+  },
+  'Focus Blur Paste SetContent NodeChange HeadersFooters:SetFormat': {
+    applyCurrentFormat: applyCurrentFormat,
+    reloadMenuItems: reloadMenuItems
+  },
+  'HeadersFooters:Error:NegativeBodyHeight': {
+    alertErrorNegativeBodyHeight: alertErrorNegativeBodyHeight
+  }
 }
 
-},{}],7:[function(require,module,exports){
+function setBodies (evt) {
+  var editor = evt.target
+  this.documentBodies.mce[this.type] = editor.getBody()
+  if (!this.documentBodies.app) {
+    this.documentBodies.app = window.document.body
+  }
+  this.documentBody = editor.getBody()
+}
+
+function setStackedLayout (evt) {
+  uiUtils.mapMceLayoutElements(this.bodyClass, this.stackedLayout)
+}
+
+function setPageLayout (evt) {
+  if (this.isMaster) {
+    uiUtils.mapPageLayoutElements(this.pageLayout)
+  }
+}
+
+function enterHeadFoot (evt) {
+  this.enable()
+}
+
+function leaveHeadFoot (evt) {
+  this.disable()
+}
+
+function applyCurrentFormat (evt) {
+  var that = this
+  if (this.currentFormat) {
+    // console.info('evt', that.type, evt.type)
+    if (evt.type === 'blur' || evt.type === 'focus') {
+      setTimeout(function () {
+        that.currentFormat.applyToPlugin(that)
+      }, 200)
+    } else {
+      that.currentFormat.applyToPlugin(that)
+    }
+  }
+}
+
+/**
+ * @param {Event} evt HeadersFooters:Error:NegativeBodyHeight event
+ * @TODO document setting `editor.settings.SILENT_INCONSISTANT_FORMAT_WARNING`
+ * @TODO document event `HeadersFooters:Error:NegativeBodyHeight`
+ */
+function alertErrorNegativeBodyHeight (evt) {
+  var editor = evt.target
+  if (!editor.settings.SILENT_INCONSISTANT_FORMAT_WARNING) {
+    // editor.execCommand('editFormatCmd')
+    // throw new Error('Inconsistant custom format: body height is negative. Please fix format properties')
+    console.error('Inconsistant custom format: body height is negative. Please fix format properties')
+  }
+}
+
+function reloadMenuItems (evt) {
+  var editor = evt.target
+  editor.plugins.headersfooters.reloadMenuItems()
+}
+
+},{"./utils/ui":14}],10:[function(require,module,exports){
 'use strict'
 
 /**
@@ -2701,8 +3586,14 @@ module.exports = {
 var tinymce = window.tinymce
 
 var menuItems = require('./components/menu-items')
+
 var units = require('./utils/units')
+var events = require('./utils/events')
+var uiUtils = require('./utils/ui')
+
 var eventHandlers = require('./event-handlers')
+var Format = require('./classes/Format')
+var editFormatOpenMainWin = require('./components/edit-format-window')
 
 // Add the plugin to the tinymce PluginManager
 tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
@@ -2716,15 +3607,83 @@ tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
  */
 function tinymcePluginHeadersFooters (editor, url) {
   var thisPlugin = this
+
+  this.type = editor.settings.headersfooters_type
+  this.bodyClass = editor.settings.body_class
+
+  // bind plugin methods
+  this.enable = enable
+  this.disable = disable
+  this.setFormat = setFormat
+  this.parseParamList = parseParamList
+  this.reloadMenuItems = reloadMenuItems
+
+  this.isMaster = this.type === 'body'
+  this.isSlave = !this.isMaster
+
+  if (this.isMaster) {
+    tinymce.getMasterHeadersFootersPlugin = function () {
+      return thisPlugin
+    }
+  }
+  this.getMaster = function () {
+    if (tinymce.getMasterHeadersFootersPlugin) {
+      return tinymce.getMasterHeadersFootersPlugin()
+    } else {
+      return null
+    }
+  }
+
+  if (this.isMaster && window.env === 'development') {
+    window.mceHF = this
+  }
+
   this.headerFooterFactory = null
+
   this.units = units
   this.editor = editor
-  this.menuItemsList = menuItems.create(editor)
 
-  // add the plugin's menu items
-  for (var itemName in this.menuItemsList) {
-    editor.addMenuItem(itemName, this.menuItemsList[itemName])
+  this.documentBody = null
+  this.documentBodies = {
+    app: null,
+    mce: {
+      header: null,
+      body: null,
+      footer: null
+    }
   }
+  this.stackedLayout = {
+    root: null,
+    wrapper: null,
+    layout: null,
+    menubar: null,
+    toolbar: null,
+    editarea: null,
+    statusbar: null
+  }
+
+  if (this.isMaster) {
+    this.pageLayout = {
+      pageWrapper: null,
+      pagePanel: null,
+      headerWrapper: null,
+      headerPanel: null,
+      bodyPanel: null,
+      footerWrapper: null,
+      footerPanel: null
+    }
+  }
+
+  this.availableFormats = {}
+  this.formats = []
+  this.customFormats = []
+  this.defaultFormat = null
+  this.currentFormat = null
+
+  _setAvailableFormats.call(this)
+
+  this.menuItemsList = menuItems.create(editor)
+  uiUtils.autoAddMenuItems.call(this)
 
   editor.addCommand('insertPageNumberCmd', function () {
     editor.insertContent('{{page}}')
@@ -2732,26 +3691,375 @@ function tinymcePluginHeadersFooters (editor, url) {
   editor.addCommand('insertNumberOfPagesCmd', function () {
     editor.insertContent('{{pages}}')
   })
+  editor.addCommand('editFormatCmd', function () {
+    editFormatOpenMainWin(editor)(thisPlugin.currentFormat)
+  })
 
-  // Bind event callbacks
-  var callbackName
-  for (callbackName in eventHandlers.onInit) {
-    editor.on('init', eventHandlers.onInit[callbackName].bind(thisPlugin))
+  events.autoBindImplementedEventCallbacks.call(this, editor, eventHandlers)
+
+  // if (window.env === 'development' && this.isMaster) {
+  //   setTimeout(function () {
+  //     editor.execCommand('editFormatCmd')
+  //   })
+  // }
+}
+
+function enable () {
+  this.stackedLayout.menubar.show()
+  this.stackedLayout.toolbar.show()
+  this.stackedLayout.statusbar.wrapper.show()
+  this.stackedLayout.statusbar.path.show()
+  this.stackedLayout.statusbar.wordcount.show()
+  this.stackedLayout.statusbar.resizehandle.show()
+
+  this.stackedLayout.statusbar.wrapper.css({left: 0, right: 0, zIndex: 9999})
+
+  this.editor.$('body').css({opacity: 1})
+}
+
+function disable () {
+  this.stackedLayout.menubar.hide()
+  this.stackedLayout.toolbar.hide()
+  this.stackedLayout.statusbar.wrapper.hide()
+  this.stackedLayout.statusbar.path.hide()
+  this.stackedLayout.statusbar.wordcount.hide()
+  this.stackedLayout.statusbar.resizehandle.hide()
+
+  if (!this.editor.selection.isCollapsed()) {
+    this.editor.selection.collapse()
   }
-  for (callbackName in eventHandlers.onNodeChange) {
-    editor.on('NodeChange', eventHandlers.onNodeChange[callbackName].bind(thisPlugin))
+  this.editor.$('body').css({opacity: 0.25})
+}
+
+function _setAvailableFormats () {
+  var that = this
+  var settings = this.editor.settings
+
+  // set enabled default formats
+  var userEnabledDefaultFormats = this.parseParamList(settings.headersfooters_formats)
+  .map(function (formatName) {
+    return Format.defaults[formatName]
+  })
+  .filter(function (v) {
+    return !!v
+  })
+  if (userEnabledDefaultFormats.length) {
+    this.formats = userEnabledDefaultFormats
+  } else {
+    this.formats = []
+    for (var name in Format.defaults) {
+      that.formats.push(Format.defaults[name])
+    }
   }
-  for (callbackName in eventHandlers.onBeforeSetContent) {
-    editor.on('BeforeSetContent', eventHandlers.onBeforeSetContent[callbackName].bind(thisPlugin))
+
+  // set user custom formats
+  this.customFormats = (settings.headersfooters_custom_formats || [])
+  .map(function (f) {
+    return new Format(f.name, f.config)
+  })
+
+  // set the formats available for the editor
+  this.availableFormats = {}
+  // use enabled default formats
+  this.formats.map(function (f) {
+    that.availableFormats[f.name] = f
+  })
+  // add or override custom formats
+  this.customFormats.map(function (f) {
+    that.availableFormats[f.name] = f
+  })
+
+  // select a default format for new doc
+  this.defaultFormat = this.availableFormats[settings.headersfooters_default_format] || this.formats[0] || this.customFormats[0]
+
+  // current format is set on editor init callback
+}
+
+function setFormat (format) {
+  this.currentFormat = new Format(format.name, format)
+  this.editor.fire('HeadersFooters:SetFormat')
+}
+
+function parseParamList (paramValue) {
+  if (paramValue === undefined) {
+    return []
   }
-  for (callbackName in eventHandlers.onSetContent) {
-    editor.on('SetContent', eventHandlers.onSetContent[callbackName].bind(thisPlugin))
+  if (typeof paramValue !== 'string') {
+    throw new TypeError('paramValue must be a String, ' + typeof paramValue + ' given.')
+  }
+  return paramValue.split(' ')
+}
+
+/**
+ * Helper function. Do the reload of headers and footers
+ * @method
+ * @returns {undefined}
+ */
+function reloadMenuItems () {
+  if (this.currentFormat) {
+    if (this.currentFormat.header.height && this.currentFormat.header.height !== '0') {
+      this.menuItemsList.insertHeader.hide()
+      this.menuItemsList.removeHeader.show()
+    } else {
+      this.menuItemsList.insertHeader.show()
+      this.menuItemsList.removeHeader.hide()
+    }
+    if (this.currentFormat.footer.height && this.currentFormat.footer.height !== '0') {
+      this.menuItemsList.insertFooter.hide()
+      this.menuItemsList.removeFooter.show()
+    } else {
+      this.menuItemsList.insertFooter.show()
+      this.menuItemsList.removeFooter.hide()
+    }
   }
 }
 
-},{"./components/menu-items":5,"./event-handlers":6,"./utils/units":9}],8:[function(require,module,exports){
+},{"./classes/Format":4,"./components/edit-format-window":7,"./components/menu-items":8,"./event-handlers":9,"./utils/events":11,"./utils/ui":14,"./utils/units":15}],11:[function(require,module,exports){
 'use strict'
 
+module.exports = {
+  autoBindImplementedEventCallbacks: autoBindImplementedEventCallbacks
+}
+
+/**
+ * Automatically bind event callbacks implemented in `eventHandlers` module
+ */
+function autoBindImplementedEventCallbacks (editor, eventHandlers) {
+  for (var eventName in eventHandlers) {
+    for (var callbackName in eventHandlers[eventName]) {
+      editor.on(eventName, eventHandlers[eventName][callbackName].bind(this))
+    }
+  }
+}
+
+},{}],12:[function(require,module,exports){
+'use strict'
+
+module.exports = {
+  timestamp: timestamp
+}
+
+function timestamp () {
+  return Date.now()
+}
+
+},{}],13:[function(require,module,exports){
+/**
+ * This file contains the source code for the module `lib/ui/helpers`
+ * @file
+ * @author "Rémi Becheras <rbecheras@sirap.fr>"
+ * @copyright 2016 © Groupe SIRAP, tout droits réservés
+ * @see module:lib/ui/helpers
+ */
+
+/**
+ * This module exports some useful UI helplers to create UI components
+ * @module lib/ui/helpers
+ */
+
+'use strict'
+
+var tinymce = window.tinymce
+
+module.exports = {
+  createTextBox: createTextBox,
+  createUnitSelectBox: createUnitSelectBox,
+  createSelectBox: createSelectBox,
+  createTab: createTab,
+  createFieldset: createFieldset,
+  createForm: createForm,
+  createListBox: createListBox,
+  createListBoxItem: createListBoxItem,
+  createColorPicker: createColorPicker
+}
+
+/**
+ * Create a simple text box
+ * @method
+ * @param {string} label The textBox label
+ * @param {string} name The textBox name
+ * @param {number} [maxWidth=null] The maximum width for the input
+ * @param {number} [minWidth=55] The minimum width for the input
+ * @returns {TextBox} textBox The new textBox
+ */
+function createTextBox (label, name, maxWidth, minWidth) {
+  var textBox = {
+    label: label,
+    name: name,
+    maxWidth: maxWidth || null,
+    minWidth: minWidth || null,
+    onchange: function (e) {
+      // console.log('createTextBox on action', e)
+    }
+  }
+
+  return new tinymce.ui.TextBox(textBox)
+}
+
+/**
+ * Create a select box to select a length unit
+ * @method
+ * @param {string} inputName - A name to identify the input in the form
+ * @param {string} [defaultUnit=pt] - A default unit in (`pt`, `mm`, or `cm`).
+ * @param {number} [maxWidth=55] - The maximum width for th input.
+ * @param {number} [minWidth=55] - The minimum width for th input.
+ * @returns {SelectBox} unitSelectBox The new unit select box.
+ */
+function createUnitSelectBox (inputName, defaultUnit, maxWidth, minWidth) {
+  defaultUnit = defaultUnit || 'pt'
+  return {
+    label: 'Unit',
+    name: inputName,
+    type: 'listbox',
+    minWidth: minWidth || 55,
+    maxWidth: maxWidth || 55,
+    values: [
+      {text: 'pt', value: 'pt'},
+      {text: 'cm', value: 'cm'},
+      {text: 'mm', value: 'mm'}
+    ],
+    text: defaultUnit,
+    value: defaultUnit
+  }
+}
+
+function createSelectBox (label, inputName, values, maxWidth, minWidth) {
+  return new tinymce.ui.ListBox({
+    label: label,
+    name: inputName,
+    type: 'listbox',
+    minWidth: minWidth || 55,
+    maxWidth: maxWidth || null,
+    text: label,
+    values: values,
+    onselect: function (e) {
+      // console.log('SelectBox Selected', e)
+    }
+  })
+}
+
+/**
+ * @function
+ * @param
+ * @returns
+ */
+function createTab (title, fieldsets, direction, columns) {
+  return {
+    title: title,
+    type: 'form',
+    items: {
+      type: 'form',
+      layout: 'grid',
+      columns: columns || 1,
+      // layout: 'flex',
+      direction: direction || 'collumn',
+      labelGapCalc: 'children',
+      padding: 0,
+      items: fieldsets
+    }
+  }
+}
+
+/**
+ * Create a field set
+ * @method
+ * @param {string} title The field set title
+ * @param {array<object>} items The field items to put in the field set
+ * @param {number} [maxWidth=null] The maximum with for the fieldset, in pixels
+ * @returns {Fieldset} fieldset The new field set
+ */
+function createFieldset (title, items, maxWidth, minWidth) {
+  var fieldset = {
+    type: 'fieldset',
+    title: title,
+    items: items,
+    maxWidth: maxWidth || null,
+    minWidth: minWidth || null
+  }
+  return fieldset
+}
+
+/**
+ * @function
+ * @param
+ * @returns
+ */
+function createForm (items, columns) {
+  return {
+    type: 'form',
+    labelGapCalc: false,
+    padding: 0,
+    layout: 'grid',
+    columns: columns || 2,
+    defaults: {
+      type: 'textbox',
+      maxWidth: 100
+    },
+    items: items
+  }
+}
+
+/**
+ * @method
+ * @static
+ * @param {string} label The label for the list box
+ * @param {string} name The name of the list box to identify it in the form
+ * @param {array<ListBoxItem>} values An array of list box items
+ * @param {ListBoxItem} [defaultItem=N/A] An item to select as default value
+ * @param {number} [maxWidth=null] The maximum width for the input
+ * @returns
+ */
+function createListBox (label, name, values, defaultItem, maxWidth) {
+  return {
+    label: label,
+    name: name,
+    type: 'listbox',
+    text: 'None',
+    minWidth: 90,
+    maxWidth: maxWidth,
+    values: values
+  }
+}
+
+/**
+ * Create an item for createListBox() values array
+ * @param {string} text The text shown for the item
+ * @param {string|number} value A value for the item
+ * @return {ListBoxItem}
+ */
+function createListBoxItem (text, value) {
+  if (value === undefined) {
+    value = text
+  }
+  var item = {
+    text: text,
+    value: value
+  }
+  return item
+}
+
+/**
+ * Create a color picker
+ * @method
+ * @param {string} label The label for the color picker
+ * @param {string} name The name to identify the color picker in the form set
+ * @returns {ColorPicker} colorPicker The new color picker
+ */
+function createColorPicker (label, name, callback) {
+  return {
+    type: 'colorbox',
+    label: label,
+    name: name,
+    minWidth: 140,
+    maxWidth: 140,
+    onaction: callback
+  }
+}
+
+},{}],14:[function(require,module,exports){
+'use strict'
+
+var units = require('./units')
 var $ = window.jQuery
 
 /**
@@ -2762,10 +4070,15 @@ var $ = window.jQuery
  */
 
 module.exports = {
+  jQuery: $,
   lockNode: lockNode,
   unlockNode: unlockNode,
   addUnselectableCSSClass: addUnselectableCSSClass,
-  resetMenuItemState: resetMenuItemState
+  resetMenuItemState: resetMenuItemState,
+  autoAddMenuItems: autoAddMenuItems,
+  mapMceLayoutElements: mapMceLayoutElements,
+  mapPageLayoutElements: mapPageLayoutElements,
+  getElementHeight: getElementHeight
 }
 
 /**
@@ -2822,7 +4135,59 @@ function resetMenuItemState (editor, selector) {
   this.disabled(!parents.length)
 }
 
-},{}],9:[function(require,module,exports){
+/**
+ * Add the plugin's menu items
+ */
+function autoAddMenuItems () {
+  for (var itemName in this.menuItemsList) {
+    this.editor.addMenuItem(itemName, this.menuItemsList[itemName])
+  }
+}
+
+function mapMceLayoutElements (bodyClass, stackedLayout) {
+  stackedLayout.root = $('.' + bodyClass)
+  stackedLayout.wrapper = stackedLayout.root.children('.mce-tinymce')
+  stackedLayout.layout = stackedLayout.wrapper.children('.mce-stack-layout')
+  stackedLayout.menubar = stackedLayout.layout.children('.mce-stack-layout-item.mce-menubar.mce-toolbar')
+  stackedLayout.toolbar = stackedLayout.layout.children('.mce-stack-layout-item.mce-toolbar-grp')
+  stackedLayout.editarea = stackedLayout.layout.children('.mce-stack-layout-item.mce-edit-area')
+  stackedLayout.iframe = stackedLayout.editarea.children('iframe')
+  stackedLayout.statusbar = {}
+  stackedLayout.statusbar.wrapper = stackedLayout.layout.children('.mce-stack-layout-item.mce-statusbar')
+  stackedLayout.statusbar.flowLayout = stackedLayout.statusbar.wrapper.children('.mce-flow-layout')
+  stackedLayout.statusbar.path = stackedLayout.statusbar.wrapper.children('.mce-path')
+  stackedLayout.statusbar.wordcount = stackedLayout.layout.children('.mce-wordcount')
+  stackedLayout.statusbar.resizehandle = stackedLayout.layout.children('.mce-resizehandle')
+}
+
+function mapPageLayoutElements (pageLayout) {
+  pageLayout.pageWrapper = $('.page-wrapper')
+  pageLayout.pagePanel = $('.page-panel')
+
+  pageLayout.headerWrapper = $('.header-wrapper')
+  pageLayout.headerPanel = $('.header-panel')
+
+  pageLayout.bodyWrapper = $('.body-wrapper')
+  pageLayout.bodyPanel = $('.body-panel')
+
+  pageLayout.footerWrapper = $('.footer-wrapper')
+  pageLayout.footerPanel = $('.footer-panel')
+}
+
+function getElementHeight (element, win, isBorderBox) {
+  win = win || window
+  var style = win.getComputedStyle(element)
+  var height = px(style.height) // +
+    // px(style.paddingTop) + px(style.paddingBottom) +
+    // px(style.marginTop) + px(style.marginBottom)
+  return height
+
+  function px (style) {
+    return Number(units.getValueFromStyle(style))
+  }
+}
+
+},{"./units":15}],15:[function(require,module,exports){
 'use strict'
 
 /**
@@ -2835,17 +4200,32 @@ function resetMenuItemState (editor, selector) {
 
 var document = window.document
 
-createDpiTestElements()
+_createDpiTestElements()
 
 module.exports = {
   getValueFromStyle: getValueFromStyle,
   getUnitFromStyle: getUnitFromStyle,
-  px2mm: px2mm,
-  px2pt: px2pt,
-  px2in: px2in,
-  in2pt: in2pt,
+  getDpi: getDpi,
+
   in2mm: in2mm,
-  getDpi: getDpi
+  mm2in: mm2in,
+
+  px2in: px2in,
+  in2px: in2px,
+
+  px2mm: px2mm,
+  mm2px: mm2px,
+
+  in2pt: in2pt,
+  pt2in: pt2in,
+
+  px2pt: px2pt,
+  pt2px: pt2px
+}
+
+// expose the module to the global scope in development environment
+if (window.env === 'development' && !window._units) {
+  window._units = module.exports
 }
 
 /**
@@ -2873,16 +4253,35 @@ function getUnitFromStyle (styleValue) {
 }
 
 /**
- * Converts a quantity of pixels to a quantity of milimeters
- * 1 in = 25.4 mm
- * Calculate pixels to inches then inches to milimeters
- * @method
- * @static
- * @param {Number} qPx The quantity of pixels to convert to milimeters
- * @returns {Number} qMm The resuluting quantity of milimeters
- */
-function px2mm (qPx) {
-  return in2mm(px2in(qPx))
+* Evaluate the DPI of the device's screen (pixels per inche).
+* It creates and inpect a dedicated and hidden `data-dpi-test` DOM element to
+* deduct the screen DPI.
+* @method
+* @static
+* @returns {number} - The current screen DPI, so in pixels per inch.
+*/
+function getDpi () {
+  return document.getElementById('dpi-test').offsetHeight
+}
+
+/**
+* @function
+* @inner
+*/
+function _createDpiTestElements () {
+  var getDpiHtmlStyle = 'data-dpi-test { height: 1in; left: -100%; position: absolute; top: -100%; width: 1in; }'
+
+  var head = document.getElementsByTagName('head')[0]
+  var getDPIElement = document.createElement('style')
+  getDPIElement.setAttribute('type', 'text/css')
+  getDPIElement.setAttribute('rel', 'stylesheet')
+  getDPIElement.innerHTML = getDpiHtmlStyle
+  head.appendChild(getDPIElement)
+
+  var body = document.getElementsByTagName('body')[0]
+  var dpiTestElement = document.createElement('data-dpi-test')
+  dpiTestElement.setAttribute('id', 'dpi-test')
+  body.appendChild(dpiTestElement)
 }
 
 /**
@@ -2898,8 +4297,97 @@ function in2mm (qIn) {
 }
 
 /**
+ * Converts milimeters (mm) to inches (in)
+ * 1 in = 25.4 mm
+ * @method
+ * @static
+ * @param {number} mm Number of milimeters to convert to inches
+ * @returns {number} - Resulting number of inches (in)
+ */
+function mm2in (qmm) {
+  return Number(qmm) / 25.4
+}
+
+/**
+* Converts pixels (px) to inches (in)
+* dpi = px / in
+* => in = px / dpi
+* @method
+* @static
+* @param {number} px Number of pixels to convert to inches
+* @returns {number} - Resulting number of inches (in)
+*/
+function px2in (px) {
+  var dpi = getDpi()
+  return Number(px) / Number(dpi)
+}
+
+/**
+* Converts pixels (px) to inches (in)
+* dpi = px / in
+* => px = in * dpi
+* @method
+* @static
+* @param {number} in Number of inches to convert to pixels
+* @returns {number} - Resulting number of pixels (px)
+*/
+function in2px (qin) {
+  var dpi = getDpi()
+  return Number(qin) * Number(dpi)
+}
+
+/**
+* Converts a quantity of pixels to a quantity of milimeters
+* 1 in = 25.4 mm
+* Calculate pixels to inches then inches to milimeters
+* @method
+* @static
+* @param {Number} qPx The quantity of pixels to convert to milimeters
+* @returns {Number} qMm The resuluting quantity of milimeters
+*/
+function px2mm (qPx) {
+  return in2mm(px2in(qPx))
+}
+
+/**
+ * Converts milimeters (mm) to pixels (px)
+ * mm2in -> in2px
+ * @method
+ * @static
+ * @param {number} qmm Number of milimeters to convert to pixels
+ * @returns {number} - Resulting number of pixels (px)
+ */
+function mm2px (qmm) {
+  return in2px(mm2in(qmm))
+}
+
+/**
+* Converts inches (in) to points (pt)
+* 72 = pt / in -> pt = 72 * in
+* @method
+* @static
+* @param {number} inches Number of inches (in) to convet to points (pt)
+* @returns {number} - Resulting number of points (pt)
+*/
+function in2pt (inches) {
+  return Number(inches) * 72
+}
+
+/**
+* Converts point (pt) to inches (in)
+* 72 = pt / in -> in = pt / 72
+* @method
+* @static
+* @param {number} inches Number of inches (in) to convet to points (pt)
+* @returns {number} - Resulting number of points (pt)
+*/
+function pt2in (qpt) {
+  return qpt / 72
+}
+
+/**
  * Converts pixels (px) to points (pt)
- * px -> in -> pt
+ * px2in -> in2pt
  * @method
  * @static
  * @param {number} px Number of pixels to convert to points
@@ -2911,60 +4399,15 @@ function px2pt (px) {
 }
 
 /**
- * Converts pixels (px) to inches (in)
- * dpi = px / in -> in = px / dpi
+ * Converts point (pt) to pixels (px)
+ * pt2in -> in2px
  * @method
  * @static
- * @param {number} px Number of pixels to convert to inches
- * @returns {number} - Resulting number of inches (in)
+ * @param {number} pt Number of points to convert to pixels
+ * @returns {number} - Resulting number of pixels (px)
  */
-function px2in (px) {
-  var dpi = getDpi()
-  return Number(px) / Number(dpi)
-}
-
-/**
- * Converts inches (in) to points (pt)
- * 72 = pt / in -> pt = 72 * in
- * @method
- * @static
- * @param {number} inches Number of inches (in) to convet to points (pt)
- * @returns {number} - Resulting number of points (pt)
- */
-function in2pt (inches) {
-  return Number(inches) * 72
-}
-
-/**
- * Evaluate the DPI of the device's screen (pixels per inche).
- * It creates and inpect a dedicated and hidden `data-dpi-test` DOM element to
- * deduct the screen DPI.
- * @method
- * @static
- * @returns {number} - The current screen DPI, so in pixels per inch.
- */
-function getDpi () {
-  return document.getElementById('dpi-test').offsetHeight
-}
-
-/**
- * @function
- * @inner
- */
-function createDpiTestElements () {
-  var getDpiHtmlStyle = 'data-dpi-test { height: 1in; left: -100%; position: absolute; top: -100%; width: 1in; }'
-
-  var head = document.getElementsByTagName('head')[0]
-  var getDPIElement = document.createElement('style')
-  getDPIElement.setAttribute('type', 'text/css')
-  getDPIElement.setAttribute('rel', 'stylesheet')
-  getDPIElement.innerHTML = getDpiHtmlStyle
-  head.appendChild(getDPIElement)
-
-  var body = document.getElementsByTagName('body')[0]
-  var dpiTestElement = document.createElement('data-dpi-test')
-  dpiTestElement.setAttribute('id', 'dpi-test')
-  body.appendChild(dpiTestElement)
+function pt2px (qpt) {
+  return in2px(pt2in(qpt))
 }
 
 },{}]},{},[1]);

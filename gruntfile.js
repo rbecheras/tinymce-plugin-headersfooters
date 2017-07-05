@@ -41,7 +41,7 @@ module.exports = function (grunt) {
         pushTo: 'gh-sirap-group',
         gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
         globalReplace: false,
-        // prereleaseName: 'rc',
+        prereleaseName: 'rc',
         regExp: false
       }
     }
