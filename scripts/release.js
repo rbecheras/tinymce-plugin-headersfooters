@@ -25,7 +25,7 @@ cli.arguments('<semverLevel>').action(function (semverLevel) {
         //     return true
         //   })
         // })(semverLevel))
-        .then(deferizeExec('git commit -m "build dist and docs to release ' + semverLevel + '"'))
+        .then(deferizeExec('git commit -m "build dist and docs to release ' + semverLevel + '" || true'))
         .then(deferizeExec('git push gh-sirap-group master'))
         .then(deferizeExec('git push gl-open-source master'))
         // .then((function (level) {
