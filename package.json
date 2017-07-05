@@ -24,6 +24,9 @@
     "release-patch": "node ./scripts/release.js patch",
     "release-minor": "node ./scripts/release.js minor",
     "release-major": "node ./scripts/release.js major",
+    "prerelease": "node ./scripts/release.js prerelease",
+    "prerelease-patch": "node ./scripts/release.js prepatch",
+    "prerelease-minor": "node ./scripts/release.js preminor",
     "prerelease-major": "node ./scripts/release.js premajor"
   },
   "repository": {
