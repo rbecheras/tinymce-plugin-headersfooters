@@ -1,6 +1,6 @@
 {
   "name": "tinymce-plugin-headersfooters",
-  "version": "0.8.1",
+  "version": "1.0.0-0",
   "description": "A plugin for tinymce WYSIWYG HTML editor that allow to insert headers and footers - requires tinymce-plugin-paginate",
   "main": "plugin.js",
   "devDependencies": {
