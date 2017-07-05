@@ -172,7 +172,7 @@ function applyToPlugin (plugin) {
         overflow: 'auto', // TODO: update model spec
         background: '#464646',
         // height: 'auto', // TODO: update model spec
-        position: 'fixed', // TODO: update model spec
+        position: 'absolute', // TODO: update model spec
         top: 0, // TODO: update model spec
         right: 0, // TODO: update model spec
         left: 0, // TODO: update model spec
