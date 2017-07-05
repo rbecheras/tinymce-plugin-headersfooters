@@ -90,5 +90,7 @@ function alertErrorNegativeBodyHeight (evt) {
 
 function reloadMenuItems (evt) {
   var editor = evt.target
-  editor.plugins.headersfooters.reloadMenuItems()
+  if (editor && editor.plugins && editor.plugins.headersfooters) {
+    editor.plugins.headersfooters.reloadMenuItems()
+  }
 }
