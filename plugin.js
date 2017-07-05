@@ -3941,7 +3941,7 @@ function createSelectBox (label, inputName, values, maxWidth, minWidth) {
 /**
  * @function
  * @param
- * @returns
+ * @returns {object}
  */
 function createTab (title, fieldsets, direction, columns) {
   return {
@@ -3982,7 +3982,7 @@ function createFieldset (title, items, maxWidth, minWidth) {
 /**
  * @function
  * @param
- * @returns
+ * @returns {object}
  */
 function createForm (items, columns) {
   return {
@@ -4007,7 +4007,7 @@ function createForm (items, columns) {
  * @param {array<ListBoxItem>} values An array of list box items
  * @param {ListBoxItem} [defaultItem=N/A] An item to select as default value
  * @param {number} [maxWidth=null] The maximum width for the input
- * @returns
+ * @returns {object}
  */
 function createListBox (label, name, values, defaultItem, maxWidth) {
   return {
