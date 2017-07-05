@@ -6,160 +6,89 @@
  * @name eventHandlers
  */
 
-var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
-var ui = require('./utils/ui')
-var menuItems = require('./components/menu-items')
+var uiUtils = require('./utils/ui')
 
 module.exports = {
-  onInit: {
-    initHeaderFooterFactory: initHeaderFooterFactoryOnInit,
-    initMenuItemsList: initMenuItemsListOnInit,
-    initUI: initUIOnInit
+  'Init': {
+    setBodies: setBodies,
+    setStackedLayout: setStackedLayout,
+    setPageLayout: setPageLayout,
+    reloadMenuItems: reloadMenuItems
   },
-  onNodeChange: {
-    forceBodyMinHeight: forceBodyMinHeightOnNodeChange,
-    fixSelectAll: fixSelectAllOnNodeChange,
-    forceCursorToAllowedLocation: forceCursorToAllowedLocationOnNodeChange
+  'NodeChange': {},
+  'SetContent': {},
+  'BeforeSetContent': {},
+  'Focus': {
+    enterHeadFoot: enterHeadFoot
   },
-  onSetContent: {
-    enterBodyNodeOnLoad: enterBodyNodeOnLoadOnSetContent,
-    removeAnyOuterElement: removeAnyOuterElementOnSetContent,
-    reloadHeadFootIfNeeded: reloadHeadFootIfNeededOnSetContent
+  'Blur': {
+    leaveHeadFoot: leaveHeadFoot
   },
-  onBeforeSetContent: {
-    updateLastActiveSection: updateLastActiveSectionOnBeforeSetContent
+  'Focus Blur Paste SetContent NodeChange HeadersFooters:SetFormat': {
+    applyCurrentFormat: applyCurrentFormat,
+    reloadMenuItems: reloadMenuItems
+  },
+  'HeadersFooters:Error:NegativeBodyHeight': {
+    alertErrorNegativeBodyHeight: alertErrorNegativeBodyHeight
   }
 }
 
-function forceBodyMinHeightOnNodeChange (evt) {
-  if (this.headerFooterFactory && this.headerFooterFactory.hasBody()) {
-    this.headerFooterFactory.forceBodyMinHeigh()
+function setBodies (evt) {
+  var editor = evt.target
+  this.documentBodies.mce[this.type] = editor.getBody()
+  if (!this.documentBodies.app) {
+    this.documentBodies.app = window.document.body
+  }
+  this.documentBody = editor.getBody()
+}
+
+function setStackedLayout (evt) {
+  uiUtils.mapMceLayoutElements(this.bodyClass, this.stackedLayout)
+}
+
+function setPageLayout (evt) {
+  if (this.isMaster) {
+    uiUtils.mapPageLayoutElements(this.pageLayout)
   }
 }
 
-/**
- * Auto-enter in the body section on document load.
- * (SetContent or NodeChange with some conditions) event handler.
- * @method
- * @mixin
- * @returns void
- */
-function enterBodyNodeOnLoadOnSetContent (evt) {
+function enterHeadFoot (evt) {
+  this.enable()
+}
+
+function leaveHeadFoot (evt) {
+  this.disable()
+}
+
+function applyCurrentFormat (evt) {
   var that = this
-  setTimeout(function () {
-    if (that.headerFooterFactory && that.headerFooterFactory.hasBody() && !that.headerFooterFactory.getActiveSection()) {
-      that.headerFooterFactory.body.enterNode()
-    }
-  }, 500)
-}
-
-/**
- * Update the last active section on BeforeSetContent to be able to restore it if needed on SetContent event.
- * BeforeSetContent event handler.
- * @method
- * @mixin
- * @returns void
- */
-function updateLastActiveSectionOnBeforeSetContent (evt) {
-  if (this.headerFooterFactory) {
-    this.headerFooterFactory.updateLastActiveSection()
-  }
-}
-
-/**
- * Remove any element located out of the allowed sections on SetContent
- * SetContent event handler.
- * @method
- * @mixin
- * @returns void
- */
-function removeAnyOuterElementOnSetContent (evt) {
-  var conditions = [
-    !!evt.content,
-    evt.content && !!evt.content.length,
-    !!this.editor.getContent(),
-    !!this.editor.getContent().length,
-    !!this.headerFooterFactory
-  ]
-
-  // if all of theses conditions are true (none are false)
-  if (!~conditions.indexOf(false)) {
-    this.headerFooterFactory.removeAnyOuterElement()
-  }
-  if (this.headerFooterFactory && this.headerFooterFactory.lastActiveSection) {
-    console.info('entering to the last node', this.headerFooterFactory.lastActiveSection)
-    this.headerFooterFactory.lastActiveSection.enterNode()
-    this.headerFooterFactory.resetLastActiveSection()
-  }
-}
-
-/**
- * When pressing Ctrl+A to select all content, force the selection to be contained in the current active section.
- * onNodeChange event handler.
- * @method
- * @mixin
- * @returns void
- */
-function fixSelectAllOnNodeChange (evt) {
-  if (evt.selectionChange && !this.editor.selection.isCollapsed()) {
-    if (this.editor.selection.getNode() === this.editor.getBody()) {
-      this.editor.selection.select(this.headerFooterFactory.getActiveSection().node)
+  if (this.currentFormat) {
+    // console.info('evt', that.type, evt.type)
+    if (evt.type === 'blur' || evt.type === 'focus') {
+      setTimeout(function () {
+        that.currentFormat.applyToPlugin(that)
+      }, 200)
+    } else {
+      that.currentFormat.applyToPlugin(that)
     }
   }
 }
 
 /**
- * On SetContent event handler. Load or reload headers and footers from existing elements if it should do.
- * @method
- * @mixin
- * @returns void
+ * @param {Event} evt HeadersFooters:Error:NegativeBodyHeight event
+ * @TODO document setting `editor.settings.SILENT_INCONSISTANT_FORMAT_WARNING`
+ * @TODO document event `HeadersFooters:Error:NegativeBodyHeight`
  */
-function reloadHeadFootIfNeededOnSetContent (evt) {
-  if (this.headerFooterFactory) {
-    this.headerFooterFactory.reload()
-  } else {
-    setTimeout(reloadHeadFootIfNeededOnSetContent.bind(this, evt), 100)
+function alertErrorNegativeBodyHeight (evt) {
+  var editor = evt.target
+  if (!editor.settings.SILENT_INCONSISTANT_FORMAT_WARNING) {
+    // editor.execCommand('editFormatCmd')
+    // throw new Error('Inconsistant custom format: body height is negative. Please fix format properties')
+    console.error('Inconsistant custom format: body height is negative. Please fix format properties')
   }
 }
 
-/**
- * On NodeChange event handler. Force cursor location to allowedLocations
- * @method
- * @mixin
- * @returns void
- */
-function forceCursorToAllowedLocationOnNodeChange (evt) {
-  if (this.headerFooterFactory) {
-    this.headerFooterFactory.forceCursorToAllowedLocation(evt.element)
-  }
-}
-
-/**
- * On init event handler. Instanciate the factory.
- * @method
- * @mixin
- * @returns void
- */
-function initHeaderFooterFactoryOnInit (evt) {
-  this.headerFooterFactory = new HeaderFooterFactory(this.editor, this.menuItemsList)
-}
-
-/**
- * On init event handler. Init the menu items list.
- * @method
- * @mixin
- * @returns void
- */
-function initMenuItemsListOnInit (evt) {
-  menuItems.init(this.headerFooterFactory, this.menuItemsList)
-}
-
-/**
- * On init event handler. Init the plugin's needed CSS classes.
- * @method
- * @mixin
- * @returns void
- */
-function initUIOnInit (evt) {
-  ui.addUnselectableCSSClass(this.editor)
+function reloadMenuItems (evt) {
+  var editor = evt.target
+  editor.plugins.headersfooters.reloadMenuItems()
 }

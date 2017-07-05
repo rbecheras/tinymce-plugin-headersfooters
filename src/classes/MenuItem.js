@@ -1,7 +1,10 @@
 'use strict'
 
 var q = require('q')
+var timeUtils = require('../utils/time')
 var $ = window.jQuery
+
+var timestamp = timeUtils.timestamp
 
 module.exports = MenuItem
 
@@ -44,7 +47,7 @@ function MenuItem (name, options) {
     }
   }
   if (!options.id) {
-    this.id = 'mce-plugin-headersfooters-' + _camel2Dash(name)
+    this.id = 'mce-plugin-headersfooters-' + _camel2Dash(name) + timestamp()
   }
   if (options.visible === false) this.hide()
   if (options.disabled) this.disable()
@@ -74,7 +77,7 @@ function getUIControl () {
  * // to override this placehoder callback, juste assign a new one
  * var menuItem = new MenuItem('my menu item', options)
  * menuItem.onclick = function () {
- * 	// implement your own
+ * => implement your own
  * }
  */
 function onclick () {

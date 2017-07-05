@@ -23,17 +23,26 @@ var MenuItem = require('../classes/MenuItem')
  */
 var ui = require('../utils/ui')
 
+var timeUtils = require('../utils/time')
+var timestamp = timeUtils.timestamp
+
 /**
  * A selector to select the header and the footer but not the body
  * @const
  * @inner
  */
-var HEADER_FOOTER_ONLY_SELECTOR = 'section[data-headfoot-header], section[data-headfoot-footer]'
+var HEADER_FOOTER_ONLY_SELECTOR = '.header-panel, .footer-panel'
+
+/**
+ * A selector to select the body but not the header and the footer
+ * @const
+ * @inner
+ */
+var BODY_ONLY_SELECTOR = '.body-panel'
 
 // Static API
 module.exports = {
-  create: create,
-  init: init
+  create: create
 }
 
 // Inner API
@@ -41,8 +50,9 @@ module.exports = {
 // _createInsertFooterMenuItem()
 // _createRemoveHeaderMenuItem()
 // _createRemoveFooterMenuItem()
-// _createInsertPageNumber(editor)
-// _createinsertNumberOfPages(editor)
+// _createInsertPageNumberMenuItem(editor)
+// _createinsertNumberOfPagesMenuItem(editor)
+// _createEditFormatMenuItem(editor)
 
 /**
  * Create a hash of all the menu items for the plugin
@@ -52,48 +62,13 @@ module.exports = {
  */
 function create (editor) {
   return {
-    insertHeader: _createInsertHeaderMenuItem(),
-    insertFooter: _createInsertFooterMenuItem(),
-    removeHeader: _createRemoveHeaderMenuItem(),
-    removeFooter: _createRemoveFooterMenuItem(),
-    insertPageNumber: _createInsertPageNumber(editor),
-    insertNumberOfPages: _createinsertNumberOfPages(editor)
-  }
-}
-
-/**
- * Initialize menu items states (show, hide, ...) and implements onclick handlers
- * @method
- * @static
- * @param {HeaderFooterFactory} factory The header and footer factory
- * @param {object} menuItems The set of plugin's menu items
- * @returns undefined
- */
-function init (factory, menuItems) {
-  // on startup, hide remove buttons
-  menuItems.removeHeader.hide()
-  menuItems.removeFooter.hide()
-
-  // override insertHeader, insertFooter, removeHeader and removeFooter onclick handlers
-  menuItems.insertHeader.onclick = function () {
-    factory.insertHeader()
-    menuItems.insertHeader.hide()
-    menuItems.removeHeader.show()
-  }
-  menuItems.insertFooter.onclick = function () {
-    factory.insertFooter()
-    menuItems.insertFooter.hide()
-    menuItems.removeFooter.show()
-  }
-  menuItems.removeHeader.onclick = function () {
-    factory.removeHeader()
-    menuItems.insertHeader.show()
-    menuItems.removeHeader.hide()
-  }
-  menuItems.removeFooter.onclick = function () {
-    factory.removeFooter()
-    menuItems.insertFooter.show()
-    menuItems.removeFooter.hide()
+    insertHeader: _createInsertHeaderMenuItem(editor),
+    insertFooter: _createInsertFooterMenuItem(editor),
+    removeHeader: _createRemoveHeaderMenuItem(editor),
+    removeFooter: _createRemoveFooterMenuItem(editor),
+    insertPageNumber: _createInsertPageNumberMenuItem(editor),
+    insertNumberOfPages: _createinsertNumberOfPagesMenuItem(editor),
+    editFormat: _createEditFormatMenuItem(editor)
   }
 }
 
@@ -103,14 +78,24 @@ function init (factory, menuItems) {
  * @inner
  * @returns {MenuItem}
  */
-function _createInsertHeaderMenuItem () {
+function _createInsertHeaderMenuItem (editor) {
   return new MenuItem('insertHeader', {
     text: 'Insérer une entête',
-    icon: 'abc',
-    id: 'plugin-headersfooters-menuitem-insert-header',
-    context: 'insert',
+    icon: 'template',
+    id: 'plugin-headersfooters-menuitem-insert-header' + timestamp(),
+    context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+    },
     onclick: function () {
-      window.alert('insert header')
+      var master = editor.plugins.headersfooters.getMaster()
+      master.currentFormat.header.height = '20mm'
+      master.currentFormat.header.border.width = '1mm'
+      master.currentFormat.header.margins.bottom = '5mm'
+      master.currentFormat.applyToPlugin(master)
+      master.menuItemsList.insertHeader.hide()
+      master.menuItemsList.removeHeader.show()
     }
   })
 }
@@ -121,13 +106,24 @@ function _createInsertHeaderMenuItem () {
  * @inner
  * @returns {MenuItem}
  */
-function _createRemoveHeaderMenuItem () {
+function _createRemoveHeaderMenuItem (editor) {
   return new MenuItem('removeHeader', {
     text: "Supprimer l'entête",
-    icon: 'text',
-    context: 'insert',
+    icon: 'undo',
+    id: 'plugin-headersfooters-menuitem-remove-header' + timestamp(),
+    context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+    },
     onclick: function () {
-      window.alert('remove header')
+      var master = editor.plugins.headersfooters.getMaster()
+      master.currentFormat.header.height = '0'
+      master.currentFormat.header.border.width = '0'
+      master.currentFormat.header.margins.bottom = '0'
+      master.currentFormat.applyToPlugin(master)
+      master.menuItemsList.removeHeader.hide()
+      master.menuItemsList.insertHeader.show()
     }
   })
 }
@@ -138,13 +134,23 @@ function _createRemoveHeaderMenuItem () {
  * @inner
  * @returns {MenuItem}
  */
-function _createInsertFooterMenuItem () {
+function _createInsertFooterMenuItem (editor) {
   return new MenuItem('insertFooter', {
     text: 'Insérer un pied de page',
-    icon: 'abc',
-    context: 'insert',
+    icon: 'template',
+    context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+    },
     onclick: function () {
-      window.alert('insert footer')
+      var master = editor.plugins.headersfooters.getMaster()
+      master.currentFormat.footer.height = '20mm'
+      master.currentFormat.footer.border.width = '1mm'
+      master.currentFormat.footer.margins.top = '5mm'
+      master.currentFormat.applyToPlugin(master)
+      master.menuItemsList.insertFooter.hide()
+      master.menuItemsList.removeFooter.show()
     }
   })
 }
@@ -155,13 +161,23 @@ function _createInsertFooterMenuItem () {
  * @inner
  * @returns {MenuItem}
  */
-function _createRemoveFooterMenuItem () {
+function _createRemoveFooterMenuItem (editor) {
   return new MenuItem('removeFooter', {
     text: 'Supprimer le pied de page',
-    icon: 'text',
-    context: 'insert',
+    icon: 'undo',
+    context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+    },
     onclick: function () {
-      window.alert('remove footer')
+      var master = editor.plugins.headersfooters.getMaster()
+      master.currentFormat.footer.height = '0'
+      master.currentFormat.footer.border.width = '0'
+      master.currentFormat.footer.margins.top = '0'
+      master.currentFormat.applyToPlugin(master)
+      master.menuItemsList.removeFooter.hide()
+      master.menuItemsList.insertFooter.show()
     }
   })
 }
@@ -172,11 +188,12 @@ function _createRemoveFooterMenuItem () {
  * @inner
  * @returns {MenuItem}
  */
-function _createInsertPageNumber (editor) {
+function _createInsertPageNumberMenuItem (editor) {
   return new MenuItem('insertPageNumber', {
     text: 'Insérer le numéro de page',
     context: 'document',
     onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, HEADER_FOOTER_ONLY_SELECTOR)
       editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, HEADER_FOOTER_ONLY_SELECTOR))
     },
     cmd: 'insertPageNumberCmd'
@@ -189,14 +206,34 @@ function _createInsertPageNumber (editor) {
  * @inner
  * @returns {MenuItem}
  */
-function _createinsertNumberOfPages (editor) {
+function _createinsertNumberOfPagesMenuItem (editor) {
   return new MenuItem('insertNumberOfPages', {
     text: 'Insérer le nombre de page',
     // icon: 'text',
     context: 'document',
     onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, HEADER_FOOTER_ONLY_SELECTOR)
       editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, HEADER_FOOTER_ONLY_SELECTOR))
     },
     cmd: 'insertNumberOfPagesCmd'
+  })
+}
+
+/**
+ * Create a menu item to edit the current format
+ * @function
+ * @inner
+ * @returns {MenuItem}
+ */
+function _createEditFormatMenuItem (editor) {
+  return new MenuItem('editFormat', {
+    text: 'Format',
+    icon: 'newdocument',
+    context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+    },
+    cmd: 'editFormatCmd'
   })
 }
