@@ -208,12 +208,15 @@ function applyToPlugin (plugin) {
         padding: 0
         // width: '100%' // TODO: update model spec
       })
+
       /* TODO: split border to top/right/bottom/left */
+      var hasHeader = that.hasHeader()
+      var headerHasBorder = that.hasHeaderBorder()
       plugin.pageLayout.headerPanel.css({
         overflow: 'hidden', // TODO: update model spec
-        borderColor: that.header.border.color,
-        borderStyle: that.header.border.style,
-        borderWidth: that.header.border.width,
+        borderColor: (hasHeader && !headerHasBorder) ? 'black' : that.header.border.color,
+        borderStyle: (hasHeader && !headerHasBorder) ? 'solid' : that.header.border.style,
+        borderWidth: (hasHeader && !headerHasBorder) ? '0.1mm' : that.header.border.width,
         boxSizing: 'border-box',
         height: that.header.height,
         marginTop: 0,
@@ -260,12 +263,15 @@ function applyToPlugin (plugin) {
         padding: 0
         // width: '100%' // TODO: update model spec
       })
+
+      var hasFooter = that.hasFooter()
+      var footerHasBorder = that.hasFooterBorder()
       /* TODO: split border to top/right/bottom/left */
       plugin.pageLayout.footerPanel.css({
         overflow: 'hidden', // TODO: update model spec
-        borderColor: that.footer.border.color,
-        borderStyle: that.footer.border.style,
-        borderWidth: that.footer.border.width,
+        borderColor: (hasFooter && !footerHasBorder) ? 'black' : that.footer.border.color,
+        borderStyle: (hasFooter && !footerHasBorder) ? 'solid' : that.footer.border.style,
+        borderWidth: (hasFooter && !footerHasBorder) ? '0.1mm' : that.footer.border.width,
         boxSizing: 'border-box',
         height: that.footer.height,
         marginTop: that.footer.margins.top,
