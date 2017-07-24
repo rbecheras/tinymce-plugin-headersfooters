@@ -229,6 +229,14 @@ function applyToPlugin (plugin) {
         padding: 0
         // width: '100%' // TODO: update model spec
       })
+      if (plugin.pageLayout.headerIframe) {
+        plugin.pageLayout.headerIframe.css({
+          height: that.header.height,
+          minHeight: that.header.height,
+          maxHeight: that.header.height
+        })
+      }
+
       var bodyHeight = that.calculateBodyHeight(editor)
       // var bodyWrapperHeight = Number(units.getValueFromStyle(bodyHeight)) +
       //   Number(units.getValueFromStyle(that.body.border.width)) * 2
@@ -284,6 +292,13 @@ function applyToPlugin (plugin) {
         padding: 0
         // width: '100%' // TODO: update model spec
       })
+      if (plugin.pageLayout.footerIframe) {
+        plugin.pageLayout.footerIframe.css({
+          height: that.footer.height,
+          minHeight: that.footer.height,
+          maxHeight: that.footer.height
+        })
+      }
     }
   }
 }
