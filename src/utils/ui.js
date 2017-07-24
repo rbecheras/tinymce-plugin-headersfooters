@@ -107,12 +107,18 @@ function mapPageLayoutElements (pageLayout) {
 
   pageLayout.headerWrapper = $('.header-wrapper')
   pageLayout.headerPanel = $('.header-panel')
+  setTimeout(function () {
+    pageLayout.headerIframe = pageLayout.headerPanel.find('iframe')
+  }, 100)
 
   pageLayout.bodyWrapper = $('.body-wrapper')
   pageLayout.bodyPanel = $('.body-panel')
 
   pageLayout.footerWrapper = $('.footer-wrapper')
   pageLayout.footerPanel = $('.footer-panel')
+  setTimeout(function () {
+    pageLayout.footerIframe = pageLayout.footerPanel.find('iframe')
+  }, 100)
 }
 
 function getElementHeight (element, win, isBorderBox) {
