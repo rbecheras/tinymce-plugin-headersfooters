@@ -19,13 +19,13 @@ Format.defaults['A4'] = new Format('A4', {
   width: '210mm',
   margins: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' },
   header: {
-    height: '20mm',
+    height: '0',
     // height: 'auto',
     margins: { right: '0', bottom: '10mm', left: '0' },
     border: { color: 'black', style: 'solid', width: '0' }
   },
   footer: {
-    height: '20mm',
+    height: '0',
     // height: 'auto',
     margins: { right: '0', top: '10mm', left: '0' },
     border: { color: 'black', style: 'solid', width: '0' }
