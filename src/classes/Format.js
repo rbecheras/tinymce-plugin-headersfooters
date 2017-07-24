@@ -8,6 +8,10 @@ module.exports = Format
 
 Format.prototype.applyToPlugin = applyToPlugin
 Format.prototype.calculateBodyHeight = calculateBodyHeight
+Format.prototype.hasHeader = hasHeader
+Format.prototype.hasFooter = hasFooter
+Format.prototype.hasHeaderBorder = hasHeaderBorder
+Format.prototype.hasFooterBorder = hasFooterBorder
 
 Format.defaults = {}
 Format.defaults['A4'] = new Format('A4', {
@@ -315,4 +319,20 @@ function calculateBodyHeight (editor) {
     }
   }
   return ret
+}
+
+function hasHeader () {
+  return !this.header || (this.header.height && this.header.height !== '0')
+}
+
+function hasFooter () {
+  return !this.footer || this.footer.height && this.footer.height !== '0'
+}
+
+function hasHeaderBorder () {
+  return !this.hasHeader() || this.header.border.width && this.header.border.width !== '0'
+}
+
+function hasFooterBorder () {
+  return !this.hasFooter() || this.footer.border.width && this.footer.border.width !== '0'
 }
