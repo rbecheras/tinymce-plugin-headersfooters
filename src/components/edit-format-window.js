@@ -68,8 +68,9 @@ function openMainWinFunction (editor) {
      * @TODO implement heightUnit
      * @TODO implement widthUnit (etc...)
      */
-    function onMainWindowSubmit (evt) {
-      var d = evt.data
+    function onMainWindowSubmit () {
+      // handle all forms values in `d` for `data`
+      var d = this.toJSON()
       var formatToApply = {
         name: 'custom',
         orientation: (d.orientation) ? d.orientation : 'portrait',
