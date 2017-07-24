@@ -2246,6 +2246,10 @@ module.exports = Format
 
 Format.prototype.applyToPlugin = applyToPlugin
 Format.prototype.calculateBodyHeight = calculateBodyHeight
+Format.prototype.hasHeader = hasHeader
+Format.prototype.hasFooter = hasFooter
+Format.prototype.hasHeaderBorder = hasHeaderBorder
+Format.prototype.hasFooterBorder = hasFooterBorder
 
 Format.defaults = {}
 Format.defaults['A4'] = new Format('A4', {
@@ -2253,13 +2257,13 @@ Format.defaults['A4'] = new Format('A4', {
   width: '210mm',
   margins: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' },
   header: {
-    height: '20mm',
+    height: '0',
     // height: 'auto',
     margins: { right: '0', bottom: '10mm', left: '0' },
     border: { color: 'black', style: 'solid', width: '0' }
   },
   footer: {
-    height: '20mm',
+    height: '0',
     // height: 'auto',
     margins: { right: '0', top: '10mm', left: '0' },
     border: { color: 'black', style: 'solid', width: '0' }
@@ -2302,42 +2306,42 @@ function Format (name, config) {
   this.width = config.width
   this.height = config.height
   this.margins = {
-    top: config.margins.top,
-    right: config.margins.right,
-    bottom: config.margins.bottom,
-    left: config.margins.left
+    top: config.margins ? config.margins.top : '0',
+    right: config.margins ? config.margins.right : '0',
+    bottom: config.margins ? config.margins.bottom : '0',
+    left: config.margins ? config.margins.left : '0'
   }
   this.header = {
-    height: config.header.height,
+    height: config.header ? config.header.height : '0',
     margins: {
-      right: config.header.margins.right,
-      bottom: config.header.margins.bottom,
-      left: config.header.margins.left
+      right: config.header && config.header.margins ? config.header.margins.right : '0',
+      bottom: config.header && config.header.margins ? config.header.margins.bottom : '0',
+      left: config.header && config.header.margins ? config.header.margins.left : '0'
     },
     border: {
-      color: config.header.border.color,
-      style: config.header.border.style,
-      width: config.header.border.width
+      color: config.header && config.header.border ? config.header.border.color : 'black',
+      style: config.header && config.header.border ? config.header.border.style : 'none',
+      width: config.header && config.header.border ? config.header.border.width : '0'
     }
   }
   this.footer = {
-    height: config.footer.height,
+    height: config.footer ? config.footer.height : '0',
     margins: {
-      top: config.footer.margins.top,
-      right: config.footer.margins.right,
-      left: config.footer.margins.left
+      top: config.footer && config.footer.margins ? config.footer.margins.top : '0',
+      right: config.footer && config.footer.margins ? config.footer.margins.right : '0',
+      left: config.footer && config.footer.margins ? config.footer.margins.left : '0'
     },
     border: {
-      color: config.footer.border.color,
-      style: config.footer.border.style,
-      width: config.footer.border.width
+      color: config.footer && config.footer.border ? config.footer.border.color : 'black',
+      style: config.footer && config.footer.border ? config.footer.border.style : 'none',
+      width: config.footer && config.footer.border ? config.footer.border.width : '0'
     }
   }
   this.body = {
     border: {
-      color: config.body.border.color,
-      style: config.body.border.style,
-      width: config.body.border.width
+      color: config.body && config.body.border ? config.body.border.color : 'black',
+      style: config.body && config.body.border ? config.body.border.style : 'none',
+      width: config.body && config.body.border ? config.body.border.width : '0'
     }
   }
   this.showAlert = true
@@ -2360,11 +2364,14 @@ function applyToPlugin (plugin) {
     var win = plugin.editor.getWin()
     var body = plugin.documentBody
 
+    plugin = plugin.getMaster() || plugin
+    that = plugin.currentFormat
+
     applyToStackedLayout()
     applyToBody(plugin)
 
     editor.fire('HeadersFooters:Format:AppliedToBody', {
-      documentFormat: this
+      documentFormat: that
     })
   }
 
@@ -2442,12 +2449,15 @@ function applyToPlugin (plugin) {
         padding: 0
         // width: '100%' // TODO: update model spec
       })
+
       /* TODO: split border to top/right/bottom/left */
+      var hasHeader = that.hasHeader()
+      var headerHasBorder = that.hasHeaderBorder()
       plugin.pageLayout.headerPanel.css({
         overflow: 'hidden', // TODO: update model spec
-        borderColor: that.header.border.color,
-        borderStyle: that.header.border.style,
-        borderWidth: that.header.border.width,
+        borderColor: (hasHeader && !headerHasBorder) ? 'black' : that.header.border.color,
+        borderStyle: (hasHeader && !headerHasBorder) ? 'solid' : that.header.border.style,
+        borderWidth: (hasHeader && !headerHasBorder) ? '0.1mm' : that.header.border.width,
         boxSizing: 'border-box',
         height: that.header.height,
         marginTop: 0,
@@ -2457,6 +2467,14 @@ function applyToPlugin (plugin) {
         padding: 0
         // width: '100%' // TODO: update model spec
       })
+      if (plugin.pageLayout.headerIframe) {
+        plugin.pageLayout.headerIframe.css({
+          height: that.header.height,
+          minHeight: that.header.height,
+          maxHeight: that.header.height
+        })
+      }
+
       var bodyHeight = that.calculateBodyHeight(editor)
       // var bodyWrapperHeight = Number(units.getValueFromStyle(bodyHeight)) +
       //   Number(units.getValueFromStyle(that.body.border.width)) * 2
@@ -2494,12 +2512,15 @@ function applyToPlugin (plugin) {
         padding: 0
         // width: '100%' // TODO: update model spec
       })
+
+      var hasFooter = that.hasFooter()
+      var footerHasBorder = that.hasFooterBorder()
       /* TODO: split border to top/right/bottom/left */
       plugin.pageLayout.footerPanel.css({
         overflow: 'hidden', // TODO: update model spec
-        borderColor: that.footer.border.color,
-        borderStyle: that.footer.border.style,
-        borderWidth: that.footer.border.width,
+        borderColor: (hasFooter && !footerHasBorder) ? 'black' : that.footer.border.color,
+        borderStyle: (hasFooter && !footerHasBorder) ? 'solid' : that.footer.border.style,
+        borderWidth: (hasFooter && !footerHasBorder) ? '0.1mm' : that.footer.border.width,
         boxSizing: 'border-box',
         height: that.footer.height,
         marginTop: that.footer.margins.top,
@@ -2509,6 +2530,13 @@ function applyToPlugin (plugin) {
         padding: 0
         // width: '100%' // TODO: update model spec
       })
+      if (plugin.pageLayout.footerIframe) {
+        plugin.pageLayout.footerIframe.css({
+          height: that.footer.height,
+          minHeight: that.footer.height,
+          maxHeight: that.footer.height
+        })
+      }
     }
   }
 }
@@ -2553,6 +2581,22 @@ function calculateBodyHeight (editor) {
     }
   }
   return ret
+}
+
+function hasHeader () {
+  return !this.header || (this.header.height && this.header.height !== '0')
+}
+
+function hasFooter () {
+  return !this.footer || this.footer.height && this.footer.height !== '0'
+}
+
+function hasHeaderBorder () {
+  return !this.hasHeader() || this.header.border.width && this.header.border.width !== '0'
+}
+
+function hasFooterBorder () {
+  return !this.hasFooter() || this.footer.border.width && this.footer.border.width !== '0'
 }
 
 },{"../utils/ui":14,"../utils/units":15}],5:[function(require,module,exports){
@@ -4168,12 +4212,18 @@ function mapPageLayoutElements (pageLayout) {
 
   pageLayout.headerWrapper = $('.header-wrapper')
   pageLayout.headerPanel = $('.header-panel')
+  setTimeout(function () {
+    pageLayout.headerIframe = pageLayout.headerPanel.find('iframe')
+  }, 100)
 
   pageLayout.bodyWrapper = $('.body-wrapper')
   pageLayout.bodyPanel = $('.body-panel')
 
   pageLayout.footerWrapper = $('.footer-wrapper')
   pageLayout.footerPanel = $('.footer-panel')
+  setTimeout(function () {
+    pageLayout.footerIframe = pageLayout.footerPanel.find('iframe')
+  }, 100)
 }
 
 function getElementHeight (element, win, isBorderBox) {
