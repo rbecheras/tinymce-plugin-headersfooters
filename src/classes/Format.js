@@ -126,11 +126,14 @@ function applyToPlugin (plugin) {
     var win = plugin.editor.getWin()
     var body = plugin.documentBody
 
+    plugin = plugin.getMaster() || plugin
+    that = plugin.currentFormat
+
     applyToStackedLayout()
     applyToBody(plugin)
 
     editor.fire('HeadersFooters:Format:AppliedToBody', {
-      documentFormat: this
+      documentFormat: that
     })
   }
 
