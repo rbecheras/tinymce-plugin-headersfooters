@@ -68,42 +68,42 @@ function Format (name, config) {
   this.width = config.width
   this.height = config.height
   this.margins = {
-    top: config.margins.top,
-    right: config.margins.right,
-    bottom: config.margins.bottom,
-    left: config.margins.left
+    top: config.margins ? config.margins.top : '0',
+    right: config.margins ? config.margins.right : '0',
+    bottom: config.margins ? config.margins.bottom : '0',
+    left: config.margins ? config.margins.left : '0'
   }
   this.header = {
-    height: config.header.height,
+    height: config.header ? config.header.height : '0',
     margins: {
-      right: config.header.margins.right,
-      bottom: config.header.margins.bottom,
-      left: config.header.margins.left
+      right: config.header && config.header.margins ? config.header.margins.right : '0',
+      bottom: config.header && config.header.margins ? config.header.margins.bottom : '0',
+      left: config.header && config.header.margins ? config.header.margins.left : '0'
     },
     border: {
-      color: config.header.border.color,
-      style: config.header.border.style,
-      width: config.header.border.width
+      color: config.header && config.header.border ? config.header.border.color : 'black',
+      style: config.header && config.header.border ? config.header.border.style : 'none',
+      width: config.header && config.header.border ? config.header.border.width : '0'
     }
   }
   this.footer = {
-    height: config.footer.height,
+    height: config.footer ? config.footer.height : '0',
     margins: {
-      top: config.footer.margins.top,
-      right: config.footer.margins.right,
-      left: config.footer.margins.left
+      top: config.footer && config.footer.margins ? config.footer.margins.top : '0',
+      right: config.footer && config.footer.margins ? config.footer.margins.right : '0',
+      left: config.footer && config.footer.margins ? config.footer.margins.left : '0'
     },
     border: {
-      color: config.footer.border.color,
-      style: config.footer.border.style,
-      width: config.footer.border.width
+      color: config.footer && config.footer.border ? config.footer.border.color : 'black',
+      style: config.footer && config.footer.border ? config.footer.border.style : 'none',
+      width: config.footer && config.footer.border ? config.footer.border.width : '0'
     }
   }
   this.body = {
     border: {
-      color: config.body.border.color,
-      style: config.body.border.style,
-      width: config.body.border.width
+      color: config.body && config.body.border ? config.body.border.color : 'black',
+      style: config.body && config.body.border ? config.body.border.style : 'none',
+      width: config.body && config.body.border ? config.body.border.width : '0'
     }
   }
   this.showAlert = true
