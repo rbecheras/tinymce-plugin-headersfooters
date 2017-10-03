@@ -328,7 +328,11 @@ function applyToPlugin (plugin) {
     editor.$('body.body-panel', ctx).css({
       'overflow-y': 'auto !important',
     })
+    editor.$('html', ctx).css({
+      'height': 'calc(100% - ' + borderWidth + ')'
+    })
     editor.$('body', ctx).css({
+      'height': '100%',
       'border': '1px dashed gray'
     })
   }
