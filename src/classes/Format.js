@@ -126,7 +126,15 @@ function applyToPlugin (plugin) {
     var win = plugin.editor.getWin()
     var body = plugin.documentBody
 
-    plugin = plugin.getMaster() || plugin
+    apply()
+
+    if (plugin.getMaster()) {
+      plugin = plugin.getMaster()
+      apply()
+    }
+  }
+
+  function apply () {
     that = plugin.currentFormat
 
     applyToStackedLayout()
@@ -154,6 +162,8 @@ function applyToPlugin (plugin) {
 
     plugin.stackedLayout.editarea.css({border: 0})
     plugin.stackedLayout.iframe.css(rules)
+
+    setBodyCss(plugin)
   }
 
   function applyToBody (plugin) {
@@ -300,6 +310,21 @@ function applyToPlugin (plugin) {
         })
       }
     }
+  }
+
+  /**
+   * Set iframes -> <body> CSS style:
+   * - overflow-y,
+   * - height
+   * - border
+   * @param {tinymce.Plugin} plugin
+   */
+  function setBodyCss (plugin) {
+    var ctx = plugin.stackedLayout.iframe[0].contentDocument
+    var borderWidth = plugin.stackedLayout.root.css('border-width')
+    editor.$('body', ctx).css({
+      'border': '1px dashed gray'
+    })
   }
 }
 
