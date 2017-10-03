@@ -322,6 +322,12 @@ function applyToPlugin (plugin) {
   function setBodyCss (plugin) {
     var ctx = plugin.stackedLayout.iframe[0].contentDocument
     var borderWidth = plugin.stackedLayout.root.css('border-width')
+    editor.$('html, body', ctx).css({
+      'overflow-y': 'hidden !important'
+    })
+    editor.$('body.body-panel', ctx).css({
+      'overflow-y': 'auto !important',
+    })
     editor.$('body', ctx).css({
       'border': '1px dashed gray'
     })
