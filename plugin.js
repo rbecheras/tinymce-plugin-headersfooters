@@ -2467,7 +2467,7 @@ function applyToPlugin (plugin) {
         overflow: 'hidden', // TODO: update model spec
         borderColor: (hasHeader && !headerHasBorder) ? 'black' : that.header.border.color,
         borderStyle: (hasHeader && !headerHasBorder) ? 'solid' : that.header.border.style,
-        borderWidth: (hasHeader && !headerHasBorder) ? '0.1mm' : that.header.border.width,
+        borderWidth: (hasHeader && !headerHasBorder) ? '0' : that.header.border.width,
         boxSizing: 'border-box',
         height: that.header.height,
         marginTop: 0,
@@ -2515,7 +2515,7 @@ function applyToPlugin (plugin) {
       plugin.pageLayout.footerWrapper.css({
         overflow: 'hidden', // TODO: update model spec
         border: 0,
-        borderTop: 'dashed 1px gray', // TODO update model spec?
+        // borderTop: 'dashed 1px gray', // TODO update model spec?
         boxSizing: 'border-box',
         height: that.footer.height + that.footer.margins.top,
         margin: 0,
@@ -2530,7 +2530,7 @@ function applyToPlugin (plugin) {
         overflow: 'hidden', // TODO: update model spec
         borderColor: (hasFooter && !footerHasBorder) ? 'black' : that.footer.border.color,
         borderStyle: (hasFooter && !footerHasBorder) ? 'solid' : that.footer.border.style,
-        borderWidth: (hasFooter && !footerHasBorder) ? '0.1mm' : that.footer.border.width,
+        borderWidth: (hasFooter && !footerHasBorder) ? '0' : that.footer.border.width,
         boxSizing: 'border-box',
         height: that.footer.height,
         marginTop: that.footer.margins.top,
@@ -2560,16 +2560,22 @@ function applyToPlugin (plugin) {
   function setBodyCss (plugin) {
     var ctx = plugin.stackedLayout.iframe[0].contentDocument
     var borderWidth = plugin.stackedLayout.root.css('border-width')
+    if (borderWidth === '0px') {
+      // use default dashed gray border of 1px
+      borderWidth = '1px'
+    }
+    window.winroot = plugin.stackedLayout.root
     editor.$('html, body', ctx).css({
-      'overflow-y': 'hidden !important'
+      'overflow-y': 'hidden'
     })
-    editor.$('body.body-panel', ctx).css({
-      'overflow-y': 'auto !important'
-    })
+    // editor.$('body.body-panel', ctx).css({
+    //   'overflow-y': 'auto'
+    // })
     editor.$('html', ctx).css({
-      'height': 'calc(100% - ' + borderWidth + ')'
+      'height': 'calc(100% - ' + borderWidth + ' - ' + borderWidth + ')'
     })
     editor.$('body', ctx).css({
+      // 'height': 'calc(100% - ' + borderWidth + ' - ' + borderWidth + ')',
       'height': '100%',
       'border': '1px dashed gray'
     })
@@ -3389,7 +3395,7 @@ function _createInsertHeaderMenuItem (editor) {
     onclick: function () {
       var master = editor.plugins.headersfooters.getMaster()
       master.currentFormat.header.height = '20mm'
-      master.currentFormat.header.border.width = '1mm'
+      // master.currentFormat.header.border.width = '1mm'
       master.currentFormat.header.margins.bottom = '5mm'
       master.currentFormat.applyToPlugin(master)
       master.menuItemsList.insertHeader.hide()
@@ -3444,7 +3450,7 @@ function _createInsertFooterMenuItem (editor) {
     onclick: function () {
       var master = editor.plugins.headersfooters.getMaster()
       master.currentFormat.footer.height = '20mm'
-      master.currentFormat.footer.border.width = '1mm'
+      // master.currentFormat.footer.border.width = '1mm'
       master.currentFormat.footer.margins.top = '5mm'
       master.currentFormat.applyToPlugin(master)
       master.menuItemsList.insertFooter.hide()
