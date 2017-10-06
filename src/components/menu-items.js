@@ -91,7 +91,7 @@ function _createInsertHeaderMenuItem (editor) {
     onclick: function () {
       var master = editor.plugins.headersfooters.getMaster()
       master.currentFormat.header.height = '20mm'
-      master.currentFormat.header.border.width = '1mm'
+      // master.currentFormat.header.border.width = '1mm'
       master.currentFormat.header.margins.bottom = '5mm'
       master.currentFormat.applyToPlugin(master)
       master.menuItemsList.insertHeader.hide()
@@ -146,7 +146,7 @@ function _createInsertFooterMenuItem (editor) {
     onclick: function () {
       var master = editor.plugins.headersfooters.getMaster()
       master.currentFormat.footer.height = '20mm'
-      master.currentFormat.footer.border.width = '1mm'
+      // master.currentFormat.footer.border.width = '1mm'
       master.currentFormat.footer.margins.top = '5mm'
       master.currentFormat.applyToPlugin(master)
       master.menuItemsList.insertFooter.hide()
