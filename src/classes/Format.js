@@ -198,6 +198,15 @@ function applyToPlugin (plugin) {
         // padding: '3cm 0 3cm 0',
         // width: '100%'
       })
+
+      var firstPage = plugin.pageLayout.pagePanel.get(0)
+      var lastPageIndex = plugin.pageLayout.pagePanel.length - 1
+      var lastPage = plugin.pageLayout.pagePanel.get(lastPageIndex)
+      // first page margin top
+      $(firstPage).css({ marginTop: '2.5cm' })
+      // last page margin bottom
+      $(lastPage).css({ marginBottom: '2cm' })
+
       plugin.pageLayout.pagePanel.css({
         overflow: 'hidden', // TODO: update model spec
         background: 'white',
@@ -205,7 +214,9 @@ function applyToPlugin (plugin) {
         boxSizing: 'border-box',
         // minHeight: that.height, // @TODO update for pagination
         height: that.height, // @TODO update for pagination
-        margin: '25mm auto 2cm auto',
+        // margin: '25mm auto 2cm auto',
+        marginRight: 'auto',
+        marginLeft: 'auto',
         paddingTop: that.margins.top,
         paddingRight: that.margins.right,
         paddingBottom: that.margins.bottom,
