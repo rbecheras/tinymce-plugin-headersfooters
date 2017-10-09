@@ -199,6 +199,21 @@ function applyToPlugin (plugin) {
         // width: '100%'
       })
 
+      plugin.pageLayout.pagePanel.css({
+        overflow: 'hidden', // TODO: update model spec
+        background: 'white',
+        border: 0,
+        boxSizing: 'border-box',
+        // minHeight: that.height, // @TODO update for pagination
+        height: that.height, // @TODO update for pagination
+        margin: '5mm auto',
+        paddingTop: that.margins.top,
+        paddingRight: that.margins.right,
+        paddingBottom: that.margins.bottom,
+        paddingLeft: that.margins.left,
+        width: that.width
+      })
+
       var firstPage = plugin.pageLayout.pagePanel.get(0)
       var lastPageIndex = plugin.pageLayout.pagePanel.length - 1
       var lastPage = plugin.pageLayout.pagePanel.get(lastPageIndex)
@@ -207,22 +222,6 @@ function applyToPlugin (plugin) {
       // last page margin bottom
       $(lastPage).css({ marginBottom: '2cm' })
 
-      plugin.pageLayout.pagePanel.css({
-        overflow: 'hidden', // TODO: update model spec
-        background: 'white',
-        border: 0,
-        boxSizing: 'border-box',
-        // minHeight: that.height, // @TODO update for pagination
-        height: that.height, // @TODO update for pagination
-        // margin: '25mm auto 2cm auto',
-        marginRight: 'auto',
-        marginLeft: 'auto',
-        paddingTop: that.margins.top,
-        paddingRight: that.margins.right,
-        paddingBottom: that.margins.bottom,
-        paddingLeft: that.margins.left,
-        width: that.width
-      })
       plugin.pageLayout.headerWrapper.css({
         overflow: 'hidden', // TODO: update model spec
         // border: 0,
