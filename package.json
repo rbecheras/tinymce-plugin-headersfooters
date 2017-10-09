@@ -4,7 +4,13 @@
   "description": "A plugin for tinymce WYSIWYG HTML editor that allow to insert headers and footers - requires tinymce-plugin-paginate",
   "main": "plugin.js",
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.0.1",
+    "babel-plugin-module-resolver": "^2.7.1",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
     "commander": "^2.9.0",
+    "eslint": "^4.8.0",
     "grunt": "^0.4.5",
     "grunt-browserify": "^4.0.1",
     "grunt-bump": "^0.6.0",
@@ -15,7 +21,8 @@
     "inquirer": "^0.12.0",
     "load-grunt-tasks": "^3.3.0",
     "q": "^1.4.1",
-    "shelljs": "^0.6.0"
+    "shelljs": "^0.6.0",
+    "standard": "^10.0.3"
   },
   "scripts": {
     "build": "grunt",
@@ -49,5 +56,11 @@
   "homepage": "https://github.com/rbecheras/tinymce-plugin-headersfooters#readme",
   "dependencies": {
     "q": "^1.4.1"
+  },
+  "standard": {
+    "parser": "babel-eslint",
+    "ignore": [
+      "node_modules/**"
+    ]
   }
 }
