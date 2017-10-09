@@ -391,13 +391,13 @@ function hasHeader () {
 }
 
 function hasFooter () {
-  return !this.footer || this.footer.height && this.footer.height !== '0'
+  return !this.footer || (this.footer.height && this.footer.height !== '0')
 }
 
 function hasHeaderBorder () {
-  return !this.hasHeader() || this.header.border.width && this.header.border.width !== '0'
+  return !this.hasHeader() || (this.header.border.width && this.header.border.width !== '0')
 }
 
 function hasFooterBorder () {
-  return !this.hasFooter() || this.footer.border.width && this.footer.border.width !== '0'
+  return !this.hasFooter() || (this.footer.border.width && this.footer.border.width !== '0')
 }
