@@ -2,9 +2,12 @@
 
 var HeadFoot = require('./HeadFoot')
 
-var $ = window.jQuery
+// var $ = window.jQuery
 
 module.exports = Footer
+
+// Prototypal Inheritance
+Footer.prototype = Object.create(HeadFoot.prototype)
 
 /**
  * Footer class
@@ -17,20 +20,6 @@ module.exports = Footer
  * @property {DOMElement}  _documentBody The body element of the current document
  * @property {DOMNode} node The header/footer's node element
  */
-function Footer (editor, _documentBody, existingElement) {
-  HeadFoot.call(this, editor, _documentBody, existingElement)
-  $(this.node).appendTo(this._documentBody)
-}
-
-Footer.prototype = Object.create(HeadFoot.prototype)
-
-/**
- * Create a new node for the footer.
- * @private
- * @method
- * @override
- */
-Footer.prototype._createNode = function () {
-  HeadFoot.prototype._createNode.call(this)
-  $(this.node).attr('data-headfoot-footer', true)
+function Footer (editor, nodeElement) {
+  HeadFoot.call(this, editor, nodeElement)
 }

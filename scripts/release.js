@@ -15,26 +15,25 @@ cli.arguments('<semverLevel>').action(function (semverLevel) {
     if (confirmation) {
       return deferizeExec('grunt build')()
         .then(deferizeExec('git add . --all'))
-        .then((function (level) {
-          return deferizeExec('git commit -m "build dist and docs to release ' + level + '"')()
-          .catch(function (err) {
-            if (err) console.error(err)
-            // if there is nothing to commit, the child_process will end with error code at 1
-            // but we want to continue, its not really an error, but a warning.
-            // We will ask to confirm for continuing.
-            return true
-          })
-        })(semverLevel))
-        .then(deferizeExec('git push origin master'))
+        // .then((function (level) {
+        //   return deferizeExec('git commit -m "build dist and docs to release ' + level + '"')()
+        //   .catch(function (err) {
+        //     if (err) console.error(err)
+        //     // if there is nothing to commit, the child_process will end with error code at 1
+        //     // but we want to continue, its not really an error, but a warning.
+        //     // We will ask to confirm for continuing.
+        //     return true
+        //   })
+        // })(semverLevel))
+        .then(deferizeExec('git commit -m "build dist and docs to release ' + semverLevel + '" || true'))
         .then(deferizeExec('git push gh-sirap-group master'))
         .then(deferizeExec('git push gl-open-source master'))
-        .then((function (level) {
-          return deferizeExec('grunt bump:' + level)()
-        })(semverLevel))
-        .then(deferizeExec('git push origin master'))
+        // .then((function (level) {
+        //   return deferizeExec('grunt bump:' + level)()
+        // })(semverLevel))
+        .then(deferizeExec('grunt bump:' + semverLevel))
         .then(deferizeExec('git push gh-sirap-group master'))
         .then(deferizeExec('git push gl-open-source master'))
-        .then(deferizeExec('git push origin --tags'))
         .then(deferizeExec('git push gh-sirap-group --tags'))
         .then(deferizeExec('git push gl-open-source --tags'))
     } else {

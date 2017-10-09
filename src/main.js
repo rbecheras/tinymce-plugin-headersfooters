@@ -4,7 +4,7 @@
  * plugin.js
  *
  * Released under LGPL License.
- * Copyright (c) 2016 SIRAP Group All rights reserved
+ * Copyright (c) 2017 SIRAP Group All rights reserved
  *
  * License: http://www.tinymce.com/license
  * Contributing: http://www.tinymce.com/contributing
@@ -17,12 +17,10 @@
  * @name tinycmce-plugin-headersfooters
  * @description
  * A plugin for tinymce WYSIWYG HTML editor that allow to insert headers and footers
- * It will may be used with requires tinymce-plugin-paginate the a near future, but not for now.
- * @link https://github.com/sirap-group/tinymce-plugin-headersfooters
+ * @see https://github.com/sirap-group/tinymce-plugin-headersfooters
  * @author Rémi Becheras
  * @author Groupe SIRAP
  * @license GNU GPL-v2 http://www.tinymce.com/license
- * @version 1.0.0
  */
 
 /**
@@ -32,17 +30,15 @@
  */
 var tinymce = window.tinymce
 
-/**
- * The jQuery plugin namespace - plugin dependency.
- * @external "jQuery.fn"
- * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
- */
-var $ = window.jQuery
-var getComputedStyle = window.getComputedStyle
+var menuItems = require('./components/menu-items')
 
-var ui = require('./utils/ui')
 var units = require('./utils/units')
-var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
+var events = require('./utils/events')
+var uiUtils = require('./utils/ui')
+
+var eventHandlers = require('./event-handlers')
+var Format = require('./classes/Format')
+var editFormatOpenMainWin = require('./components/edit-format-window')
 
 // Add the plugin to the tinymce PluginManager
 tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
@@ -55,289 +51,210 @@ tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
  * @returns void
  */
 function tinymcePluginHeadersFooters (editor, url) {
-  var headerFooterFactory
-  var lastActiveSection = null
+  var thisPlugin = this
 
-  var menuItems = {
-    insertHeader: ui.createInsertHeaderMenuItem(),
-    insertFooter: ui.createInsertFooterMenuItem(),
-    removeHeader: ui.createRemoveHeaderMenuItem(),
-    removeFooter: ui.createRemoveFooterMenuItem(),
-    insertPageNumber: ui.createInsertPageNumber(editor),
-    insertNumberOfPages: ui.createinsertNumberOfPages(editor)
+  this.type = editor.settings.headersfooters_type
+  this.bodyClass = editor.settings.body_class
+
+  // bind plugin methods
+  this.enable = enable
+  this.disable = disable
+  this.setFormat = setFormat
+  this.parseParamList = parseParamList
+  this.reloadMenuItems = reloadMenuItems
+
+  this.isMaster = this.type === 'body'
+  this.isSlave = !this.isMaster
+
+  if (this.isMaster) {
+    tinymce.getMasterHeadersFootersPlugin = function () {
+      return thisPlugin
+    }
+  }
+  this.getMaster = function () {
+    if (tinymce.getMasterHeadersFootersPlugin) {
+      return tinymce.getMasterHeadersFootersPlugin()
+    } else {
+      return null
+    }
   }
 
-  this.units = units
+  if (this.isMaster && window.env === 'development') {
+    window.mceHF = this
+  }
 
-  // add menu items
-  editor.addMenuItem('insertHeader', menuItems.insertHeader)
-  editor.addMenuItem('removeHeader', menuItems.removeHeader)
-  editor.addMenuItem('insertFooter', menuItems.insertFooter)
-  editor.addMenuItem('removeFooter', menuItems.removeFooter)
-  editor.addMenuItem('insertPageNumber', menuItems.insertPageNumber)
-  editor.addMenuItem('insertNumberOfPages', menuItems.insertNumberOfPages)
+  this.headerFooterFactory = null
+
+  this.units = units
+  this.editor = editor
+
+  this.documentBody = null
+  this.documentBodies = {
+    app: null,
+    mce: {
+      header: null,
+      body: null,
+      footer: null
+    }
+  }
+  this.stackedLayout = {
+    root: null,
+    wrapper: null,
+    layout: null,
+    menubar: null,
+    toolbar: null,
+    editarea: null,
+    statusbar: null
+  }
+
+  if (this.isMaster) {
+    this.pageLayout = {
+      pageWrapper: null,
+      pagePanel: null,
+      headerWrapper: null,
+      headerPanel: null,
+      bodyPanel: null,
+      footerWrapper: null,
+      footerPanel: null
+    }
+  }
+
+  this.availableFormats = {}
+  this.formats = []
+  this.customFormats = []
+  this.defaultFormat = null
+  this.currentFormat = null
+
+  _setAvailableFormats.call(this)
+
+  this.menuItemsList = menuItems.create(editor)
+  uiUtils.autoAddMenuItems.call(this)
 
   editor.addCommand('insertPageNumberCmd', function () {
     editor.insertContent('{{page}}')
   })
-
   editor.addCommand('insertNumberOfPagesCmd', function () {
     editor.insertContent('{{pages}}')
   })
+  editor.addCommand('editFormatCmd', function () {
+    editFormatOpenMainWin(editor)(thisPlugin.currentFormat)
+  })
 
-  editor.on('init', onInitHandler)
-  editor.on('SetContent', reloadHeadFootIfNeededOnSetContent)
-  editor.on('NodeChange', onNodeChange)
-  editor.on('NodeChange', forceBodyMinHeightOnNodeChange)
-  editor.on('SetContent NodeChange', enterBodyNodeOnLoad)
-  editor.on('BeforeSetContent', saveLastActiveSectionOnBeforeSetContent)
-  editor.on('SetContent', removeAnyOuterElementOnSetContent)
-  editor.on('NodeChange', fixSelectAllOnNodeChange)
+  events.autoBindImplementedEventCallbacks.call(this, editor, eventHandlers)
 
-  /**
-   * Make sure the body minimum height is correct, depending the margins, header and footer height.
-   * NodeChange event handler.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function forceBodyMinHeightOnNodeChange (evt) {
-    if (headerFooterFactory && headerFooterFactory.hasBody()) {
-      var bodyTag = {}
-      var bodySection = {}
-      var headerSection = {}
-      var footerSection = {}
-      var pageHeight
+  // if (window.env === 'development' && this.isMaster) {
+  //   setTimeout(function () {
+  //     editor.execCommand('editFormatCmd')
+  //   })
+  // }
+}
 
-      bodySection.node = headerFooterFactory.body.node
-      bodySection.height = headerFooterFactory.body.node.offsetHeight
-      bodySection.style = window.getComputedStyle(bodySection.node)
+function enable () {
+  this.stackedLayout.menubar.show()
+  this.stackedLayout.toolbar.show()
+  this.stackedLayout.statusbar.wrapper.show()
+  this.stackedLayout.statusbar.path.show()
+  this.stackedLayout.statusbar.wordcount.show()
+  this.stackedLayout.statusbar.resizehandle.show()
 
-      if (headerFooterFactory.hasHeader()) {
-        headerSection.node = headerFooterFactory.header.node
-        headerSection.height = headerFooterFactory.header.node.offsetHeight
-        headerSection.style = window.getComputedStyle(headerSection.node)
-      } else {
-        headerSection.node = null
-        headerSection.height = 0
-        headerSection.style = window.getComputedStyle(document.createElement('bogusElement'))
-      }
+  this.stackedLayout.statusbar.wrapper.css({left: 0, right: 0, zIndex: 9999})
 
-      if (headerFooterFactory.hasFooter()) {
-        footerSection.node = headerFooterFactory.footer.node
-        footerSection.height = headerFooterFactory.footer.node.offsetHeight
-        footerSection.style = window.getComputedStyle(footerSection.node)
-      } else {
-        footerSection.node = null
-        footerSection.height = 0
-        footerSection.style = window.getComputedStyle(document.createElement('bogusElement'))
-      }
+  this.editor.$('body').css({opacity: 1})
+}
 
-      bodyTag.node = editor.getBody()
-      bodyTag.height = units.getValueFromStyle(getComputedStyle(editor.getBody()).minHeight)
-      bodyTag.style = window.getComputedStyle(bodyTag.node)
-      bodyTag.paddingTop = units.getValueFromStyle(bodyTag.style.paddingTop)
-      bodyTag.paddingBottom = units.getValueFromStyle(bodyTag.style.paddingBottom)
+function disable () {
+  this.stackedLayout.menubar.hide()
+  this.stackedLayout.toolbar.hide()
+  this.stackedLayout.statusbar.wrapper.hide()
+  this.stackedLayout.statusbar.path.hide()
+  this.stackedLayout.statusbar.wordcount.hide()
+  this.stackedLayout.statusbar.resizehandle.hide()
 
-      pageHeight = bodyTag.height - bodyTag.paddingTop - bodyTag.paddingBottom - headerSection.height - footerSection.height
-      $(bodySection.node).css({ minHeight: pageHeight })
+  if (!this.editor.selection.isCollapsed()) {
+    this.editor.selection.collapse()
+  }
+  this.editor.$('body').css({opacity: 0.25})
+}
+
+function _setAvailableFormats () {
+  var that = this
+  var settings = this.editor.settings
+
+  // set enabled default formats
+  var userEnabledDefaultFormats = this.parseParamList(settings.headersfooters_formats)
+  .map(function (formatName) {
+    return Format.defaults[formatName]
+  })
+  .filter(function (v) {
+    return !!v
+  })
+  if (userEnabledDefaultFormats.length) {
+    this.formats = userEnabledDefaultFormats
+  } else {
+    this.formats = []
+    for (var name in Format.defaults) {
+      that.formats.push(Format.defaults[name])
     }
   }
 
-  /**
-   * Auto-enter in the body section on document load.
-   * (SetContent or NodeChange with some conditions) event handler.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function enterBodyNodeOnLoad (evt) {
-    setTimeout(function () {
-      if (headerFooterFactory && headerFooterFactory.hasBody() && !headerFooterFactory.getActiveSection()) {
-        headerFooterFactory.body.enterNode()
-      }
-    }, 500)
+  // set user custom formats
+  this.customFormats = (settings.headersfooters_custom_formats || [])
+  .map(function (f) {
+    return new Format(f.name, f.config)
+  })
+
+  // set the formats available for the editor
+  this.availableFormats = {}
+  // use enabled default formats
+  this.formats.map(function (f) {
+    that.availableFormats[f.name] = f
+  })
+  // add or override custom formats
+  this.customFormats.map(function (f) {
+    that.availableFormats[f.name] = f
+  })
+
+  // select a default format for new doc
+  this.defaultFormat = this.availableFormats[settings.headersfooters_default_format] || this.formats[0] || this.customFormats[0]
+
+  // current format is set on editor init callback
+}
+
+function setFormat (format) {
+  this.currentFormat = new Format(format.name, format)
+  this.editor.fire('HeadersFooters:SetFormat')
+}
+
+function parseParamList (paramValue) {
+  if (paramValue === undefined) {
+    return []
   }
-
-  /**
-   * Save the last active section on BeforeSetContent to be able to restore it if needed on SetContent event.
-   * BeforeSetContent event handler.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function saveLastActiveSectionOnBeforeSetContent () {
-    if (headerFooterFactory) {
-      lastActiveSection = headerFooterFactory.getActiveSection()
-    }
+  if (typeof paramValue !== 'string') {
+    throw new TypeError('paramValue must be a String, ' + typeof paramValue + ' given.')
   }
-
-  /**
-   * Remove any element located out of the allowed sections.
-   * SetContent event handler.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function removeAnyOuterElementOnSetContent (evt) {
-    var conditions = [
-      !!evt.content,
-      !!evt.content.length,
-      !!editor.getContent(),
-      !!editor.getContent().length,
-      !!headerFooterFactory
-    ]
-    if (!~conditions.indexOf(false)) {
-      var $body = $(editor.getBody())
-      $body.children().each(function (i) {
-        var allowedRootNodes = [headerFooterFactory.body.node]
-        if (headerFooterFactory.hasHeader()) {
-          allowedRootNodes.push(headerFooterFactory.header.node)
-        }
-        if (headerFooterFactory.hasFooter()) {
-          allowedRootNodes.push(headerFooterFactory.footer.node)
-        }
-        if (!~allowedRootNodes.indexOf(this)) {
-          console.error('Removing the following element because it is out of the allowed sections')
-          console.log(this)
-          $(this).remove()
-        }
-      })
-    }
-    if (lastActiveSection) {
-      console.info('entering to the last node', lastActiveSection)
-      lastActiveSection.enterNode()
-      lastActiveSection = null
-    }
-  }
-
-  /**
-   * When pressing Ctrl+A to select all content, force the selection to be contained in the current active section.
-   * onNodeChange event handler.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function fixSelectAllOnNodeChange (evt) {
-    if (evt.selectionChange && !editor.selection.isCollapsed()) {
-      if (editor.selection.getNode() === editor.getBody()) {
-        editor.selection.select(headerFooterFactory.getActiveSection().node)
-      }
-    }
-  }
-
-  /**
-   * On init event handler. Instanciate the factory and initialize menu items states
-   * @function
-   * @inner
-   * @returns void
-   */
-  function onInitHandler () {
-    headerFooterFactory = new HeaderFooterFactory(editor)
-    initMenuItems(headerFooterFactory, menuItems)
-    ui.addUnselectableCSSClass(editor)
-  }
-
-  /**
-   * On SetContent event handler. Load or reload headers and footers from existing elements if it should do.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function reloadHeadFootIfNeededOnSetContent (evt) {
-    if (headerFooterFactory) {
-      reloadHeadFoots(menuItems)
-    } else {
-      setTimeout(reloadHeadFootIfNeededOnSetContent.bind(null, evt), 100)
-    }
-  }
-
-  function onNodeChange (evt) {
-    if (headerFooterFactory) {
-      headerFooterFactory.forceCursorToAllowedLocation(evt.element)
-    }
-  }
-
-  /**
-   * Helper function. Do the reload of headers and footers
-   * @function
-   * @inner
-   * @returns void
-   */
-  function reloadHeadFoots (menuItems) {
-    var $headFootElmts = $('*[data-headfoot]', editor.getDoc())
-    var $bodyElmt = $('*[data-headfoot-body]', editor.getDoc())
-    var hasBody = !!$bodyElmt.length
-    var $allElmts = null
-
-    // init starting states
-    menuItems.insertHeader.show()
-    menuItems.insertFooter.show()
-    menuItems.removeHeader.hide()
-    menuItems.removeFooter.hide()
-
-    // set another state and load elements if a header or a footer exists
-    $headFootElmts.each(function (i, el) {
-      var $el = $(el)
-      if ($el.attr('data-headfoot-header')) {
-        menuItems.insertHeader.hide()
-        menuItems.removeHeader.show()
-      } else if ($el.attr('data-headfoot-body')) {
-        // @TODO something ?
-      } else if ($el.attr('data-headfoot-footer')) {
-        menuItems.insertFooter.hide()
-        menuItems.removeFooter.show()
-      }
-      headerFooterFactory.loadElement(el)
-    })
-
-    if (!hasBody) {
-      $allElmts = $(editor.getBody()).children()
-      headerFooterFactory.insertBody()
-      var $body = $(headerFooterFactory.body.node)
-      $body.empty()
-      $allElmts.each(function (i, el) {
-        var $el = $(el)
-        if (!$el.attr('data-headfoot')) {
-          $body.append($el)
-        }
-      })
-    }
-  }
+  return paramValue.split(' ')
 }
 
 /**
- * Initialize menu items states (show, hide, ...) and implements onclick handlers
- * @function
- * @inner
- * @param {HeaderFooterFactory} factory The header and footer factory
- * @param {object} menuItems The set of plugin's menu items
- * @returns undefined
+ * Helper function. Do the reload of headers and footers
+ * @method
+ * @returns {undefined}
  */
-function initMenuItems (factory, menuItems) {
-  // on startup, hide remove buttons
-  menuItems.removeHeader.hide()
-  menuItems.removeFooter.hide()
-
-  // override insertHeader, insertFooter, removeHeader and removeFooter onclick handlers
-  menuItems.insertHeader.onclick = function () {
-    factory.insertHeader()
-    menuItems.insertHeader.hide()
-    menuItems.removeHeader.show()
-  }
-  menuItems.insertFooter.onclick = function () {
-    factory.insertFooter()
-    menuItems.insertFooter.hide()
-    menuItems.removeFooter.show()
-  }
-  menuItems.removeHeader.onclick = function () {
-    factory.removeHeader()
-    menuItems.insertHeader.show()
-    menuItems.removeHeader.hide()
-  }
-  menuItems.removeFooter.onclick = function () {
-    factory.removeFooter()
-    menuItems.insertFooter.show()
-    menuItems.removeFooter.hide()
+function reloadMenuItems () {
+  if (this.currentFormat) {
+    if (this.currentFormat.header.height && this.currentFormat.header.height !== '0') {
+      this.menuItemsList.insertHeader.hide()
+      this.menuItemsList.removeHeader.show()
+    } else {
+      this.menuItemsList.insertHeader.show()
+      this.menuItemsList.removeHeader.hide()
+    }
+    if (this.currentFormat.footer.height && this.currentFormat.footer.height !== '0') {
+      this.menuItemsList.insertFooter.hide()
+      this.menuItemsList.removeFooter.show()
+    } else {
+      this.menuItemsList.insertFooter.show()
+      this.menuItemsList.removeFooter.hide()
+    }
   }
 }

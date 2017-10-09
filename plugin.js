@@ -2238,475 +2238,432 @@ return Q;
 },{"_process":2}],4:[function(require,module,exports){
 'use strict'
 
-var HeadFoot = require('./HeadFoot')
+var uiUtils = require('../utils/ui')
+var units = require('../utils/units')
+var $ = uiUtils.jQuery
 
-var $ = window.jQuery
+module.exports = Format
 
-module.exports = Body
+Format.prototype.applyToPlugin = applyToPlugin
+Format.prototype.calculateBodyHeight = calculateBodyHeight
+Format.prototype.hasHeader = hasHeader
+Format.prototype.hasFooter = hasFooter
+Format.prototype.hasHeaderBorder = hasHeaderBorder
+Format.prototype.hasFooterBorder = hasFooterBorder
 
-/**
- * Body class
- * @class
- * @augments HeadFoot
- * @param {Editor} editor The current editor
- * @param {DOMElement} documentBody The document body for this documentBody
- * @param {DOMNode} [existingElement] The optional existing element that constitute a header of a footer and should be loaded from it
- * @property {Editor} _editor The current editor
- * @property {DOMElement}  _documentBody The body element of the current document
- * @property {DOMNode} node The header/footer's node element
- */
-function Body (editor, _documentBody, existingElement, hasHeader, hasFooter, header) {
-  HeadFoot.call(this, editor, _documentBody, existingElement)
-
-  var hasBoth = hasHeader && hasFooter
-  var hasNoOne = !hasHeader && !hasFooter
-  var hasJustHeader = hasHeader && !hasFooter
-  var hasJustFooter = !hasHeader && hasFooter
-
-  if (hasBoth || hasJustHeader) {
-    $(this.node).insertAfter(header.node)
-  } else if (hasNoOne || hasJustFooter) {
-    $(this.node).prependTo(this._documentBody)
-  } else {
-    throw new Error('Unexpected context to insert the body section')
+Format.defaults = {}
+Format.defaults['A4'] = new Format('A4', {
+  height: '297mm',
+  width: '210mm',
+  margins: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' },
+  header: {
+    height: '0',
+    // height: 'auto',
+    margins: { right: '0', bottom: '10mm', left: '0' },
+    border: { color: 'black', style: 'solid', width: '0' }
+  },
+  footer: {
+    height: '0',
+    // height: 'auto',
+    margins: { right: '0', top: '10mm', left: '0' },
+    border: { color: 'black', style: 'solid', width: '0' }
+  },
+  body: {
+    border: { color: 'black', style: 'solid', width: '0' }
   }
-}
+})
 
-Body.prototype = Object.create(HeadFoot.prototype)
-
-/**
- * Create a new node for the body.
- * @private
- * @method
- * @override
- */
-Body.prototype._createNode = function () {
-  HeadFoot.prototype._createNode.call(this)
-  $(this.node).attr('data-headfoot-body', true)
-}
-
-},{"./HeadFoot":6}],5:[function(require,module,exports){
-'use strict'
-
-var HeadFoot = require('./HeadFoot')
-
-var $ = window.jQuery
-
-module.exports = Footer
-
-/**
- * Footer class
- * @class
- * @augments HeadFoot
- * @param {Editor} editor The current editor
- * @param {DOMElement} documentBody The document body for this documentBody
- * @param {DOMNode} [existingElement] The optional existing element that constitute a header of a footer and should be loaded from it
- * @property {Editor} _editor The current editor
- * @property {DOMElement}  _documentBody The body element of the current document
- * @property {DOMNode} node The header/footer's node element
- */
-function Footer (editor, _documentBody, existingElement) {
-  HeadFoot.call(this, editor, _documentBody, existingElement)
-  $(this.node).appendTo(this._documentBody)
-}
-
-Footer.prototype = Object.create(HeadFoot.prototype)
-
-/**
- * Create a new node for the footer.
- * @private
- * @method
- * @override
- */
-Footer.prototype._createNode = function () {
-  HeadFoot.prototype._createNode.call(this)
-  $(this.node).attr('data-headfoot-footer', true)
-}
-
-},{"./HeadFoot":6}],6:[function(require,module,exports){
-'use strict'
-
-var ui = require('../utils/ui')
-var domUtils = require('../utils/dom')
-
-var $ = window.jQuery
-var tinymce = window.tinymce
-
-module.exports = HeadFoot
-
-/**
- * Abstract class to inherit Header and Footer sub classes from.
- * @constructor
- * @param {Editor} editor The current editor
- * @param {DOMElement} documentBody The document body for this documentBody
- * @param {DOMNode} [existingElement] The optional existing element that constitute a header of a footer and should be loaded from it
- * @property {Editor} _editor The current editor
- * @property {DOMElement}  _documentBody The body element of the current document
- * @property {DOMNode} node The header/footer's node element
- */
-function HeadFoot (editor, documentBody, existingElement) {
-  // bind useful vars
-  var that = this
-  this._editor = editor
-  this._documentBody = documentBody
-  this.pluginPaginate = editor.plugins.paginate
-
-  // load the existing element if it exists or create a new one.
-  if (existingElement) {
-    this.node = existingElement
-  } else {
-    this._createNode()
-  }
-
-  var $thisNode = $(this.node)
-  // live the node and implements the double click handler to switch the contentEditable mode.
-  this.isActive = false
-  this.liveNode()
-  $thisNode.dblclick(this.enterNode.bind(this))
-  $(this._documentBody).on('EnterNode', function (evt) {
-    if (that.node !== evt.target) {
-      that.liveNode()
+if (window.env === 'development') {
+  Format.defaults['dev-small'] = new Format('dev-small', {
+    height: '150mm',
+    width: '100mm',
+    margins: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' },
+    header: {
+      height: '10mm',
+      // height: 'auto',
+      margins: { right: '15mm', bottom: '10mm', left: '5mm' },
+      border: { color: 'red', style: 'dashed', width: '1mm' }
+    },
+    footer: {
+      height: '10mm',
+      // height: 'auto',
+      margins: { right: '0', top: '1cm', left: '0' },
+      border: { color: 'red', style: 'dashed', width: '1mm' }
+    },
+    body: {
+      border: { color: 'red', style: 'dashed', width: '1mm' }
     }
   })
 }
 
 /**
- * Create a new node for an header or a footer.
- * @private
- * @method
+ * @param {string} name
+ * @param {object} config
  */
-HeadFoot.prototype._createNode = function () {
-  this.node = $('<section>').attr('data-headfoot', true)[0]
-  this.initParagraph()
-}
-
-/**
- * Disable the page edition and enable the edition for the header or the footers
- * @method
- * @returns void
- */
-HeadFoot.prototype.enterNode = function () {
-  if (!this.isActive) {
-    // var that = this
-    // var currentPageContent
-    var headfootContent
-    var $thisNode = $(this.node)
-
-    this.isActive = true
-    $thisNode.trigger('EnterNode', this.node)
-
-    // disable paginator watching
-    // if (this.pluginPaginate) {
-    //   this.pluginPaginate.disableWatchPage()
-    //
-    //   // toggle elements states (contentEditable or not)
-    //   $.each(this.pluginPaginate.paginator.getPages(), function () {
-    //     ui.lockNode.call(this)
-    //   })
-    // }
-
-    ui.unlockNode.call(this.node)
-
-    // select the unlocked node content or not
-    headfootContent = this.node.firstChild
-    if (!headfootContent) {
-      throw new Error('no child is not allowed in a headfoot')
-    }
-    if (this.pristine()) {
-      this.initParagraph()
-    }
-    this._editor.focus()
-    this._editor.selection.setCursorLocation(this.node, this.node.childNodes.length)
-    $thisNode.focus()
-
-    // if (this.pluginPaginate) {
-    //   // bind a click handler to the current page to toggle contentEditable state between header/footer and the page
-    //   currentPageContent = this.pluginPaginate.getCurrentPage().content()
-    //   $(currentPageContent).click(that.liveNode.bind(that))
-    // }
+function Format (name, config) {
+  this.name = name
+  this.orientation = (config.height > config.width) ? 'portrait' : 'paysage'
+  this.width = config.width
+  this.height = config.height
+  this.margins = {
+    top: config.margins ? config.margins.top : '0',
+    right: config.margins ? config.margins.right : '0',
+    bottom: config.margins ? config.margins.bottom : '0',
+    left: config.margins ? config.margins.left : '0'
   }
+  this.header = {
+    height: config.header ? config.header.height : '0',
+    margins: {
+      right: config.header && config.header.margins ? config.header.margins.right : '0',
+      bottom: config.header && config.header.margins ? config.header.margins.bottom : '0',
+      left: config.header && config.header.margins ? config.header.margins.left : '0'
+    },
+    border: {
+      color: config.header && config.header.border ? config.header.border.color : 'black',
+      style: config.header && config.header.border ? config.header.border.style : 'none',
+      width: config.header && config.header.border ? config.header.border.width : '0'
+    }
+  }
+  this.footer = {
+    height: config.footer ? config.footer.height : '0',
+    margins: {
+      top: config.footer && config.footer.margins ? config.footer.margins.top : '0',
+      right: config.footer && config.footer.margins ? config.footer.margins.right : '0',
+      left: config.footer && config.footer.margins ? config.footer.margins.left : '0'
+    },
+    border: {
+      color: config.footer && config.footer.border ? config.footer.border.color : 'black',
+      style: config.footer && config.footer.border ? config.footer.border.style : 'none',
+      width: config.footer && config.footer.border ? config.footer.border.width : '0'
+    }
+  }
+  this.body = {
+    border: {
+      color: config.body && config.body.border ? config.body.border.color : 'black',
+      style: config.body && config.body.border ? config.body.border.style : 'none',
+      width: config.body && config.body.border ? config.body.border.width : '0'
+    }
+  }
+  this.showAlert = true
 }
 
 /**
- * Do the inverse of .enterNode(). Disable edition for the header or footer, and re-enable it for the current page.
+ * Apply the current format to the DOM and fires the `AppliedToBody` event to
+ * permit the main app to bind the format object definition to the document
+ * object to be saved with.
  * @method
- * @returns void
+ * @param {HeadersFooters} plugin The current HeaderFooters plugin instance
+ * @fires `HeadersFooters:Format:AppliedToBody`
+ * @returns {undefined}
  */
-HeadFoot.prototype.liveNode = function () {
-  this.isActive = false
-  $(this.node).trigger('LiveNode', this.node)
-  if (this.pluginPaginate) {
-    this.pluginPaginate.enableWatchPage()
-    $.each(this.pluginPaginate.paginator.getPages(), function () {
-      ui.unlockNode.call(this)
+function applyToPlugin (plugin) {
+  var that = this
+  var editor = plugin.editor
+
+  if (plugin.documentBody) {
+    var win = plugin.editor.getWin()
+    var body = plugin.documentBody
+
+    apply()
+
+    if (plugin.getMaster()) {
+      plugin = plugin.getMaster()
+      apply()
+    }
+  }
+
+  function apply () {
+    that = plugin.currentFormat
+
+    applyToStackedLayout()
+    applyToBody(plugin)
+
+    editor.fire('HeadersFooters:Format:AppliedToBody', {
+      documentFormat: that
     })
   }
-  if (domUtils.elementIsEmpty(this.node, this._editor.getWin())) {
-    this.setPlaceholder()
-  }
-  ui.lockNode.call(this.node)
-}
 
-HeadFoot.prototype.setPlaceholder = function () {
-  var translatedLabel = tinymce.i18n.translate('Double-click to edit this content')
-  var $p = this.initParagraph().html(translatedLabel)
-  $(this.node).append($p)
-  this.pristine(true)
-}
-
-HeadFoot.prototype.initParagraph = function () {
-  var $span = $('<span>').css({ 'font-family': 'calibri', 'font-size': '12pt' })
-  var $p = $('<p>').append($span)
-  $span.html('<br data-mce-bogus="1">')
-  $(this.node).removeAttr('data-headfoot-pristine').empty().append($p)
-  return $p
-}
-
-/**
- * [Getter/Setter] Get or set the pristine state of the headfoot node
- * @method
- * @param {Boolean} [b] If defined, the value to set
- * @returns {Boolean|undefined} - The pristine value if no argument is given.
- * @throws {Error} - if this.node is unset an error is thrown
- */
-HeadFoot.prototype.pristine = function (b) {
-  if (!this.node || !this.node.nodeType) {
-    throw new Error('Missing node can not be pristine or not.')
-  }
-  var attr = 'data-headfoot-pristine'
-  if (b === undefined) {
-    return this.node.getAttribute(attr) === 'true'
-  } else {
-    this.node.setAttribute(attr, !!b)
-  }
-}
-
-},{"../utils/dom":11,"../utils/ui":12}],7:[function(require,module,exports){
-'use strict'
-
-var HeadFoot = require('./HeadFoot')
-
-var $ = window.jQuery
-
-module.exports = Header
-
-/**
- * Header class
- * @class
- * @augments HeadFoot
- * @param {Editor} editor The current editor
- * @param {DOMElement} documentBody The document body for this documentBody
- * @param {DOMNode} [existingElement] The optional existing element that constitute a header of a footer and should be loaded from it
- * @property {Editor} _editor The current editor
- * @property {DOMElement}  _documentBody The body element of the current document
- * @property {DOMNode} node The header/footer's node element
- */
-function Header (editor, _documentBody, existingElement) {
-  HeadFoot.call(this, editor, _documentBody, existingElement)
-  $(this.node).prependTo(this._documentBody)
-}
-
-Header.prototype = Object.create(HeadFoot.prototype)
-
-/**
- * Create a new node for the header.
- * @private
- * @method
- * @override
- */
-Header.prototype._createNode = function () {
-  HeadFoot.prototype._createNode.call(this)
-  $(this.node).attr('data-headfoot-header', true)
-}
-
-},{"./HeadFoot":6}],8:[function(require,module,exports){
-'use strict'
-
-var Header = require('./Header')
-var Footer = require('./Footer')
-var Body = require('./Body')
-
-var $ = window.jQuery
-
-module.exports = HeaderFooterFactory
-
-/**
- * HeaderFactory class. The aim of this class is to manage the document header and footer.
- * @constructor
- * @param {Editor} editor The current editor
- * @property {Editor} _editor The current editor
- * @property {Boolean} _hasHeader Tell if the document has a header or not
- * @property {Boolean} _hasBody Tell if the document has a body or not
- * @property {Boolean} _hasFooter Tell if the document has a fooer or not
- * @property {Header} header The current header if exists
- * @property {Footer} footer The current footer if exists
- */
-function HeaderFooterFactory (editor) {
-  this._editor = editor
-  this._hasHeader = false
-  this._hasBody = false
-  this._hasFooter = false
-}
-
-/**
- * Load an existing header or footer depending of its nature, from its DOM element.
- * @method
- * @param {DOMElement} element
- * @returns void
- */
-HeaderFooterFactory.prototype.loadElement = function (element) {
-  var $el = $(element)
-  if ($el.attr('data-headfoot-header')) {
-    this._hasHeader = true
-    this.header = new Header(this._editor, this._editor.getBody(), element)
-  } else if ($el.attr('data-headfoot-footer')) {
-    this._hasFooter = true
-    this.footer = new Footer(this._editor, this._editor.getBody(), element)
-  } else if ($el.attr('data-headfoot-body')) {
-    this._hasBody = true
-    this.body = new Body(this._editor, this._editor.getBody(), element, this.hasHeader(), this.hasFooter(), this.header)
-  } else throw new Error('This element is not a header, footer neither a body element.')
-}
-
-/**
- * Insert a new header
- * @method
- * @returns void
- */
-HeaderFooterFactory.prototype.insertHeader = function () {
-  this.header = new Header(this._editor, this._editor.getBody())
-  this._hasHeader = true
-  this.header.enterNode()
-}
-
-/**
- * Insert a new body
- * @method
- * @returns void
- */
-HeaderFooterFactory.prototype.insertBody = function () {
-  this.body = new Body(this._editor, this._editor.getBody(), this._hasHeader, this._hasFooter, this.header)
-  this._hasBody = true
-  this.body.enterNode()
-}
-
-/**
- * Insert a new footer
- * @method
- * @returns void
- */
-HeaderFooterFactory.prototype.insertFooter = function () {
-  this.footer = new Footer(this._editor, this._editor.getBody())
-  this._hasFooter = true
-  this.footer.enterNode()
-}
-
-/**
- * Remove the current header
- * @method
- * @returns void
- */
-HeaderFooterFactory.prototype.removeHeader = function () {
-  // the header can be removed only if it exists
-  if (!this.hasHeader()) throw new Error('No header available to remove')
-
-  $(this.header.node).remove()
-  this.header = null
-  this._hasHeader = false
-}
-
-/**
- * Insert a new footer
- * @method
- * @returns void
- */
-HeaderFooterFactory.prototype.removeFooter = function () {
-  // the footer can be removed only if it exists
-  if (!this.hasFooter()) throw new Error('No footer available to remove')
-
-  $(this.footer.node).remove()
-  this.footer = null
-  this._hasFooter = false
-}
-
-/**
- * Check if the document has a header or not
- * @method
- * @returns {Boolean} true if the document has a header, false if not
- */
-HeaderFooterFactory.prototype.hasHeader = function () {
-  return this._hasHeader
-}
-
-/**
- * Check if the document has a body or not
- * @method
- * @returns {Boolean} true if the document has a body, false if not
- */
-HeaderFooterFactory.prototype.hasBody = function () {
-  return this._hasBody
-}
-
-/**
- * Check if the document has a footer or not
- * @method
- * @returns {Boolean} true if the document has a footer, false if not
- */
-HeaderFooterFactory.prototype.hasFooter = function () {
-  return this._hasFooter
-}
-
-HeaderFooterFactory.prototype.focusToEndOfBody = function () {
-  var $body = $(this.body.node)
-  var lastBodyChild = $body.children().last()[0]
-  this.body.enterNode()
-  this._editor.selection.setCursorLocation(lastBodyChild, lastBodyChild.childNodes.length)
-}
-
-HeaderFooterFactory.prototype.forceCursorToAllowedLocation = function (node, parents) {
-  if (this.hasBody()) {
-    if (!parents) {
-      var $node = $(node)
-      var allparents = $node.parents()
-      parents = allparents.slice(0, -2)
-    }
-
-    var lastParent = parents[parents.length - 1]
-    var allowedLocations = [this.body.node]
-
-    if (this.hasHeader()) {
-      allowedLocations.push(this.header.node)
-    }
-    if (this.hasFooter()) {
-      allowedLocations.push(this.footer.node)
-    }
-
-    if (!~allowedLocations.indexOf(lastParent) && !~allowedLocations.indexOf(node)) {
-      this.focusToEndOfBody()
-    }
-  }
-}
-
-HeaderFooterFactory.prototype.getActiveSection = function () {
-  return [this.header, this.body, this.footer]
-  .reduce(function (prev, section) {
-    if (prev) {
-      return prev
+  function applyToStackedLayout () {
+    // var bodyHeight = uiUtils.getElementHeight(body)
+    var bodyHeight
+    if (plugin.type === 'body') {
+      bodyHeight = that.calculateBodyHeight(editor)
     } else {
-      if (section && section.isActive) {
-        return section
+      bodyHeight = that[plugin.type].height
+    }
+    var rules = {
+      boxSizing: 'border-box',
+      height: bodyHeight,
+      minHeight: bodyHeight,
+      maxHeight: bodyHeight
+    }
+
+    plugin.stackedLayout.editarea.css({border: 0})
+    plugin.stackedLayout.iframe.css(rules)
+
+    setBodyCss(plugin)
+  }
+
+  function applyToBody (plugin) {
+    // NOTE: set padding to zero to fix unknown bug
+    // where all iframe's body paddings are set to '2cm'...
+    // TODO: remove this statement if the 2cm padding source is found.
+    $(body, win).css({
+      margin: 0,
+      padding: 0,
+      overflow: 'hidden'
+    })
+
+    // Allow body panel overflow
+    if (plugin.isMaster) {
+      $(body, win).css({
+        overflowY: 'auto'
+      })
+    }
+
+    // var bodyHeight = uiUtils.getElementHeight(body, win)
+    if (plugin.isMaster) {
+      plugin.pageLayout.pageWrapper.css({
+        overflow: 'auto', // TODO: update model spec
+        background: '#464646',
+        // height: 'auto', // TODO: update model spec
+        position: 'absolute', // TODO: update model spec
+        top: 0, // TODO: update model spec
+        right: 0, // TODO: update model spec
+        left: 0, // TODO: update model spec
+        bottom: 0, // TODO: update model spec
+        margin: 0
+        // padding: '3cm 0 3cm 0',
+        // width: '100%'
+      })
+      plugin.pageLayout.pagePanel.css({
+        overflow: 'hidden', // TODO: update model spec
+        background: 'white',
+        border: 0,
+        boxSizing: 'border-box',
+        // minHeight: that.height, // @TODO update for pagination
+        height: that.height, // @TODO update for pagination
+        margin: '25mm auto 2cm auto',
+        paddingTop: that.margins.top,
+        paddingRight: that.margins.right,
+        paddingBottom: that.margins.bottom,
+        paddingLeft: that.margins.left,
+        width: that.width
+      })
+      plugin.pageLayout.headerWrapper.css({
+        overflow: 'hidden', // TODO: update model spec
+        // border: 0,
+        boxSizing: 'border-box',
+        height: that.header.height + that.header.margins.bottom,
+        margin: 0,
+        padding: 0
+        // width: '100%' // TODO: update model spec
+      })
+
+      /* TODO: split border to top/right/bottom/left */
+      var hasHeader = that.hasHeader()
+      var headerHasBorder = that.hasHeaderBorder()
+      plugin.pageLayout.headerPanel.css({
+        overflow: 'hidden', // TODO: update model spec
+        borderColor: (hasHeader && !headerHasBorder) ? 'black' : that.header.border.color,
+        borderStyle: (hasHeader && !headerHasBorder) ? 'solid' : that.header.border.style,
+        borderWidth: (hasHeader && !headerHasBorder) ? '0' : that.header.border.width,
+        boxSizing: 'border-box',
+        height: that.header.height,
+        marginTop: 0,
+        marginRight: that.header.margins.right,
+        marginBottom: that.header.margins.bottom,
+        marginLeft: that.header.margins.left,
+        padding: 0
+        // width: '100%' // TODO: update model spec
+      })
+      if (plugin.pageLayout.headerIframe) {
+        plugin.pageLayout.headerIframe.css({
+          height: that.header.height,
+          minHeight: that.header.height,
+          maxHeight: that.header.height
+        })
+      }
+
+      var bodyHeight = that.calculateBodyHeight(editor)
+      // var bodyWrapperHeight = Number(units.getValueFromStyle(bodyHeight)) +
+      //   Number(units.getValueFromStyle(that.body.border.width)) * 2
+      // bodyWrapperHeight += 'mm'
+      plugin.pageLayout.bodyWrapper.css({
+        // overflow: 'hidden', // TODO: update model spec
+        overflow: 'auto', // TODO: update for pagination
+        border: 0,
+        boxSizing: 'border-box',
+        height: bodyHeight, // bodyWrapperHeight
+        margin: 0,
+        padding: 0,
+        width: '100%'
+      })
+      plugin.pageLayout.bodyPanel.css({
+        // overflow: 'hidden', // TODO: update model spec
+        overflow: 'auto', // TODO: update for pagination
+        borderColor: that.body.border.color,
+        borderStyle: that.body.border.style,
+        borderWidth: that.body.border.width,
+        boxSizing: 'border-box',
+        // minHeight: that.calculateBodyHeight(), // @TODO update for pagination
+        height: bodyHeight, // @TODO update for pagination
+        margin: 0,
+        padding: 0,
+        width: '100%'
+      })
+      plugin.pageLayout.footerWrapper.css({
+        overflow: 'hidden', // TODO: update model spec
+        border: 0,
+        // borderTop: 'dashed 1px gray', // TODO update model spec?
+        boxSizing: 'border-box',
+        height: that.footer.height + that.footer.margins.top,
+        margin: 0,
+        padding: 0
+        // width: '100%' // TODO: update model spec
+      })
+
+      var hasFooter = that.hasFooter()
+      var footerHasBorder = that.hasFooterBorder()
+      /* TODO: split border to top/right/bottom/left */
+      plugin.pageLayout.footerPanel.css({
+        overflow: 'hidden', // TODO: update model spec
+        borderColor: (hasFooter && !footerHasBorder) ? 'black' : that.footer.border.color,
+        borderStyle: (hasFooter && !footerHasBorder) ? 'solid' : that.footer.border.style,
+        borderWidth: (hasFooter && !footerHasBorder) ? '0' : that.footer.border.width,
+        boxSizing: 'border-box',
+        height: that.footer.height,
+        marginTop: that.footer.margins.top,
+        marginRight: that.footer.margins.right,
+        marginBottom: 0,
+        marginLeft: that.footer.margins.left,
+        padding: 0
+        // width: '100%' // TODO: update model spec
+      })
+      if (plugin.pageLayout.footerIframe) {
+        plugin.pageLayout.footerIframe.css({
+          height: that.footer.height,
+          minHeight: that.footer.height,
+          maxHeight: that.footer.height
+        })
       }
     }
-  }, null)
+  }
+
+  /**
+   * Set iframes -> <body> CSS style:
+   * - overflow-y,
+   * - height
+   * - border
+   * @param {tinymce.Plugin} plugin
+   */
+  function setBodyCss (plugin) {
+    var ctx = plugin.stackedLayout.iframe[0].contentDocument
+    var borderWidth = plugin.stackedLayout.root.css('border-width')
+    if (borderWidth === '0px') {
+      // use default dashed gray border of 1px
+      borderWidth = '1px'
+    }
+    window.winroot = plugin.stackedLayout.root
+    editor.$('html, body', ctx).css({
+      'overflow-y': 'hidden'
+    })
+    // editor.$('body.body-panel', ctx).css({
+    //   'overflow-y': 'auto'
+    // })
+    editor.$('html', ctx).css({
+      'height': 'calc(100% - ' + borderWidth + ' - ' + borderWidth + ')'
+    })
+    editor.$('body', ctx).css({
+      // 'height': 'calc(100% - ' + borderWidth + ' - ' + borderWidth + ')',
+      'height': '100%',
+      'border': '1px dashed gray'
+    })
+  }
 }
 
-},{"./Body":4,"./Footer":5,"./Header":7}],9:[function(require,module,exports){
+/**
+ * Caluculate the document Body height depending the Format propeties
+ * @param {Editor}
+ * @returns {String} the body height (in mm for now)
+ * @fires HeadersFooters:Error:NegativeBodyHeight
+ * @TODO support other size units (cm, pt)
+ */
+function calculateBodyHeight (editor) {
+  var that = this
+  var ret
+  var height = units.getValueFromStyle(this.height)
+  var marginTop = units.getValueFromStyle(this.margins.top)
+  var marginBottom = units.getValueFromStyle(this.margins.bottom)
+  var headerHeight = units.getValueFromStyle(this.header.height)
+  var headerMarginBottom = units.getValueFromStyle(this.header.margins.bottom)
+  var footerHeight = units.getValueFromStyle(this.footer.height)
+  var footerMarginTop = units.getValueFromStyle(this.footer.margins.top)
+
+  var value = height - marginTop - marginBottom -
+    headerHeight - headerMarginBottom -
+    footerHeight - footerMarginTop
+
+  ret = value + 'mm'
+  // console.log('calculateBodyHeight() => ', ret)
+  if (value <= 0) {
+    if (this.showAlert) {
+      var message
+      this.showAlert = false
+      message = 'Inconsistant Custom Format: « Body height < 0 ». Do you want to fix it ?'
+
+      editor.fire('HeadersFooters:Error:NegativeBodyHeight')
+      editor.windowManager.confirm(message, function (conf) {
+        if (conf) {
+          editor.execCommand('editFormatCmd')
+        }
+        that.showAlert = true
+      })
+    }
+  }
+  return ret
+}
+
+function hasHeader () {
+  return !this.header || (this.header.height && this.header.height !== '0')
+}
+
+function hasFooter () {
+  return !this.footer || this.footer.height && this.footer.height !== '0'
+}
+
+function hasHeaderBorder () {
+  return !this.hasHeader() || this.header.border.width && this.header.border.width !== '0'
+}
+
+function hasFooterBorder () {
+  return !this.hasFooter() || this.footer.border.width && this.footer.border.width !== '0'
+}
+
+},{"../utils/ui":14,"../utils/units":15}],5:[function(require,module,exports){
 'use strict'
 
 var q = require('q')
+var timeUtils = require('../utils/time')
 var $ = window.jQuery
 
+var timestamp = timeUtils.timestamp
+
 module.exports = MenuItem
+
+// Public API
+MenuItem.prototype = {
+  getUIControl: getUIControl,
+  onclick: onclick,
+  show: show,
+  hide: hide,
+  disable: disable,
+  enable: enable
+}
+
+// Private API
+// _setUIControlPromise()
+// _camel2Dash()
 
 /**
  * MenuItem Class
@@ -2726,14 +2683,14 @@ module.exports = MenuItem
  */
 function MenuItem (name, options) {
   this.name = name
-  _setUIControlPromise(this)
+  _setUIControlPromise.call(this)
   for (var key in options) {
     if (key !== 'visible' && key !== 'disabled') {
       this[key] = options[key]
     }
   }
   if (!options.id) {
-    this.id = 'mce-plugin-headersfooters-' + camel2Dash(name)
+    this.id = 'mce-plugin-headersfooters-' + _camel2Dash(name) + timestamp()
   }
   if (options.visible === false) this.hide()
   if (options.disabled) this.disable()
@@ -2747,7 +2704,7 @@ function MenuItem (name, options) {
  * var menuElement = ui.menuItems.insertHeader.getUIControl()
  * menuElement.css('color','red')
  */
-MenuItem.prototype.getUIControl = function () {
+function getUIControl () {
   var that = this
   return this._renderingPromise.then(function () {
     return $('#' + that.id)
@@ -2763,10 +2720,10 @@ MenuItem.prototype.getUIControl = function () {
  * // to override this placehoder callback, juste assign a new one
  * var menuItem = new MenuItem('my menu item', options)
  * menuItem.onclick = function () {
- * 	// implement your own
+ * => implement your own
  * }
  */
-MenuItem.prototype.onclick = function () {
+function onclick () {
   console.info('%s menu item has been clicked', this.name)
 }
 
@@ -2781,7 +2738,7 @@ MenuItem.prototype.onclick = function () {
  *   menuItem.disable() // now the menu item is shown but disabled
  * })
  */
-MenuItem.prototype.show = function () {
+function show () {
   return this.getUIControl().then(function (uiControl) {
     uiControl.show()
     return uiControl
@@ -2793,7 +2750,7 @@ MenuItem.prototype.show = function () {
  * @method
  * @returns {Promise} A promise resolved by the menu item
  */
-MenuItem.prototype.hide = function () {
+function hide () {
   return this.getUIControl().then(function (uiControl) {
     uiControl.hide()
     return uiControl
@@ -2817,7 +2774,7 @@ MenuItem.prototype.hide = function () {
  *   })
  * })
  */
-MenuItem.prototype.disable = function () {
+function disable () {
   return this.getUIControl().then(function (uiControl) {
     uiControl.addClass('mce-disabled')
     return uiControl
@@ -2836,7 +2793,7 @@ MenuItem.prototype.disable = function () {
  *   },2000)
  * })
  */
-MenuItem.prototype.enable = function () {
+function enable () {
   return this.getUIControl().then(function (uiControl) {
     uiControl.removeClass('mce-disabled')
     return uiControl
@@ -2855,11 +2812,12 @@ MenuItem.prototype.enable = function () {
  * @example
  * function MenuItem (name, options) {
  *   this.name = name
- *   _setUIControlPromise(this) // this step must be done more earlier as possible to get access to the DOMNode when it will be rendered
+ *   _setUIControlPromise.call(this) // this step must be done more earlier as possible to get access to the DOMNode when it will be rendered
  *   // continue to build the instance
  * }
  */
-function _setUIControlPromise (that) {
+function _setUIControlPromise () {
+  var that = this
   var d = q.defer()
   var $body = $('body')
 
@@ -2873,7 +2831,7 @@ function _setUIControlPromise (that) {
   //   console.info('menusController:mceMenuItemRendered', itemID)
   //   if (itemID === that.id) d.resolve()
   // })
-  that._renderingPromise = d.promise
+  this._renderingPromise = d.promise
 }
 
 /**
@@ -2884,23 +2842,812 @@ function _setUIControlPromise (that) {
  * @param {String} inputStr The input string to dasherize
  * @example
  * var camelCasedString = 'helloWorld'
- * var dashedString = camel2Dash(s)
+ * var dashedString = _camel2Dash(s)
  * console.log(dashedString)
  * // -> hello-world
  */
-function camel2Dash (inputStr) {
+function _camel2Dash (inputStr) {
   if (!inputStr.replace) throw new Error('The replace() method is not available.')
   return inputStr.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
 }
 
-},{"q":3}],10:[function(require,module,exports){
+},{"../utils/time":12,"q":3}],6:[function(require,module,exports){
+'use strict'
+
+var uiHelpers = require('../utils/ui-helpers')
+// var eventHandlers = require('../event-handlers')
+
+var tinymce = window.tinymce
+
+module.exports = {
+  createFormatTab: createFormatTab,
+  createMarginsTab: createMarginsTab,
+  createHeaderTab: createHeaderTab,
+  createFooterTab: createFooterTab,
+  createBodyTab: createBodyTab
+}
+
+/**
+ * Create the general tab component that show form inputs for:
+ * - paper labeled formats,
+ * - paper custom size
+ * @method
+ * @returns {TabPanel} formatTab
+ */
+function createFormatTab (format) {
+  // format select box
+  var formats = tinymce.activeEditor.plugins.headersfooters.availableFormats
+  var formatValues = []
+  for (var name in formats) {
+    var f = formats[name]
+    formatValues.push({
+      text: f.name,
+      value: f.name
+    })
+  }
+  var formatSelectBox = uiHelpers.createSelectBox('Format', 'newformat', formatValues, 150)
+
+  // orientation select box
+  var orientationSelectBox = uiHelpers.createSelectBox('Orientation', 'orientation', [
+    {text: 'paysage', value: 'paysage'},
+    {text: 'portrait', value: 'portrait'}
+  ], 150)
+
+  // page height form inputs
+  var pageHeightTextBox = uiHelpers.createTextBox('Page height', 'pageHeight', 65)
+  var pageHeightUnitSelect = uiHelpers.createUnitSelectBox('pageHeightUnit', 'mm')
+
+  // page width form inputs
+  var pageWidthTextBox = uiHelpers.createTextBox('Page width', 'pageWidth', 65)
+  var pageWidthUnitSelect = uiHelpers.createUnitSelectBox('pageWidthUnit', 'mm')
+
+  formatSelectBox.on('select', function (e) {
+    var selectValue = e.control.value()
+    var _format = formats[selectValue]
+    pageHeightTextBox.value(_format.height.slice(0, -2)) // using raw 'mm' value
+    pageWidthTextBox.value(_format.width.slice(0, -2)) // using raw 'mm' value
+  })
+  orientationSelectBox.on('select', function (e) {
+    var orientation = orientationSelectBox.value()
+    var height = pageHeightTextBox.value()
+    var width = pageWidthTextBox.value()
+    var max, min
+    if (height >= width) {
+      max = height
+      min = width
+    } else {
+      max = width
+      min = height
+    }
+    if (orientation === 'portrait') {
+      pageHeightTextBox.value(max) // using raw 'mm' value
+      pageWidthTextBox.value(min) // using raw 'mm' value
+    } else {
+      pageHeightTextBox.value(min) // using raw 'mm' value
+      pageWidthTextBox.value(max) // using raw 'mm' value
+    }
+  })
+
+  // paperSize fieldset form
+  var formatForm = uiHelpers.createForm([
+    formatSelectBox,
+    orientationSelectBox
+  ], 1)
+
+  // paperSize fieldset form
+  var paperSizeForm = uiHelpers.createForm([
+    pageHeightTextBox, pageHeightUnitSelect,
+    pageWidthTextBox, pageWidthUnitSelect
+  ], 2)
+
+  // format fieldset
+  var formatFieldSet = uiHelpers.createFieldset('Format', [formatForm], null, 300)
+
+  // format fieldset
+  var paperSizeFieldSet = uiHelpers.createFieldset('Paper Size', [paperSizeForm], 460)
+
+  // tab
+  var tab = uiHelpers.createTab('Paper', [formatFieldSet, paperSizeFieldSet])
+
+  return tab
+}
+
+/**
+ * Create the margins tab component that show form inputs for:
+ * - paper margins
+ * @method
+ * @returns {TabPanel} marginTab
+ */
+function createMarginsTab (format) {
+  var marginTopTextBox = uiHelpers.createTextBox('Margin top', 'marginTop', 65)
+  var marginTopUnitSelect = uiHelpers.createUnitSelectBox('marginTopUnit', 'mm')
+
+  var marginRightTextBox = uiHelpers.createTextBox('Margin right', 'marginRight', 65)
+  var marginRightUnitSelect = uiHelpers.createUnitSelectBox('marginRightUnit', 'mm')
+
+  var marginBottomTextBox = uiHelpers.createTextBox('Margin bottom', 'marginBottom', 65)
+  var marginBottomUnitSelect = uiHelpers.createUnitSelectBox('marginBottomUnit', 'mm')
+
+  var marginLeftTextBox = uiHelpers.createTextBox('Margin left', 'marginLeft', 65)
+  var marginLeftUnitSelect = uiHelpers.createUnitSelectBox('marginLeftUnit', 'mm')
+
+  // paperSize fieldset form
+  var form = uiHelpers.createForm([
+    marginTopTextBox, marginTopUnitSelect,
+    marginRightTextBox, marginRightUnitSelect,
+    marginBottomTextBox, marginBottomUnitSelect,
+    marginLeftTextBox, marginLeftUnitSelect
+  ], 2)
+
+  var fieldSet = uiHelpers.createFieldset('Margins', [form], 460)
+
+  // tab
+  var tab = uiHelpers.createTab('Margin', [fieldSet])
+
+  return tab
+}
+
+/**
+ * Create the margins tab component that show form inputs for:
+ * - paper margins
+ * @method
+ * @returns {TabPanel} marginTab
+ */
+function createHeaderTab (format) {
+  // header height
+  var heightTextBox = uiHelpers.createTextBox('Height', 'headerHeight', 65)
+  var heightUnitSelect = uiHelpers.createUnitSelectBox('headerHeightUnit', 'mm')
+
+  var heightForm = uiHelpers.createForm([
+    heightTextBox, heightUnitSelect
+  ], 2)
+
+  var heightFieldSet = uiHelpers.createFieldset('Header dimensions', [heightForm], 460)
+
+  // header margins
+
+  var marginRightTextBox = uiHelpers.createTextBox('Margin right', 'headerMarginRight', 65)
+  var marginRightUnitSelect = uiHelpers.createUnitSelectBox('headerMarginRightUnit', 'mm')
+
+  var marginBottomTextBox = uiHelpers.createTextBox('Margin bottom', 'headerMarginBottom', 65)
+  var marginBottomUnitSelect = uiHelpers.createUnitSelectBox('headerMarginBottomUnit', 'mm')
+
+  var marginLeftTextBox = uiHelpers.createTextBox('Margin left', 'headerMarginLeft', 65)
+  var marginLeftUnitSelect = uiHelpers.createUnitSelectBox('headerMarginLeftUnit', 'mm')
+
+  var form = uiHelpers.createForm([
+    marginRightTextBox, marginRightUnitSelect,
+    marginBottomTextBox, marginBottomUnitSelect,
+    marginLeftTextBox, marginLeftUnitSelect
+  ], 2)
+
+  var marginsFieldSet = uiHelpers.createFieldset('Header margins', [form], 460)
+
+  // header borders
+  var borderWidthTextBox = uiHelpers.createTextBox('Border width', 'headerBorderWidth', 65)
+  var borderWidthUnitSelect = uiHelpers.createUnitSelectBox('headerBorderWidthUnit', 'mm')
+
+  // border style
+  var borderStyleItemNone = uiHelpers.createListBoxItem('none')
+  var borderStyleItemHidden = uiHelpers.createListBoxItem('hidden')
+  var borderStyleItemDotted = uiHelpers.createListBoxItem('dotted')
+  var borderStyleItemDashed = uiHelpers.createListBoxItem('dashed')
+  var borderStyleItemSolid = uiHelpers.createListBoxItem('solid')
+  var borderStyleItemDouble = uiHelpers.createListBoxItem('double')
+  var borderStyleItemGroove = uiHelpers.createListBoxItem('groove')
+  var borderStyleItemRidge = uiHelpers.createListBoxItem('ridge')
+  var borderStyleItemInset = uiHelpers.createListBoxItem('inset')
+  var borderStyleItemOutset = uiHelpers.createListBoxItem('outset')
+  var borderStyleValues = [
+    borderStyleItemNone, borderStyleItemHidden, borderStyleItemDotted,
+    borderStyleItemDashed, borderStyleItemSolid, borderStyleItemDouble,
+    borderStyleItemGroove, borderStyleItemRidge, borderStyleItemInset,
+    borderStyleItemOutset
+  ]
+  var borderStyleListBox = uiHelpers.createListBox('Border style', 'headerBorderStyle', borderStyleValues, borderStyleItemNone, 90)
+
+  // border color picker
+  var borderColorPicker = uiHelpers.createColorPicker('Border color', 'headerBorderColor', function () {})
+
+  // create form
+  var borderForm1 = uiHelpers.createForm([ borderWidthTextBox, borderWidthUnitSelect ])
+  var borderForm2 = uiHelpers.createForm([ borderStyleListBox, borderColorPicker ], 1)
+  // create field set
+  var borderFieldset = uiHelpers.createFieldset('Header borders', [ borderForm1, borderForm2 ], 460)
+
+  // tab
+  var tab = uiHelpers.createTab('Header', [heightFieldSet, marginsFieldSet, borderFieldset])
+
+  return tab
+}
+
+/**
+ * Create the footer tab component that show form inputs for:
+ * - footer height
+ * - footer margins
+ * - footer borders
+ * @method
+ * @returns {TabPanel} footerTab
+ */
+function createFooterTab (format) {
+  // header height
+  var heightTextBox = uiHelpers.createTextBox('Height', 'footerHeight', 65)
+  var heightUnitSelect = uiHelpers.createUnitSelectBox('footerHeightUnit', 'mm')
+
+  var heightForm = uiHelpers.createForm([
+    heightTextBox, heightUnitSelect
+  ], 2)
+
+  var heightFieldSet = uiHelpers.createFieldset('Footer dimensions', [heightForm], 460)
+
+  // header margins
+
+  var marginTopTextBox = uiHelpers.createTextBox('Margin top', 'footerMarginTop', 65)
+  var marginTopUnitSelect = uiHelpers.createUnitSelectBox('footerMarginTopUnit', 'mm')
+
+  var marginRightTextBox = uiHelpers.createTextBox('Margin right', 'footerMarginRight', 65)
+  var marginRightUnitSelect = uiHelpers.createUnitSelectBox('footerMarginRightUnit', 'mm')
+
+  var marginLeftTextBox = uiHelpers.createTextBox('Margin left', 'footerMarginLeft', 65)
+  var marginLeftUnitSelect = uiHelpers.createUnitSelectBox('footerMarginLeftUnit', 'mm')
+
+  var form = uiHelpers.createForm([
+    marginTopTextBox, marginTopUnitSelect,
+    marginRightTextBox, marginRightUnitSelect,
+    marginLeftTextBox, marginLeftUnitSelect
+  ], 2)
+
+  var marginsFieldSet = uiHelpers.createFieldset('Footer margins', [form], 460)
+
+  // footer borders
+  var borderWidthTextBox = uiHelpers.createTextBox('Border width', 'footerBorderWidth', 65)
+  var borderWidthUnitSelect = uiHelpers.createUnitSelectBox('footerBorderWidthUnit', 'mm')
+
+  // border style
+  var borderStyleItemNone = uiHelpers.createListBoxItem('none')
+  var borderStyleItemHidden = uiHelpers.createListBoxItem('hidden')
+  var borderStyleItemDotted = uiHelpers.createListBoxItem('dotted')
+  var borderStyleItemDashed = uiHelpers.createListBoxItem('dashed')
+  var borderStyleItemSolid = uiHelpers.createListBoxItem('solid')
+  var borderStyleItemDouble = uiHelpers.createListBoxItem('double')
+  var borderStyleItemGroove = uiHelpers.createListBoxItem('groove')
+  var borderStyleItemRidge = uiHelpers.createListBoxItem('ridge')
+  var borderStyleItemInset = uiHelpers.createListBoxItem('inset')
+  var borderStyleItemOutset = uiHelpers.createListBoxItem('outset')
+  var borderStyleValues = [
+    borderStyleItemNone, borderStyleItemHidden, borderStyleItemDotted,
+    borderStyleItemDashed, borderStyleItemSolid, borderStyleItemDouble,
+    borderStyleItemGroove, borderStyleItemRidge, borderStyleItemInset,
+    borderStyleItemOutset
+  ]
+  var borderStyleListBox = uiHelpers.createListBox('Border style', 'footerBorderStyle', borderStyleValues, borderStyleItemNone, 90)
+
+  // border color picker
+  var borderColorPicker = uiHelpers.createColorPicker('Border color', 'footerBorderColor', function () {})
+
+  // create form
+  var borderForm1 = uiHelpers.createForm([ borderWidthTextBox, borderWidthUnitSelect ])
+  var borderForm2 = uiHelpers.createForm([ borderStyleListBox, borderColorPicker ], 1)
+  // create field set
+  var borderFieldset = uiHelpers.createFieldset('Footer borders', [ borderForm1, borderForm2 ], 460)
+
+  // tab
+  var tab = uiHelpers.createTab('Footer', [heightFieldSet, marginsFieldSet, borderFieldset])
+
+  return tab
+}
+
+function createBodyTab (format) {
+  // body borders
+  var borderWidthTextBox = uiHelpers.createTextBox('Border width', 'bodyBorderWidth', 65)
+  var borderWidthUnitSelect = uiHelpers.createUnitSelectBox('bodyBorderWidthUnit', 'mm')
+
+  // border style
+  var borderStyleItemNone = uiHelpers.createListBoxItem('none')
+  var borderStyleItemHidden = uiHelpers.createListBoxItem('hidden')
+  var borderStyleItemDotted = uiHelpers.createListBoxItem('dotted')
+  var borderStyleItemDashed = uiHelpers.createListBoxItem('dashed')
+  var borderStyleItemSolid = uiHelpers.createListBoxItem('solid')
+  var borderStyleItemDouble = uiHelpers.createListBoxItem('double')
+  var borderStyleItemGroove = uiHelpers.createListBoxItem('groove')
+  var borderStyleItemRidge = uiHelpers.createListBoxItem('ridge')
+  var borderStyleItemInset = uiHelpers.createListBoxItem('inset')
+  var borderStyleItemOutset = uiHelpers.createListBoxItem('outset')
+  var borderStyleValues = [
+    borderStyleItemNone, borderStyleItemHidden, borderStyleItemDotted,
+    borderStyleItemDashed, borderStyleItemSolid, borderStyleItemDouble,
+    borderStyleItemGroove, borderStyleItemRidge, borderStyleItemInset,
+    borderStyleItemOutset
+  ]
+  var borderStyleListBox = uiHelpers.createListBox('Border style', 'bodyBorderStyle', borderStyleValues, borderStyleItemNone, 90)
+
+  // border color picker
+  var borderColorPicker = uiHelpers.createColorPicker('Border color', 'bodyBorderColor', function () {})
+
+  // create form
+  var borderForm1 = uiHelpers.createForm([ borderWidthTextBox, borderWidthUnitSelect ])
+  var borderForm2 = uiHelpers.createForm([ borderStyleListBox, borderColorPicker ], 1)
+  // create field set
+  var borderFieldset = uiHelpers.createFieldset('Body borders', [ borderForm1, borderForm2 ], 460)
+
+  // tab
+  var tab = uiHelpers.createTab('Body', [borderFieldset])
+
+  return tab
+}
+
+},{"../utils/ui-helpers":13}],7:[function(require,module,exports){
+'use strict'
+
+// var units = require('../units')
+var editFormatTabs = require('./edit-format-tabs')
+var Format = require('../classes/Format')
+
+module.exports = openMainWinFunction
+
+/**
+ * Make the openMainWin function as a closure
+ * @method
+ * @param {Editor} editor The tinymce active editor instance
+ * @returns {function} openMainWin The openMainWin closure function
+ */
+function openMainWinFunction (editor) {
+  return openMainWin
+
+  /**
+   * Open the main paragraph properties window
+   * @function
+   * @inner
+   * @returns {undefined}
+   */
+  function openMainWin (format) {
+    var formatTab = editFormatTabs.createFormatTab(format)
+    var marginsTab = editFormatTabs.createMarginsTab(format)
+    var headerTab = editFormatTabs.createHeaderTab(format)
+    var footerTab = editFormatTabs.createFooterTab(format)
+    var bodyTab = editFormatTabs.createBodyTab(format)
+
+    editor.windowManager.open({
+      bodyType: 'tabpanel',
+      title: 'Edit Document Format',
+      body: [ formatTab, marginsTab, headerTab, footerTab, bodyTab ],
+      data: {
+        newformat: format.name,
+        orientation: format.orientation,
+        pageHeight: format.height.slice(0, -2),
+        pageWidth: format.width.slice(0, -2),
+        marginTop: format.margins.top.slice(0, -2),
+        marginRight: format.margins.right.slice(0, -2),
+        marginBottom: format.margins.bottom.slice(0, -2),
+        marginLeft: format.margins.left.slice(0, -2),
+        headerBorderWidth: format.header.border.width.slice(0, -2),
+        headerBorderColor: format.header.border.color,
+        headerBorderStyle: format.header.border.style,
+        headerMarginLeft: format.header.margins.left.slice(0, -2),
+        headerMarginBottom: format.header.margins.bottom.slice(0, -2),
+        headerMarginRight: format.header.margins.right.slice(0, -2),
+        headerHeight: format.header.height.slice(0, -2),
+        footerBorderWidth: format.footer.border.width.slice(0, -2),
+        footerBorderColor: format.footer.border.color,
+        footerBorderStyle: format.footer.border.style,
+        footerMarginLeft: format.footer.margins.left.slice(0, -2),
+        footerMarginTop: format.footer.margins.top.slice(0, -2),
+        footerMarginRight: format.footer.margins.right.slice(0, -2),
+        footerHeight: format.footer.height.slice(0, -2),
+        bodyBorderWidth: format.body.border.width.slice(0, -2),
+        bodyBorderColor: format.body.border.color,
+        bodyBorderStyle: format.body.border.style
+      },
+      onsubmit: onMainWindowSubmit
+    })
+
+    /**
+     * Open edit format window submit callback
+     *
+     * @TODO implement heightUnit
+     * @TODO implement widthUnit (etc...)
+     */
+    function onMainWindowSubmit () {
+      // handle all forms values in `d` for `data`
+      var d = this.toJSON()
+      var formatToApply = {
+        name: 'custom',
+        orientation: (d.orientation) ? d.orientation : 'portrait',
+        height: (d.pageHeight) ? d.pageHeight + 'mm' : format.height,
+        width: (d.pageWidth) ? d.pageWidth + 'mm' : format.width,
+        margins: {
+          bottom: (d.marginBottom) ? d.marginBottom + 'mm' : format.margins.bottom,
+          left: (d.marginLeft) ? d.marginLeft + 'mm' : format.margins.left,
+          right: (d.marginRight) ? d.marginRight + 'mm' : format.margins.right,
+          top: (d.marginTop) ? d.marginTop + 'mm' : format.margins.top
+        },
+        header: {
+          border: {
+            color: d.headerBorderColor || format.header.border.color,
+            style: d.headerBorderStyle || format.header.border.style,
+            width: (d.headerBorderWidth) ? d.headerBorderWidth + 'mm' : format.header.border.width
+          },
+          height: (d.headerHeight) ? d.headerHeight + 'mm' : format.header.height,
+          margins: {
+            bottom: (d.headerMarginBottom) ? d.headerMarginBottom + 'mm' : format.header.margins.bottom,
+            left: (d.headerMarginLeft) ? d.headerMarginLeft + 'mm' : format.header.margins.left,
+            right: (d.headerMarginRight) ? d.headerMarginRight + 'mm' : format.header.margins.right
+          }
+        },
+        footer: {
+          border: {
+            color: d.footerBorderColor || format.footer.border.color,
+            style: d.footerBorderStyle || format.footer.border.style,
+            width: (d.footerBorderWidth) ? d.footerBorderWidth + 'mm' : format.footer.border.width
+          },
+          height: (d.footerHeight) ? d.footerHeight + 'mm' : format.footer.height,
+          margins: {
+            top: (d.footerMarginTop) ? d.footerMarginTop + 'mm' : format.footer.margins.top,
+            left: (d.footerMarginLeft) ? d.footerMarginLeft + 'mm' : format.footer.margins.left,
+            right: (d.footerMarginRight) ? d.footerMarginRight + 'mm' : format.footer.margins.right
+          }
+        },
+        body: {
+          border: {
+            color: d.bodyBorderColor || format.body.border.color,
+            style: d.bodyBorderStyle || format.body.border.style,
+            width: (d.bodyBorderWidth) ? d.bodyBorderWidth + 'mm' : format.body.border.width
+          }
+        }
+      }
+      editor.plugins.headersfooters.currentFormat = new Format('custom', formatToApply)
+      editor.plugins.headersfooters.currentFormat.applyToPlugin(editor.plugins.headersfooters)
+    }
+  }
+}
+
+},{"../classes/Format":4,"./edit-format-tabs":6}],8:[function(require,module,exports){
+'use strict'
+
+/**
+ * MenuItems components
+ * @module
+ * @name menuItems
+ * @description A module to provide a function to create all of the menu items for the plugin
+ */
+
+/**
+ * Class MenuItem
+ * @var
+ * @name MenuItem
+ * @type class
+ */
+var MenuItem = require('../classes/MenuItem')
+
+/**
+ * UI module
+ * @var
+ * @name ui
+ * @type {Module}
+ */
+var ui = require('../utils/ui')
+
+var timeUtils = require('../utils/time')
+var timestamp = timeUtils.timestamp
+
+/**
+ * A selector to select the header and the footer but not the body
+ * @const
+ * @inner
+ */
+var HEADER_FOOTER_ONLY_SELECTOR = '.header-panel, .footer-panel'
+
+/**
+ * A selector to select the body but not the header and the footer
+ * @const
+ * @inner
+ */
+var BODY_ONLY_SELECTOR = '.body-panel'
+
+// Static API
+module.exports = {
+  create: create
+}
+
+// Inner API
+// _createInsertHeaderMenuItem()
+// _createInsertFooterMenuItem()
+// _createRemoveHeaderMenuItem()
+// _createRemoveFooterMenuItem()
+// _createInsertPageNumberMenuItem(editor)
+// _createinsertNumberOfPagesMenuItem(editor)
+// _createEditFormatMenuItem(editor)
+
+/**
+ * Create a hash of all the menu items for the plugin
+ * @function
+ * @param {Editor} editor The tinymce active editor
+ * @returns {object} the created hash of menu items
+ */
+function create (editor) {
+  return {
+    insertHeader: _createInsertHeaderMenuItem(editor),
+    insertFooter: _createInsertFooterMenuItem(editor),
+    removeHeader: _createRemoveHeaderMenuItem(editor),
+    removeFooter: _createRemoveFooterMenuItem(editor),
+    insertPageNumber: _createInsertPageNumberMenuItem(editor),
+    insertNumberOfPages: _createinsertNumberOfPagesMenuItem(editor),
+    editFormat: _createEditFormatMenuItem(editor)
+  }
+}
+
+/**
+ * Create a menu item to insert a header
+ * @function
+ * @inner
+ * @returns {MenuItem}
+ */
+function _createInsertHeaderMenuItem (editor) {
+  return new MenuItem('insertHeader', {
+    text: 'Insérer une entête',
+    icon: 'template',
+    id: 'plugin-headersfooters-menuitem-insert-header' + timestamp(),
+    context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+    },
+    onclick: function () {
+      var master = editor.plugins.headersfooters.getMaster()
+      master.currentFormat.header.height = '20mm'
+      // master.currentFormat.header.border.width = '1mm'
+      master.currentFormat.header.margins.bottom = '5mm'
+      master.currentFormat.applyToPlugin(master)
+      master.menuItemsList.insertHeader.hide()
+      master.menuItemsList.removeHeader.show()
+    }
+  })
+}
+
+/**
+ * Create a menu item to remove a header
+ * @function
+ * @inner
+ * @returns {MenuItem}
+ */
+function _createRemoveHeaderMenuItem (editor) {
+  return new MenuItem('removeHeader', {
+    text: "Supprimer l'entête",
+    icon: 'undo',
+    id: 'plugin-headersfooters-menuitem-remove-header' + timestamp(),
+    context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+    },
+    onclick: function () {
+      var master = editor.plugins.headersfooters.getMaster()
+      master.currentFormat.header.height = '0'
+      master.currentFormat.header.border.width = '0'
+      master.currentFormat.header.margins.bottom = '0'
+      master.currentFormat.applyToPlugin(master)
+      master.menuItemsList.removeHeader.hide()
+      master.menuItemsList.insertHeader.show()
+    }
+  })
+}
+
+/**
+ * Create a menu item to insert a footer
+ * @function
+ * @inner
+ * @returns {MenuItem}
+ */
+function _createInsertFooterMenuItem (editor) {
+  return new MenuItem('insertFooter', {
+    text: 'Insérer un pied de page',
+    icon: 'template',
+    context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+    },
+    onclick: function () {
+      var master = editor.plugins.headersfooters.getMaster()
+      master.currentFormat.footer.height = '20mm'
+      // master.currentFormat.footer.border.width = '1mm'
+      master.currentFormat.footer.margins.top = '5mm'
+      master.currentFormat.applyToPlugin(master)
+      master.menuItemsList.insertFooter.hide()
+      master.menuItemsList.removeFooter.show()
+    }
+  })
+}
+
+/**
+ * Create a menu item to remove a footer
+ * @function
+ * @inner
+ * @returns {MenuItem}
+ */
+function _createRemoveFooterMenuItem (editor) {
+  return new MenuItem('removeFooter', {
+    text: 'Supprimer le pied de page',
+    icon: 'undo',
+    context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+    },
+    onclick: function () {
+      var master = editor.plugins.headersfooters.getMaster()
+      master.currentFormat.footer.height = '0'
+      master.currentFormat.footer.border.width = '0'
+      master.currentFormat.footer.margins.top = '0'
+      master.currentFormat.applyToPlugin(master)
+      master.menuItemsList.removeFooter.hide()
+      master.menuItemsList.insertFooter.show()
+    }
+  })
+}
+
+/**
+ * Create a menu item to insert page number
+ * @function
+ * @inner
+ * @returns {MenuItem}
+ */
+function _createInsertPageNumberMenuItem (editor) {
+  return new MenuItem('insertPageNumber', {
+    text: 'Insérer le numéro de page',
+    context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, HEADER_FOOTER_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, HEADER_FOOTER_ONLY_SELECTOR))
+    },
+    cmd: 'insertPageNumberCmd'
+  })
+}
+
+/**
+ * Create a menu item to insert the number of pages
+ * @function
+ * @inner
+ * @returns {MenuItem}
+ */
+function _createinsertNumberOfPagesMenuItem (editor) {
+  return new MenuItem('insertNumberOfPages', {
+    text: 'Insérer le nombre de page',
+    // icon: 'text',
+    context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, HEADER_FOOTER_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, HEADER_FOOTER_ONLY_SELECTOR))
+    },
+    cmd: 'insertNumberOfPagesCmd'
+  })
+}
+
+/**
+ * Create a menu item to edit the current format
+ * @function
+ * @inner
+ * @returns {MenuItem}
+ */
+function _createEditFormatMenuItem (editor) {
+  return new MenuItem('editFormat', {
+    text: 'Format',
+    icon: 'newdocument',
+    context: 'document',
+    onPostRender: function () {
+      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+    },
+    cmd: 'editFormatCmd'
+  })
+}
+
+},{"../classes/MenuItem":5,"../utils/time":12,"../utils/ui":14}],9:[function(require,module,exports){
+'use strict'
+
+/**
+ * This module expose the plugin event handlers
+ * @module
+ * @name eventHandlers
+ */
+
+var uiUtils = require('./utils/ui')
+
+module.exports = {
+  'Init': {
+    setBodies: setBodies,
+    setStackedLayout: setStackedLayout,
+    setPageLayout: setPageLayout,
+    reloadMenuItems: reloadMenuItems
+  },
+  'NodeChange': {},
+  'SetContent': {},
+  'BeforeSetContent': {},
+  'Focus': {
+    enterHeadFoot: enterHeadFoot
+  },
+  'Blur': {
+    leaveHeadFoot: leaveHeadFoot
+  },
+  'Focus Blur Paste SetContent NodeChange HeadersFooters:SetFormat': {
+    applyCurrentFormat: applyCurrentFormat,
+    reloadMenuItems: reloadMenuItems
+  },
+  'HeadersFooters:Error:NegativeBodyHeight': {
+    alertErrorNegativeBodyHeight: alertErrorNegativeBodyHeight
+  }
+}
+
+function setBodies (evt) {
+  var editor = evt.target
+  this.documentBodies.mce[this.type] = editor.getBody()
+  if (!this.documentBodies.app) {
+    this.documentBodies.app = window.document.body
+  }
+  this.documentBody = editor.getBody()
+}
+
+function setStackedLayout (evt) {
+  uiUtils.mapMceLayoutElements(this.bodyClass, this.stackedLayout)
+}
+
+function setPageLayout (evt) {
+  if (this.isMaster) {
+    uiUtils.mapPageLayoutElements(this.pageLayout)
+  }
+}
+
+function enterHeadFoot (evt) {
+  this.enable()
+}
+
+function leaveHeadFoot (evt) {
+  this.disable()
+}
+
+function applyCurrentFormat (evt) {
+  var that = this
+  if (this.currentFormat) {
+    // console.info('evt', that.type, evt.type)
+    if (evt.type === 'blur' || evt.type === 'focus') {
+      setTimeout(function () {
+        that.currentFormat.applyToPlugin(that)
+      }, 200)
+    } else {
+      that.currentFormat.applyToPlugin(that)
+    }
+  }
+}
+
+/**
+ * @param {Event} evt HeadersFooters:Error:NegativeBodyHeight event
+ * @TODO document setting `editor.settings.SILENT_INCONSISTANT_FORMAT_WARNING`
+ * @TODO document event `HeadersFooters:Error:NegativeBodyHeight`
+ */
+function alertErrorNegativeBodyHeight (evt) {
+  var editor = evt.target
+  if (!editor.settings.SILENT_INCONSISTANT_FORMAT_WARNING) {
+    // editor.execCommand('editFormatCmd')
+    // throw new Error('Inconsistant custom format: body height is negative. Please fix format properties')
+    console.error('Inconsistant custom format: body height is negative. Please fix format properties')
+  }
+}
+
+function reloadMenuItems (evt) {
+  var editor = evt.target
+  if (editor && editor.plugins && editor.plugins.headersfooters) {
+    editor.plugins.headersfooters.reloadMenuItems()
+  }
+}
+
+},{"./utils/ui":14}],10:[function(require,module,exports){
 'use strict'
 
 /**
  * plugin.js
  *
  * Released under LGPL License.
- * Copyright (c) 2016 SIRAP Group All rights reserved
+ * Copyright (c) 2017 SIRAP Group All rights reserved
  *
  * License: http://www.tinymce.com/license
  * Contributing: http://www.tinymce.com/contributing
@@ -2913,12 +3660,10 @@ function camel2Dash (inputStr) {
  * @name tinycmce-plugin-headersfooters
  * @description
  * A plugin for tinymce WYSIWYG HTML editor that allow to insert headers and footers
- * It will may be used with requires tinymce-plugin-paginate the a near future, but not for now.
- * @link https://github.com/sirap-group/tinymce-plugin-headersfooters
+ * @see https://github.com/sirap-group/tinymce-plugin-headersfooters
  * @author Rémi Becheras
  * @author Groupe SIRAP
  * @license GNU GPL-v2 http://www.tinymce.com/license
- * @version 1.0.0
  */
 
 /**
@@ -2928,17 +3673,15 @@ function camel2Dash (inputStr) {
  */
 var tinymce = window.tinymce
 
-/**
- * The jQuery plugin namespace - plugin dependency.
- * @external "jQuery.fn"
- * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
- */
-var $ = window.jQuery
-var getComputedStyle = window.getComputedStyle
+var menuItems = require('./components/menu-items')
 
-var ui = require('./utils/ui')
 var units = require('./utils/units')
-var HeaderFooterFactory = require('./classes/HeaderFooterFactory')
+var events = require('./utils/events')
+var uiUtils = require('./utils/ui')
+
+var eventHandlers = require('./event-handlers')
+var Format = require('./classes/Format')
+var editFormatOpenMainWin = require('./components/edit-format-window')
 
 // Add the plugin to the tinymce PluginManager
 tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
@@ -2951,326 +3694,461 @@ tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
  * @returns void
  */
 function tinymcePluginHeadersFooters (editor, url) {
-  var headerFooterFactory
-  var lastActiveSection = null
+  var thisPlugin = this
 
-  var menuItems = {
-    insertHeader: ui.createInsertHeaderMenuItem(),
-    insertFooter: ui.createInsertFooterMenuItem(),
-    removeHeader: ui.createRemoveHeaderMenuItem(),
-    removeFooter: ui.createRemoveFooterMenuItem(),
-    insertPageNumber: ui.createInsertPageNumber(editor),
-    insertNumberOfPages: ui.createinsertNumberOfPages(editor)
+  this.type = editor.settings.headersfooters_type
+  this.bodyClass = editor.settings.body_class
+
+  // bind plugin methods
+  this.enable = enable
+  this.disable = disable
+  this.setFormat = setFormat
+  this.parseParamList = parseParamList
+  this.reloadMenuItems = reloadMenuItems
+
+  this.isMaster = this.type === 'body'
+  this.isSlave = !this.isMaster
+
+  if (this.isMaster) {
+    tinymce.getMasterHeadersFootersPlugin = function () {
+      return thisPlugin
+    }
+  }
+  this.getMaster = function () {
+    if (tinymce.getMasterHeadersFootersPlugin) {
+      return tinymce.getMasterHeadersFootersPlugin()
+    } else {
+      return null
+    }
   }
 
-  this.units = units
+  if (this.isMaster && window.env === 'development') {
+    window.mceHF = this
+  }
 
-  // add menu items
-  editor.addMenuItem('insertHeader', menuItems.insertHeader)
-  editor.addMenuItem('removeHeader', menuItems.removeHeader)
-  editor.addMenuItem('insertFooter', menuItems.insertFooter)
-  editor.addMenuItem('removeFooter', menuItems.removeFooter)
-  editor.addMenuItem('insertPageNumber', menuItems.insertPageNumber)
-  editor.addMenuItem('insertNumberOfPages', menuItems.insertNumberOfPages)
+  this.headerFooterFactory = null
+
+  this.units = units
+  this.editor = editor
+
+  this.documentBody = null
+  this.documentBodies = {
+    app: null,
+    mce: {
+      header: null,
+      body: null,
+      footer: null
+    }
+  }
+  this.stackedLayout = {
+    root: null,
+    wrapper: null,
+    layout: null,
+    menubar: null,
+    toolbar: null,
+    editarea: null,
+    statusbar: null
+  }
+
+  if (this.isMaster) {
+    this.pageLayout = {
+      pageWrapper: null,
+      pagePanel: null,
+      headerWrapper: null,
+      headerPanel: null,
+      bodyPanel: null,
+      footerWrapper: null,
+      footerPanel: null
+    }
+  }
+
+  this.availableFormats = {}
+  this.formats = []
+  this.customFormats = []
+  this.defaultFormat = null
+  this.currentFormat = null
+
+  _setAvailableFormats.call(this)
+
+  this.menuItemsList = menuItems.create(editor)
+  uiUtils.autoAddMenuItems.call(this)
 
   editor.addCommand('insertPageNumberCmd', function () {
     editor.insertContent('{{page}}')
   })
-
   editor.addCommand('insertNumberOfPagesCmd', function () {
     editor.insertContent('{{pages}}')
   })
+  editor.addCommand('editFormatCmd', function () {
+    editFormatOpenMainWin(editor)(thisPlugin.currentFormat)
+  })
 
-  editor.on('init', onInitHandler)
-  editor.on('SetContent', reloadHeadFootIfNeededOnSetContent)
-  editor.on('NodeChange', onNodeChange)
-  editor.on('NodeChange', forceBodyMinHeightOnNodeChange)
-  editor.on('SetContent NodeChange', enterBodyNodeOnLoad)
-  editor.on('BeforeSetContent', saveLastActiveSectionOnBeforeSetContent)
-  editor.on('SetContent', removeAnyOuterElementOnSetContent)
-  editor.on('NodeChange', fixSelectAllOnNodeChange)
+  events.autoBindImplementedEventCallbacks.call(this, editor, eventHandlers)
 
-  /**
-   * Make sure the body minimum height is correct, depending the margins, header and footer height.
-   * NodeChange event handler.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function forceBodyMinHeightOnNodeChange (evt) {
-    if (headerFooterFactory && headerFooterFactory.hasBody()) {
-      var bodyTag = {}
-      var bodySection = {}
-      var headerSection = {}
-      var footerSection = {}
-      var pageHeight
+  // if (window.env === 'development' && this.isMaster) {
+  //   setTimeout(function () {
+  //     editor.execCommand('editFormatCmd')
+  //   })
+  // }
+}
 
-      bodySection.node = headerFooterFactory.body.node
-      bodySection.height = headerFooterFactory.body.node.offsetHeight
-      bodySection.style = window.getComputedStyle(bodySection.node)
+function enable () {
+  this.stackedLayout.menubar.show()
+  this.stackedLayout.toolbar.show()
+  this.stackedLayout.statusbar.wrapper.show()
+  this.stackedLayout.statusbar.path.show()
+  this.stackedLayout.statusbar.wordcount.show()
+  this.stackedLayout.statusbar.resizehandle.show()
 
-      if (headerFooterFactory.hasHeader()) {
-        headerSection.node = headerFooterFactory.header.node
-        headerSection.height = headerFooterFactory.header.node.offsetHeight
-        headerSection.style = window.getComputedStyle(headerSection.node)
-      } else {
-        headerSection.node = null
-        headerSection.height = 0
-        headerSection.style = window.getComputedStyle(document.createElement('bogusElement'))
-      }
+  this.stackedLayout.statusbar.wrapper.css({left: 0, right: 0, zIndex: 9999})
 
-      if (headerFooterFactory.hasFooter()) {
-        footerSection.node = headerFooterFactory.footer.node
-        footerSection.height = headerFooterFactory.footer.node.offsetHeight
-        footerSection.style = window.getComputedStyle(footerSection.node)
-      } else {
-        footerSection.node = null
-        footerSection.height = 0
-        footerSection.style = window.getComputedStyle(document.createElement('bogusElement'))
-      }
+  this.editor.$('body').css({opacity: 1})
+}
 
-      bodyTag.node = editor.getBody()
-      bodyTag.height = units.getValueFromStyle(getComputedStyle(editor.getBody()).minHeight)
-      bodyTag.style = window.getComputedStyle(bodyTag.node)
-      bodyTag.paddingTop = units.getValueFromStyle(bodyTag.style.paddingTop)
-      bodyTag.paddingBottom = units.getValueFromStyle(bodyTag.style.paddingBottom)
+function disable () {
+  this.stackedLayout.menubar.hide()
+  this.stackedLayout.toolbar.hide()
+  this.stackedLayout.statusbar.wrapper.hide()
+  this.stackedLayout.statusbar.path.hide()
+  this.stackedLayout.statusbar.wordcount.hide()
+  this.stackedLayout.statusbar.resizehandle.hide()
 
-      pageHeight = bodyTag.height - bodyTag.paddingTop - bodyTag.paddingBottom - headerSection.height - footerSection.height
-      $(bodySection.node).css({ minHeight: pageHeight })
+  if (!this.editor.selection.isCollapsed()) {
+    this.editor.selection.collapse()
+  }
+  this.editor.$('body').css({opacity: 0.25})
+}
+
+function _setAvailableFormats () {
+  var that = this
+  var settings = this.editor.settings
+
+  // set enabled default formats
+  var userEnabledDefaultFormats = this.parseParamList(settings.headersfooters_formats)
+  .map(function (formatName) {
+    return Format.defaults[formatName]
+  })
+  .filter(function (v) {
+    return !!v
+  })
+  if (userEnabledDefaultFormats.length) {
+    this.formats = userEnabledDefaultFormats
+  } else {
+    this.formats = []
+    for (var name in Format.defaults) {
+      that.formats.push(Format.defaults[name])
     }
   }
 
-  /**
-   * Auto-enter in the body section on document load.
-   * (SetContent or NodeChange with some conditions) event handler.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function enterBodyNodeOnLoad (evt) {
-    setTimeout(function () {
-      if (headerFooterFactory && headerFooterFactory.hasBody() && !headerFooterFactory.getActiveSection()) {
-        headerFooterFactory.body.enterNode()
-      }
-    }, 500)
+  // set user custom formats
+  this.customFormats = (settings.headersfooters_custom_formats || [])
+  .map(function (f) {
+    return new Format(f.name, f.config)
+  })
+
+  // set the formats available for the editor
+  this.availableFormats = {}
+  // use enabled default formats
+  this.formats.map(function (f) {
+    that.availableFormats[f.name] = f
+  })
+  // add or override custom formats
+  this.customFormats.map(function (f) {
+    that.availableFormats[f.name] = f
+  })
+
+  // select a default format for new doc
+  this.defaultFormat = this.availableFormats[settings.headersfooters_default_format] || this.formats[0] || this.customFormats[0]
+
+  // current format is set on editor init callback
+}
+
+function setFormat (format) {
+  this.currentFormat = new Format(format.name, format)
+  this.editor.fire('HeadersFooters:SetFormat')
+}
+
+function parseParamList (paramValue) {
+  if (paramValue === undefined) {
+    return []
   }
-
-  /**
-   * Save the last active section on BeforeSetContent to be able to restore it if needed on SetContent event.
-   * BeforeSetContent event handler.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function saveLastActiveSectionOnBeforeSetContent () {
-    if (headerFooterFactory) {
-      lastActiveSection = headerFooterFactory.getActiveSection()
-    }
+  if (typeof paramValue !== 'string') {
+    throw new TypeError('paramValue must be a String, ' + typeof paramValue + ' given.')
   }
-
-  /**
-   * Remove any element located out of the allowed sections.
-   * SetContent event handler.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function removeAnyOuterElementOnSetContent (evt) {
-    var conditions = [
-      !!evt.content,
-      !!evt.content.length,
-      !!editor.getContent(),
-      !!editor.getContent().length,
-      !!headerFooterFactory
-    ]
-    if (!~conditions.indexOf(false)) {
-      var $body = $(editor.getBody())
-      $body.children().each(function (i) {
-        var allowedRootNodes = [headerFooterFactory.body.node]
-        if (headerFooterFactory.hasHeader()) {
-          allowedRootNodes.push(headerFooterFactory.header.node)
-        }
-        if (headerFooterFactory.hasFooter()) {
-          allowedRootNodes.push(headerFooterFactory.footer.node)
-        }
-        if (!~allowedRootNodes.indexOf(this)) {
-          console.error('Removing the following element because it is out of the allowed sections')
-          console.log(this)
-          $(this).remove()
-        }
-      })
-    }
-    if (lastActiveSection) {
-      console.info('entering to the last node', lastActiveSection)
-      lastActiveSection.enterNode()
-      lastActiveSection = null
-    }
-  }
-
-  /**
-   * When pressing Ctrl+A to select all content, force the selection to be contained in the current active section.
-   * onNodeChange event handler.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function fixSelectAllOnNodeChange (evt) {
-    if (evt.selectionChange && !editor.selection.isCollapsed()) {
-      if (editor.selection.getNode() === editor.getBody()) {
-        editor.selection.select(headerFooterFactory.getActiveSection().node)
-      }
-    }
-  }
-
-  /**
-   * On init event handler. Instanciate the factory and initialize menu items states
-   * @function
-   * @inner
-   * @returns void
-   */
-  function onInitHandler () {
-    headerFooterFactory = new HeaderFooterFactory(editor)
-    initMenuItems(headerFooterFactory, menuItems)
-    ui.addUnselectableCSSClass(editor)
-  }
-
-  /**
-   * On SetContent event handler. Load or reload headers and footers from existing elements if it should do.
-   * @function
-   * @inner
-   * @returns void
-   */
-  function reloadHeadFootIfNeededOnSetContent (evt) {
-    if (headerFooterFactory) {
-      reloadHeadFoots(menuItems)
-    } else {
-      setTimeout(reloadHeadFootIfNeededOnSetContent.bind(null, evt), 100)
-    }
-  }
-
-  function onNodeChange (evt) {
-    if (headerFooterFactory) {
-      headerFooterFactory.forceCursorToAllowedLocation(evt.element)
-    }
-  }
-
-  /**
-   * Helper function. Do the reload of headers and footers
-   * @function
-   * @inner
-   * @returns void
-   */
-  function reloadHeadFoots (menuItems) {
-    var $headFootElmts = $('*[data-headfoot]', editor.getDoc())
-    var $bodyElmt = $('*[data-headfoot-body]', editor.getDoc())
-    var hasBody = !!$bodyElmt.length
-    var $allElmts = null
-
-    // init starting states
-    menuItems.insertHeader.show()
-    menuItems.insertFooter.show()
-    menuItems.removeHeader.hide()
-    menuItems.removeFooter.hide()
-
-    // set another state and load elements if a header or a footer exists
-    $headFootElmts.each(function (i, el) {
-      var $el = $(el)
-      if ($el.attr('data-headfoot-header')) {
-        menuItems.insertHeader.hide()
-        menuItems.removeHeader.show()
-      } else if ($el.attr('data-headfoot-body')) {
-        // @TODO something ?
-      } else if ($el.attr('data-headfoot-footer')) {
-        menuItems.insertFooter.hide()
-        menuItems.removeFooter.show()
-      }
-      headerFooterFactory.loadElement(el)
-    })
-
-    if (!hasBody) {
-      $allElmts = $(editor.getBody()).children()
-      headerFooterFactory.insertBody()
-      var $body = $(headerFooterFactory.body.node)
-      $body.empty()
-      $allElmts.each(function (i, el) {
-        var $el = $(el)
-        if (!$el.attr('data-headfoot')) {
-          $body.append($el)
-        }
-      })
-    }
-  }
+  return paramValue.split(' ')
 }
 
 /**
- * Initialize menu items states (show, hide, ...) and implements onclick handlers
- * @function
- * @inner
- * @param {HeaderFooterFactory} factory The header and footer factory
- * @param {object} menuItems The set of plugin's menu items
- * @returns undefined
+ * Helper function. Do the reload of headers and footers
+ * @method
+ * @returns {undefined}
  */
-function initMenuItems (factory, menuItems) {
-  // on startup, hide remove buttons
-  menuItems.removeHeader.hide()
-  menuItems.removeFooter.hide()
-
-  // override insertHeader, insertFooter, removeHeader and removeFooter onclick handlers
-  menuItems.insertHeader.onclick = function () {
-    factory.insertHeader()
-    menuItems.insertHeader.hide()
-    menuItems.removeHeader.show()
-  }
-  menuItems.insertFooter.onclick = function () {
-    factory.insertFooter()
-    menuItems.insertFooter.hide()
-    menuItems.removeFooter.show()
-  }
-  menuItems.removeHeader.onclick = function () {
-    factory.removeHeader()
-    menuItems.insertHeader.show()
-    menuItems.removeHeader.hide()
-  }
-  menuItems.removeFooter.onclick = function () {
-    factory.removeFooter()
-    menuItems.insertFooter.show()
-    menuItems.removeFooter.hide()
+function reloadMenuItems () {
+  if (this.currentFormat) {
+    if (this.currentFormat.header.height && this.currentFormat.header.height !== '0') {
+      this.menuItemsList.insertHeader.hide()
+      this.menuItemsList.removeHeader.show()
+    } else {
+      this.menuItemsList.insertHeader.show()
+      this.menuItemsList.removeHeader.hide()
+    }
+    if (this.currentFormat.footer.height && this.currentFormat.footer.height !== '0') {
+      this.menuItemsList.insertFooter.hide()
+      this.menuItemsList.removeFooter.show()
+    } else {
+      this.menuItemsList.insertFooter.show()
+      this.menuItemsList.removeFooter.hide()
+    }
   }
 }
 
-},{"./classes/HeaderFooterFactory":8,"./utils/ui":12,"./utils/units":13}],11:[function(require,module,exports){
+},{"./classes/Format":4,"./components/edit-format-window":7,"./components/menu-items":8,"./event-handlers":9,"./utils/events":11,"./utils/ui":14,"./utils/units":15}],11:[function(require,module,exports){
 'use strict'
 
 module.exports = {
-  elementIsEmpty: elementIsEmpty
+  autoBindImplementedEventCallbacks: autoBindImplementedEventCallbacks
 }
 
 /**
- * Tells if an element is empty (pure JS)
- * i.e. if:
- * - it contains nothing,
- * - or it contains an empty element,
- * - or the only contained element is the mceBogus element
- * @method
- * @static
- * @param {HTMLElement} element The node element to check if it is empty
- * @param {window} [contextWindow] The contextual window for this element
- * @returns {Boolean} true if the element is considered empty.
+ * Automatically bind event callbacks implemented in `eventHandlers` module
  */
-function elementIsEmpty (element, contextWindow) {
-  if (!contextWindow) { contextWindow = window }
-  if (!(element instanceof window.HTMLElement || element instanceof contextWindow.HTMLElement)) {
-    console.error('TypeError element: ', element, 'contextWindow', contextWindow)
-    throw new TypeError('argument 1 must be an instance of HTMLElement.')
+function autoBindImplementedEventCallbacks (editor, eventHandlers) {
+  for (var eventName in eventHandlers) {
+    for (var callbackName in eventHandlers[eventName]) {
+      editor.on(eventName, eventHandlers[eventName][callbackName].bind(this))
+    }
   }
-  return !element.textContent.trim()
 }
 
 },{}],12:[function(require,module,exports){
 'use strict'
 
+module.exports = {
+  timestamp: timestamp
+}
+
+function timestamp () {
+  return Date.now()
+}
+
+},{}],13:[function(require,module,exports){
+/**
+ * This file contains the source code for the module `lib/ui/helpers`
+ * @file
+ * @author "Rémi Becheras <rbecheras@sirap.fr>"
+ * @copyright 2016 © Groupe SIRAP, tout droits réservés
+ * @see module:lib/ui/helpers
+ */
+
+/**
+ * This module exports some useful UI helplers to create UI components
+ * @module lib/ui/helpers
+ */
+
+'use strict'
+
+var tinymce = window.tinymce
+
+module.exports = {
+  createTextBox: createTextBox,
+  createUnitSelectBox: createUnitSelectBox,
+  createSelectBox: createSelectBox,
+  createTab: createTab,
+  createFieldset: createFieldset,
+  createForm: createForm,
+  createListBox: createListBox,
+  createListBoxItem: createListBoxItem,
+  createColorPicker: createColorPicker
+}
+
+/**
+ * Create a simple text box
+ * @method
+ * @param {string} label The textBox label
+ * @param {string} name The textBox name
+ * @param {number} [maxWidth=null] The maximum width for the input
+ * @param {number} [minWidth=55] The minimum width for the input
+ * @returns {TextBox} textBox The new textBox
+ */
+function createTextBox (label, name, maxWidth, minWidth) {
+  var textBox = {
+    label: label,
+    name: name,
+    maxWidth: maxWidth || null,
+    minWidth: minWidth || null,
+    onchange: function (e) {
+      // console.log('createTextBox on action', e)
+    }
+  }
+
+  return new tinymce.ui.TextBox(textBox)
+}
+
+/**
+ * Create a select box to select a length unit
+ * @method
+ * @param {string} inputName - A name to identify the input in the form
+ * @param {string} [defaultUnit=pt] - A default unit in (`pt`, `mm`, or `cm`).
+ * @param {number} [maxWidth=55] - The maximum width for th input.
+ * @param {number} [minWidth=55] - The minimum width for th input.
+ * @returns {SelectBox} unitSelectBox The new unit select box.
+ */
+function createUnitSelectBox (inputName, defaultUnit, maxWidth, minWidth) {
+  defaultUnit = defaultUnit || 'pt'
+  return {
+    label: 'Unit',
+    name: inputName,
+    type: 'listbox',
+    minWidth: minWidth || 55,
+    maxWidth: maxWidth || 55,
+    values: [
+      {text: 'pt', value: 'pt'},
+      {text: 'cm', value: 'cm'},
+      {text: 'mm', value: 'mm'}
+    ],
+    text: defaultUnit,
+    value: defaultUnit
+  }
+}
+
+function createSelectBox (label, inputName, values, maxWidth, minWidth) {
+  return new tinymce.ui.ListBox({
+    label: label,
+    name: inputName,
+    type: 'listbox',
+    minWidth: minWidth || 55,
+    maxWidth: maxWidth || null,
+    text: label,
+    values: values,
+    onselect: function (e) {
+      // console.log('SelectBox Selected', e)
+    }
+  })
+}
+
+/**
+ * @function
+ * @param
+ * @returns {object}
+ */
+function createTab (title, fieldsets, direction, columns) {
+  return {
+    title: title,
+    type: 'form',
+    items: {
+      type: 'form',
+      layout: 'grid',
+      columns: columns || 1,
+      // layout: 'flex',
+      direction: direction || 'collumn',
+      labelGapCalc: 'children',
+      padding: 0,
+      items: fieldsets
+    }
+  }
+}
+
+/**
+ * Create a field set
+ * @method
+ * @param {string} title The field set title
+ * @param {array<object>} items The field items to put in the field set
+ * @param {number} [maxWidth=null] The maximum with for the fieldset, in pixels
+ * @returns {Fieldset} fieldset The new field set
+ */
+function createFieldset (title, items, maxWidth, minWidth) {
+  var fieldset = {
+    type: 'fieldset',
+    title: title,
+    items: items,
+    maxWidth: maxWidth || null,
+    minWidth: minWidth || null
+  }
+  return fieldset
+}
+
+/**
+ * @function
+ * @param
+ * @returns {object}
+ */
+function createForm (items, columns) {
+  return {
+    type: 'form',
+    labelGapCalc: false,
+    padding: 0,
+    layout: 'grid',
+    columns: columns || 2,
+    defaults: {
+      type: 'textbox',
+      maxWidth: 100
+    },
+    items: items
+  }
+}
+
+/**
+ * @method
+ * @static
+ * @param {string} label The label for the list box
+ * @param {string} name The name of the list box to identify it in the form
+ * @param {array<ListBoxItem>} values An array of list box items
+ * @param {ListBoxItem} [defaultItem=N/A] An item to select as default value
+ * @param {number} [maxWidth=null] The maximum width for the input
+ * @returns {object}
+ */
+function createListBox (label, name, values, defaultItem, maxWidth) {
+  return {
+    label: label,
+    name: name,
+    type: 'listbox',
+    text: 'None',
+    minWidth: 90,
+    maxWidth: maxWidth,
+    values: values
+  }
+}
+
+/**
+ * Create an item for createListBox() values array
+ * @param {string} text The text shown for the item
+ * @param {string|number} value A value for the item
+ * @return {ListBoxItem}
+ */
+function createListBoxItem (text, value) {
+  if (value === undefined) {
+    value = text
+  }
+  var item = {
+    text: text,
+    value: value
+  }
+  return item
+}
+
+/**
+ * Create a color picker
+ * @method
+ * @param {string} label The label for the color picker
+ * @param {string} name The name to identify the color picker in the form set
+ * @returns {ColorPicker} colorPicker The new color picker
+ */
+function createColorPicker (label, name, callback) {
+  return {
+    type: 'colorbox',
+    label: label,
+    name: name,
+    minWidth: 140,
+    maxWidth: 140,
+    onaction: callback
+  }
+}
+
+},{}],14:[function(require,module,exports){
+'use strict'
+
+var units = require('./units')
 var $ = window.jQuery
-var HEADER_FOOTER_ONLY_SELECTOR = 'section[data-headfoot-header], section[data-headfoot-footer]'
 
 /**
  * User interface module
@@ -3279,129 +4157,23 @@ var HEADER_FOOTER_ONLY_SELECTOR = 'section[data-headfoot-header], section[data-h
  * @description A module to provide configured ui elements to the plugin
  */
 
-/**
- * Class MenuItem
- * @var
- * @name MenuItem
- * @type class
- */
-var MenuItem = require('../classes/MenuItem')
-
-/**
- * A hash of menu items options
- * @var
- * @name menuItems
- * @type  {object}
- *
- */
 module.exports = {
-  createInsertHeaderMenuItem: createInsertHeaderMenuItem,
-  createRemoveHeaderMenuItem: createRemoveHeaderMenuItem,
-  createInsertFooterMenuItem: createInsertFooterMenuItem,
-  createRemoveFooterMenuItem: createRemoveFooterMenuItem,
-  createInsertPageNumber: createInsertPageNumber,
-  createinsertNumberOfPages: createinsertNumberOfPages,
+  jQuery: $,
   lockNode: lockNode,
   unlockNode: unlockNode,
-  addUnselectableCSSClass: addUnselectableCSSClass
-}
-
-/**
- * Create a menu item to insert a header
- * @function
- * @static
- * @returns {MenuItem}
- */
-function createInsertHeaderMenuItem () {
-  return new MenuItem('insertHeader', {
-    text: 'Insérer une entête',
-    icon: 'abc',
-    id: 'plugin-headersfooters-menuitem-insert-header',
-    context: 'insert',
-    onclick: function () {
-      window.alert('insert header')
-    }
-  })
-}
-
-/**
- * Create a menu item to remove a header
- * @function
- * @static
- * @returns {MenuItem}
- */
-function createRemoveHeaderMenuItem () {
-  return new MenuItem('removeHeader', {
-    text: "Supprimer l'entête",
-    icon: 'text',
-    context: 'insert',
-    onclick: function () {
-      window.alert('remove header')
-    }
-  })
-}
-
-/**
- * Create a menu item to insert a footer
- * @function
- * @static
- * @returns {MenuItem}
- */
-function createInsertFooterMenuItem () {
-  return new MenuItem('insertFooter', {
-    text: 'Insérer un pied de page',
-    icon: 'abc',
-    context: 'insert',
-    onclick: function () {
-      window.alert('insert footer')
-    }
-  })
-}
-
-/**
- * Create a menu item to remove a footer
- * @function
- * @static
- * @returns {MenuItem}
- */
-function createRemoveFooterMenuItem () {
-  return new MenuItem('removeFooter', {
-    text: 'Supprimer le pied de page',
-    icon: 'text',
-    context: 'insert',
-    onclick: function () {
-      window.alert('remove footer')
-    }
-  })
-}
-
-function createInsertPageNumber (editor) {
-  return new MenuItem('insertPageNumber', {
-    text: 'Insérer le numéro de page',
-    context: 'document',
-    onPostRender: function () {
-      editor.on('NodeChange', resetMenuItemState.bind(this, editor, HEADER_FOOTER_ONLY_SELECTOR))
-    },
-    cmd: 'insertPageNumberCmd'
-  })
-}
-
-function createinsertNumberOfPages (editor) {
-  return new MenuItem('insertNumberOfPages', {
-    text: 'Insérer le nombre de page',
-    // icon: 'text',
-    context: 'document',
-    onPostRender: function () {
-      editor.on('NodeChange', resetMenuItemState.bind(this, editor, HEADER_FOOTER_ONLY_SELECTOR))
-    },
-    cmd: 'insertNumberOfPagesCmd'
-  })
+  addUnselectableCSSClass: addUnselectableCSSClass,
+  resetMenuItemState: resetMenuItemState,
+  autoAddMenuItems: autoAddMenuItems,
+  mapMceLayoutElements: mapMceLayoutElements,
+  mapPageLayoutElements: mapPageLayoutElements,
+  getElementHeight: getElementHeight
 }
 
 /**
  * Lock a node
  * @method
- * @memberof ::callerFunction
+ * @mixin
+ * @returns {undefined}
  */
 function lockNode () {
   var $this = $(this)
@@ -3412,7 +4184,8 @@ function lockNode () {
 /**
  * Unlock a node
  * @method
- * @memberof ::callerFunction
+ * @mixin
+ * @returns {undefined}
  */
 function unlockNode () {
   var $this = $(this)
@@ -3421,6 +4194,13 @@ function unlockNode () {
   $this.focus()
 }
 
+/**
+ * Create and apply the unselectable CSS class to the active document
+ * @method
+ * @static
+ * @param {Editor} editor The tinymce active editor
+ * @returns {undefined}
+ */
 function addUnselectableCSSClass (editor) {
   var head = $('head', editor.getDoc())
   var unselectableCSSRules = '.unselectable { -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }'
@@ -3429,9 +4209,13 @@ function addUnselectableCSSClass (editor) {
 }
 
 /**
-* @function
-* @inner
-*/
+ * Reset a menu item state
+ * @method
+ * @static
+ * @param {Editor} editor The tinymce active editor
+ * @param {String} selector The selector to use to DO WHAT ?
+ * @TODO finish to describe the selector parameter
+ */
 function resetMenuItemState (editor, selector) {
   var selectedElement = editor.selection.getStart()
   var $sel = $(selectedElement)
@@ -3439,7 +4223,65 @@ function resetMenuItemState (editor, selector) {
   this.disabled(!parents.length)
 }
 
-},{"../classes/MenuItem":9}],13:[function(require,module,exports){
+/**
+ * Add the plugin's menu items
+ */
+function autoAddMenuItems () {
+  for (var itemName in this.menuItemsList) {
+    this.editor.addMenuItem(itemName, this.menuItemsList[itemName])
+  }
+}
+
+function mapMceLayoutElements (bodyClass, stackedLayout) {
+  stackedLayout.root = $('.' + bodyClass)
+  stackedLayout.wrapper = stackedLayout.root.children('.mce-tinymce')
+  stackedLayout.layout = stackedLayout.wrapper.children('.mce-stack-layout')
+  stackedLayout.menubar = stackedLayout.layout.children('.mce-stack-layout-item.mce-menubar.mce-toolbar')
+  stackedLayout.toolbar = stackedLayout.layout.children('.mce-stack-layout-item.mce-toolbar-grp')
+  stackedLayout.editarea = stackedLayout.layout.children('.mce-stack-layout-item.mce-edit-area')
+  stackedLayout.iframe = stackedLayout.editarea.children('iframe')
+  stackedLayout.statusbar = {}
+  stackedLayout.statusbar.wrapper = stackedLayout.layout.children('.mce-stack-layout-item.mce-statusbar')
+  stackedLayout.statusbar.flowLayout = stackedLayout.statusbar.wrapper.children('.mce-flow-layout')
+  stackedLayout.statusbar.path = stackedLayout.statusbar.wrapper.children('.mce-path')
+  stackedLayout.statusbar.wordcount = stackedLayout.layout.children('.mce-wordcount')
+  stackedLayout.statusbar.resizehandle = stackedLayout.layout.children('.mce-resizehandle')
+}
+
+function mapPageLayoutElements (pageLayout) {
+  pageLayout.pageWrapper = $('.page-wrapper')
+  pageLayout.pagePanel = $('.page-panel')
+
+  pageLayout.headerWrapper = $('.header-wrapper')
+  pageLayout.headerPanel = $('.header-panel')
+  setTimeout(function () {
+    pageLayout.headerIframe = pageLayout.headerPanel.find('iframe')
+  }, 100)
+
+  pageLayout.bodyWrapper = $('.body-wrapper')
+  pageLayout.bodyPanel = $('.body-panel')
+
+  pageLayout.footerWrapper = $('.footer-wrapper')
+  pageLayout.footerPanel = $('.footer-panel')
+  setTimeout(function () {
+    pageLayout.footerIframe = pageLayout.footerPanel.find('iframe')
+  }, 100)
+}
+
+function getElementHeight (element, win, isBorderBox) {
+  win = win || window
+  var style = win.getComputedStyle(element)
+  var height = px(style.height) // +
+    // px(style.paddingTop) + px(style.paddingBottom) +
+    // px(style.marginTop) + px(style.marginBottom)
+  return height
+
+  function px (style) {
+    return Number(units.getValueFromStyle(style))
+  }
+}
+
+},{"./units":15}],15:[function(require,module,exports){
 'use strict'
 
 /**
@@ -3452,17 +4294,32 @@ function resetMenuItemState (editor, selector) {
 
 var document = window.document
 
-createDpiTestElements()
+_createDpiTestElements()
 
 module.exports = {
   getValueFromStyle: getValueFromStyle,
   getUnitFromStyle: getUnitFromStyle,
-  px2mm: px2mm,
-  px2pt: px2pt,
-  px2in: px2in,
-  in2pt: in2pt,
+  getDpi: getDpi,
+
   in2mm: in2mm,
-  getDpi: getDpi
+  mm2in: mm2in,
+
+  px2in: px2in,
+  in2px: in2px,
+
+  px2mm: px2mm,
+  mm2px: mm2px,
+
+  in2pt: in2pt,
+  pt2in: pt2in,
+
+  px2pt: px2pt,
+  pt2px: pt2px
+}
+
+// expose the module to the global scope in development environment
+if (window.env === 'development' && !window._units) {
+  window._units = module.exports
 }
 
 /**
@@ -3490,16 +4347,35 @@ function getUnitFromStyle (styleValue) {
 }
 
 /**
- * Converts a quantity of pixels to a quantity of milimeters
- * 1 in = 25.4 mm
- * Calculate pixels to inches then inches to milimeters
- * @method
- * @static
- * @param {Number} qPx The quantity of pixels to convert to milimeters
- * @returns {Number} qMm The resuluting quantity of milimeters
- */
-function px2mm (qPx) {
-  return in2mm(px2in(qPx))
+* Evaluate the DPI of the device's screen (pixels per inche).
+* It creates and inpect a dedicated and hidden `data-dpi-test` DOM element to
+* deduct the screen DPI.
+* @method
+* @static
+* @returns {number} - The current screen DPI, so in pixels per inch.
+*/
+function getDpi () {
+  return document.getElementById('dpi-test').offsetHeight
+}
+
+/**
+* @function
+* @inner
+*/
+function _createDpiTestElements () {
+  var getDpiHtmlStyle = 'data-dpi-test { height: 1in; left: -100%; position: absolute; top: -100%; width: 1in; }'
+
+  var head = document.getElementsByTagName('head')[0]
+  var getDPIElement = document.createElement('style')
+  getDPIElement.setAttribute('type', 'text/css')
+  getDPIElement.setAttribute('rel', 'stylesheet')
+  getDPIElement.innerHTML = getDpiHtmlStyle
+  head.appendChild(getDPIElement)
+
+  var body = document.getElementsByTagName('body')[0]
+  var dpiTestElement = document.createElement('data-dpi-test')
+  dpiTestElement.setAttribute('id', 'dpi-test')
+  body.appendChild(dpiTestElement)
 }
 
 /**
@@ -3515,8 +4391,97 @@ function in2mm (qIn) {
 }
 
 /**
+ * Converts milimeters (mm) to inches (in)
+ * 1 in = 25.4 mm
+ * @method
+ * @static
+ * @param {number} mm Number of milimeters to convert to inches
+ * @returns {number} - Resulting number of inches (in)
+ */
+function mm2in (qmm) {
+  return Number(qmm) / 25.4
+}
+
+/**
+* Converts pixels (px) to inches (in)
+* dpi = px / in
+* => in = px / dpi
+* @method
+* @static
+* @param {number} px Number of pixels to convert to inches
+* @returns {number} - Resulting number of inches (in)
+*/
+function px2in (px) {
+  var dpi = getDpi()
+  return Number(px) / Number(dpi)
+}
+
+/**
+* Converts pixels (px) to inches (in)
+* dpi = px / in
+* => px = in * dpi
+* @method
+* @static
+* @param {number} in Number of inches to convert to pixels
+* @returns {number} - Resulting number of pixels (px)
+*/
+function in2px (qin) {
+  var dpi = getDpi()
+  return Number(qin) * Number(dpi)
+}
+
+/**
+* Converts a quantity of pixels to a quantity of milimeters
+* 1 in = 25.4 mm
+* Calculate pixels to inches then inches to milimeters
+* @method
+* @static
+* @param {Number} qPx The quantity of pixels to convert to milimeters
+* @returns {Number} qMm The resuluting quantity of milimeters
+*/
+function px2mm (qPx) {
+  return in2mm(px2in(qPx))
+}
+
+/**
+ * Converts milimeters (mm) to pixels (px)
+ * mm2in -> in2px
+ * @method
+ * @static
+ * @param {number} qmm Number of milimeters to convert to pixels
+ * @returns {number} - Resulting number of pixels (px)
+ */
+function mm2px (qmm) {
+  return in2px(mm2in(qmm))
+}
+
+/**
+* Converts inches (in) to points (pt)
+* 72 = pt / in -> pt = 72 * in
+* @method
+* @static
+* @param {number} inches Number of inches (in) to convet to points (pt)
+* @returns {number} - Resulting number of points (pt)
+*/
+function in2pt (inches) {
+  return Number(inches) * 72
+}
+
+/**
+* Converts point (pt) to inches (in)
+* 72 = pt / in -> in = pt / 72
+* @method
+* @static
+* @param {number} inches Number of inches (in) to convet to points (pt)
+* @returns {number} - Resulting number of points (pt)
+*/
+function pt2in (qpt) {
+  return qpt / 72
+}
+
+/**
  * Converts pixels (px) to points (pt)
- * px -> in -> pt
+ * px2in -> in2pt
  * @method
  * @static
  * @param {number} px Number of pixels to convert to points
@@ -3528,60 +4493,15 @@ function px2pt (px) {
 }
 
 /**
- * Converts pixels (px) to inches (in)
- * dpi = px / in -> in = px / dpi
+ * Converts point (pt) to pixels (px)
+ * pt2in -> in2px
  * @method
  * @static
- * @param {number} px Number of pixels to convert to inches
- * @returns {number} - Resulting number of inches (in)
+ * @param {number} pt Number of points to convert to pixels
+ * @returns {number} - Resulting number of pixels (px)
  */
-function px2in (px) {
-  var dpi = getDpi()
-  return Number(px) / Number(dpi)
-}
-
-/**
- * Converts inches (in) to points (pt)
- * 72 = pt / in -> pt = 72 * in
- * @method
- * @static
- * @param {number} inches Number of inches (in) to convet to points (pt)
- * @returns {number} - Resulting number of points (pt)
- */
-function in2pt (inches) {
-  return Number(inches) * 72
-}
-
-/**
- * Evaluate the DPI of the device's screen (pixels per inche).
- * It creates and inpect a dedicated and hidden `data-dpi-test` DOM element to
- * deduct the screen DPI.
- * @method
- * @static
- * @returns {number} - The current screen DPI, so in pixels per inch.
- */
-function getDpi () {
-  return document.getElementById('dpi-test').offsetHeight
-}
-
-/**
- * @function
- * @inner
- */
-function createDpiTestElements () {
-  var getDpiHtmlStyle = 'data-dpi-test { height: 1in; left: -100%; position: absolute; top: -100%; width: 1in; }'
-
-  var head = document.getElementsByTagName('head')[0]
-  var getDPIElement = document.createElement('style')
-  getDPIElement.setAttribute('type', 'text/css')
-  getDPIElement.setAttribute('rel', 'stylesheet')
-  getDPIElement.innerHTML = getDpiHtmlStyle
-  head.appendChild(getDPIElement)
-
-  var body = document.getElementsByTagName('body')[0]
-  var dpiTestElement = document.createElement('data-dpi-test')
-  dpiTestElement.setAttribute('id', 'dpi-test')
-  body.appendChild(dpiTestElement)
+function pt2px (qpt) {
+  return in2px(pt2in(qpt))
 }
 
 },{}]},{},[1]);

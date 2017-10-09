@@ -1,6 +1,6 @@
 {
   "name": "tinymce-plugin-headersfooters",
-  "version": "0.8.1",
+  "version": "1.0.0-rc.6",
   "authors": [
     "Rémi Becheras <rbecheras@sirap.fr>"
   ],
@@ -23,6 +23,6 @@
     "tests"
   ],
   "dependencies": {
-    "tinymce": "~4.3.8"
+    "tinymce": "~4.5.6"
   }
 }
