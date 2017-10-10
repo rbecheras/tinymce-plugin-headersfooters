@@ -90,10 +90,11 @@ function _createInsertHeaderMenuItem (editor) {
     },
     onclick: function () {
       var master = editor.plugins.headersfooters.getMaster()
-      master.currentFormat.header.height = '20mm'
-      // master.currentFormat.header.border.width = '1mm'
-      master.currentFormat.header.margins.bottom = '5mm'
-      master.currentFormat.applyToPlugin(master)
+      var currentFormat = master.paginator.currentFormat
+      currentFormat.header.height = '20mm'
+      // currentFormat.header.border.width = '1mm'
+      currentFormat.header.margins.bottom = '5mm'
+      currentFormat.applyToPlugin(master)
       master.menuItemsList.insertHeader.hide()
       master.menuItemsList.removeHeader.show()
     }
@@ -118,10 +119,11 @@ function _createRemoveHeaderMenuItem (editor) {
     },
     onclick: function () {
       var master = editor.plugins.headersfooters.getMaster()
-      master.currentFormat.header.height = '0'
-      master.currentFormat.header.border.width = '0'
-      master.currentFormat.header.margins.bottom = '0'
-      master.currentFormat.applyToPlugin(master)
+      var currentFormat = master.paginator.currentFormat
+      currentFormat.header.height = '0'
+      currentFormat.header.border.width = '0'
+      currentFormat.header.margins.bottom = '0'
+      currentFormat.applyToPlugin(master)
       master.menuItemsList.removeHeader.hide()
       master.menuItemsList.insertHeader.show()
     }
@@ -145,10 +147,11 @@ function _createInsertFooterMenuItem (editor) {
     },
     onclick: function () {
       var master = editor.plugins.headersfooters.getMaster()
-      master.currentFormat.footer.height = '20mm'
-      // master.currentFormat.footer.border.width = '1mm'
-      master.currentFormat.footer.margins.top = '5mm'
-      master.currentFormat.applyToPlugin(master)
+      var currentFormat = master.paginator.currentFormat
+      currentFormat.footer.height = '20mm'
+      // currentFormat.footer.border.width = '1mm'
+      currentFormat.footer.margins.top = '5mm'
+      currentFormat.applyToPlugin(master)
       master.menuItemsList.insertFooter.hide()
       master.menuItemsList.removeFooter.show()
     }
@@ -172,10 +175,11 @@ function _createRemoveFooterMenuItem (editor) {
     },
     onclick: function () {
       var master = editor.plugins.headersfooters.getMaster()
-      master.currentFormat.footer.height = '0'
-      master.currentFormat.footer.border.width = '0'
-      master.currentFormat.footer.margins.top = '0'
-      master.currentFormat.applyToPlugin(master)
+      var currentFormat = master.paginator.currentFormat
+      currentFormat.footer.height = '0'
+      currentFormat.footer.border.width = '0'
+      currentFormat.footer.margins.top = '0'
+      currentFormat.applyToPlugin(master)
       master.menuItemsList.removeFooter.hide()
       master.menuItemsList.insertFooter.show()
     }

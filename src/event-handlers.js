@@ -47,8 +47,8 @@ function setStackedLayout (evt) {
 }
 
 function setPageLayout (evt) {
-  if (this.isMaster) {
-    uiUtils.mapPageLayoutElements(this.pageLayout)
+  if (this.isMaster()) {
+    uiUtils.mapPageLayoutElements(this.page.pageLayout)
   }
 }
 
@@ -62,14 +62,14 @@ function leaveHeadFoot (evt) {
 
 function applyCurrentFormat (evt) {
   var that = this
-  if (this.currentFormat) {
+  if (this.paginator.currentFormat) {
     // console.info('evt', that.type, evt.type)
     if (evt.type === 'blur' || evt.type === 'focus') {
       setTimeout(function () {
-        that.currentFormat.applyToPlugin(that)
+        that.paginator.currentFormat.applyToPlugin(that)
       }, 200)
     } else {
-      that.currentFormat.applyToPlugin(that)
+      that.paginator.currentFormat.applyToPlugin(that)
     }
   }
 }

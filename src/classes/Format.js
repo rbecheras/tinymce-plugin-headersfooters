@@ -184,8 +184,8 @@ function applyToPlugin (plugin) {
     }
 
     // var bodyHeight = uiUtils.getElementHeight(body, win)
-    if (plugin.isMaster) {
-      plugin.pageLayout.pageWrapper.css({
+    if (plugin.isBody()) {
+      plugin.page.pageLayout.pageWrapper.css({
         overflow: 'auto', // TODO: update model spec
         background: '#464646',
         // height: 'auto', // TODO: update model spec
@@ -199,7 +199,7 @@ function applyToPlugin (plugin) {
         // width: '100%'
       })
 
-      plugin.pageLayout.pagePanel.css({
+      plugin.page.pageLayout.pagePanel.css({
         overflow: 'hidden', // TODO: update model spec
         background: 'white',
         border: 0,
@@ -214,15 +214,15 @@ function applyToPlugin (plugin) {
         width: that.width
       })
 
-      var firstPage = plugin.pageLayout.pagePanel.get(0)
-      var lastPageIndex = plugin.pageLayout.pagePanel.length - 1
-      var lastPage = plugin.pageLayout.pagePanel.get(lastPageIndex)
+      var firstPage = plugin.page.pageLayout.pagePanel.get(0)
+      var lastPageIndex = plugin.page.pageLayout.pagePanel.length - 1
+      var lastPage = plugin.page.pageLayout.pagePanel.get(lastPageIndex)
       // first page margin top
       $(firstPage).css({ marginTop: '2.5cm' })
       // last page margin bottom
       $(lastPage).css({ marginBottom: '2cm' })
 
-      plugin.pageLayout.headerWrapper.css({
+      plugin.page.pageLayout.headerWrapper.css({
         overflow: 'hidden', // TODO: update model spec
         // border: 0,
         boxSizing: 'border-box',
@@ -235,7 +235,7 @@ function applyToPlugin (plugin) {
       /* TODO: split border to top/right/bottom/left */
       var hasHeader = that.hasHeader()
       var headerHasBorder = that.hasHeaderBorder()
-      plugin.pageLayout.headerPanel.css({
+      plugin.page.pageLayout.headerPanel.css({
         overflow: 'hidden', // TODO: update model spec
         borderColor: (hasHeader && !headerHasBorder) ? 'black' : that.header.border.color,
         borderStyle: (hasHeader && !headerHasBorder) ? 'solid' : that.header.border.style,
@@ -249,8 +249,8 @@ function applyToPlugin (plugin) {
         padding: 0
         // width: '100%' // TODO: update model spec
       })
-      if (plugin.pageLayout.headerIframe) {
-        plugin.pageLayout.headerIframe.css({
+      if (plugin.page.pageLayout.headerIframe) {
+        plugin.page.pageLayout.headerIframe.css({
           height: that.header.height,
           minHeight: that.header.height,
           maxHeight: that.header.height
@@ -261,7 +261,7 @@ function applyToPlugin (plugin) {
       // var bodyWrapperHeight = Number(units.getValueFromStyle(bodyHeight)) +
       //   Number(units.getValueFromStyle(that.body.border.width)) * 2
       // bodyWrapperHeight += 'mm'
-      plugin.pageLayout.bodyWrapper.css({
+      plugin.page.pageLayout.bodyWrapper.css({
         // overflow: 'hidden', // TODO: update model spec
         overflow: 'auto', // TODO: update for pagination
         border: 0,
@@ -271,7 +271,7 @@ function applyToPlugin (plugin) {
         padding: 0,
         width: '100%'
       })
-      plugin.pageLayout.bodyPanel.css({
+      plugin.page.pageLayout.bodyPanel.css({
         // overflow: 'hidden', // TODO: update model spec
         overflow: 'auto', // TODO: update for pagination
         borderColor: that.body.border.color,
@@ -284,7 +284,7 @@ function applyToPlugin (plugin) {
         padding: 0,
         width: '100%'
       })
-      plugin.pageLayout.footerWrapper.css({
+      plugin.page.pageLayout.footerWrapper.css({
         overflow: 'hidden', // TODO: update model spec
         border: 0,
         // borderTop: 'dashed 1px gray', // TODO update model spec?
@@ -298,7 +298,7 @@ function applyToPlugin (plugin) {
       var hasFooter = that.hasFooter()
       var footerHasBorder = that.hasFooterBorder()
       /* TODO: split border to top/right/bottom/left */
-      plugin.pageLayout.footerPanel.css({
+      plugin.page.pageLayout.footerPanel.css({
         overflow: 'hidden', // TODO: update model spec
         borderColor: (hasFooter && !footerHasBorder) ? 'black' : that.footer.border.color,
         borderStyle: (hasFooter && !footerHasBorder) ? 'solid' : that.footer.border.style,
@@ -312,8 +312,8 @@ function applyToPlugin (plugin) {
         padding: 0
         // width: '100%' // TODO: update model spec
       })
-      if (plugin.pageLayout.footerIframe) {
-        plugin.pageLayout.footerIframe.css({
+      if (plugin.page.pageLayout.footerIframe) {
+        plugin.page.pageLayout.footerIframe.css({
           height: that.footer.height,
           minHeight: that.footer.height,
           maxHeight: that.footer.height
