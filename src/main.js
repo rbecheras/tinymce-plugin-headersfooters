@@ -138,12 +138,6 @@ function tinymcePluginHeadersFooters (editor, url) {
   })
 
   events.autoBindImplementedEventCallbacks.call(this, editor, eventHandlers)
-
-  // if (window.env === 'development' && this.isMaster) {
-  //   setTimeout(function () {
-  //     editor.execCommand('editFormatCmd')
-  //   })
-  // }
 }
 
 function enable () {
