@@ -120,7 +120,7 @@ function tinymcePluginHeadersFooters (editor, url) {
   this.formats = []
   this.customFormats = []
   this.defaultFormat = null
-  this.currentFormat = null
+  this.paginator.currentFormat = null
 
   _setAvailableFormats.call(this)
 
@@ -134,7 +134,7 @@ function tinymcePluginHeadersFooters (editor, url) {
     editor.insertContent('{{pages}}')
   })
   editor.addCommand('editFormatCmd', function () {
-    editFormatOpenMainWin(editor)(thisPlugin.currentFormat)
+    editFormatOpenMainWin(editor)(thisPlugin.paginator.currentFormat)
   })
 
   events.autoBindImplementedEventCallbacks.call(this, editor, eventHandlers)
@@ -218,7 +218,7 @@ function _setAvailableFormats () {
 }
 
 function setFormat (format) {
-  this.currentFormat = new Format(format.name, format)
+  this.paginator.currentFormat = this.paginator.currentFormat || new Format(format.name, format)
   this.editor.fire('HeadersFooters:SetFormat')
 }
 
@@ -238,15 +238,15 @@ function parseParamList (paramValue) {
  * @returns {undefined}
  */
 function reloadMenuItems () {
-  if (this.currentFormat) {
-    if (this.currentFormat.header.height && this.currentFormat.header.height !== '0') {
+  if (this.paginator.currentFormat) {
+    if (this.paginator.currentFormat.header.height && this.paginator.currentFormat.header.height !== '0') {
       this.menuItemsList.insertHeader.hide()
       this.menuItemsList.removeHeader.show()
     } else {
       this.menuItemsList.insertHeader.show()
       this.menuItemsList.removeHeader.hide()
     }
-    if (this.currentFormat.footer.height && this.currentFormat.footer.height !== '0') {
+    if (this.paginator.currentFormat.footer.height && this.paginator.currentFormat.footer.height !== '0') {
       this.menuItemsList.insertFooter.hide()
       this.menuItemsList.removeFooter.show()
     } else {
