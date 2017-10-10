@@ -106,16 +106,14 @@ function tinymcePluginHeadersFooters (editor, url) {
     statusbar: null
   }
 
-  if (this.isMaster) {
-    this.pageLayout = {
-      pageWrapper: null,
-      pagePanel: null,
-      headerWrapper: null,
-      headerPanel: null,
-      bodyPanel: null,
-      footerWrapper: null,
-      footerPanel: null
-    }
+  this.page.pageLayout = this.page.pageLayout || {
+    pageWrapper: null,
+    pagePanel: null,
+    headerWrapper: null,
+    headerPanel: null,
+    bodyPanel: null,
+    footerWrapper: null,
+    footerPanel: null
   }
 
   this.availableFormats = {}
