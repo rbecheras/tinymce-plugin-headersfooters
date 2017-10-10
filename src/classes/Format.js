@@ -120,25 +120,25 @@ function Format (name, config) {
  */
 function applyToPlugin (plugin) {
   var that = this
-  var editor = plugin.editor
+  var paginator = plugin.paginator
+  var editor, win, body
 
-  if (plugin.documentBody) {
-    var win = plugin.editor.getWin()
-    var body = plugin.documentBody
-
-    apply()
-
-    if (plugin.getMaster()) {
-      plugin = plugin.getMaster()
-      apply()
-    }
-  }
+  $.each(paginator.pages, function (pageNumber, pager) {
+    ;['header', 'body', 'footer'].map(function (pageType) {
+      var pagePlugin = pager[pageType]
+      if (pagePlugin && pagePlugin.editor.initialized && pagePlugin.documentBody) {
+        plugin = pagePlugin
+        editor = plugin.editor
+        win = editor.getWin()
+        body = editor.getBody()
+        apply()
+      }
+    })
+  })
 
   function apply () {
-    that = plugin.currentFormat
-
     applyToStackedLayout()
-    applyToBody(plugin)
+    applyToBody()
 
     editor.fire('HeadersFooters:Format:AppliedToBody', {
       documentFormat: that
@@ -148,7 +148,7 @@ function applyToPlugin (plugin) {
   function applyToStackedLayout () {
     // var bodyHeight = uiUtils.getElementHeight(body)
     var bodyHeight
-    if (plugin.type === 'body') {
+    if (plugin.isBody()) {
       bodyHeight = that.calculateBodyHeight(editor)
     } else {
       bodyHeight = that[plugin.type].height
@@ -163,10 +163,10 @@ function applyToPlugin (plugin) {
     plugin.stackedLayout.editarea.css({border: 0})
     plugin.stackedLayout.iframe.css(rules)
 
-    setBodyCss(plugin)
+    setBodyCss()
   }
 
-  function applyToBody (plugin) {
+  function applyToBody () {
     // NOTE: set padding to zero to fix unknown bug
     // where all iframe's body paddings are set to '2cm'...
     // TODO: remove this statement if the 2cm padding source is found.
@@ -177,7 +177,7 @@ function applyToPlugin (plugin) {
     })
 
     // Allow body panel overflow
-    if (plugin.isMaster) {
+    if (plugin.isBody()) {
       $(body, win).css({
         overflowY: 'auto'
       })
@@ -329,24 +329,25 @@ function applyToPlugin (plugin) {
    * - border
    * @param {tinymce.Plugin} plugin
    */
-  function setBodyCss (plugin) {
-    var ctx = plugin.stackedLayout.iframe[0].contentDocument
+  function setBodyCss () {
+    var $ = editor.$
+    var ctx = editor.getDoc()
     var borderWidth = plugin.stackedLayout.root.css('border-width')
     if (borderWidth === '0px') {
       // use default dashed gray border of 1px
       borderWidth = '1px'
     }
     window.winroot = plugin.stackedLayout.root
-    editor.$('html, body', ctx).css({
+    $('html, body', ctx).css({
       'overflow-y': 'hidden'
     })
-    // editor.$('body.body-panel', ctx).css({
+    // $('body.body-panel', ctx).css({
     //   'overflow-y': 'auto'
     // })
-    editor.$('html', ctx).css({
+    $('html', ctx).css({
       'height': 'calc(100% - ' + borderWidth + ' - ' + borderWidth + ')'
     })
-    editor.$('body', ctx).css({
+    $('body', ctx).css({
       // 'height': 'calc(100% - ' + borderWidth + ' - ' + borderWidth + ')',
       'height': '100%',
       'border': '1px dashed gray'
