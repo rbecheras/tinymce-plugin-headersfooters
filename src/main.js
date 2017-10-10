@@ -56,6 +56,7 @@ function tinymcePluginHeadersFooters (editor, url) {
 
   this.type = editor.settings.headersfooters_type
   this.bodyClass = editor.settings.body_class
+  this.pageNumber = editor.settings.headersfooters_pageNumber
 
   // bind plugin methods
   this.enable = enable
