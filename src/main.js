@@ -64,15 +64,24 @@ function tinymcePluginHeadersFooters (editor, url) {
   this.setFormat = setFormat
   this.parseParamList = parseParamList
   this.reloadMenuItems = reloadMenuItems
-
-  if (this.isMaster && window.env === 'development') {
-    window.mceHF = this
-  }
   this.isHeader = isHeader
   this.isBody = isBody
   this.isFooter = isFooter
   this.getMaster = getMaster
   this.isMaster = isMaster
+
+  var headersfootersPluginClass = tinymce.PluginManager.lookup.headersfooters
+  headersfootersPluginClass.paginator = headersfootersPluginClass.paginator || {}
+  this.paginator = headersfootersPluginClass.paginator
+  this.paginator.pages = this.paginator.pages || {}
+  this.paginator.pages[this.pageNumber] = this.paginator.pages[this.pageNumber] || {}
+  this.page = this.paginator.pages[this.pageNumber]
+  this.page.pageNumber = this.pageNumber
+  this.page[this.type] = this
+
+  if (window.env === 'development') {
+    window.mceHF = headersfootersPluginClass
+  }
 
   this.headerFooterFactory = null
 
