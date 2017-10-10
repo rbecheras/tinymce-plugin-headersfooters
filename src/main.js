@@ -65,28 +65,14 @@ function tinymcePluginHeadersFooters (editor, url) {
   this.parseParamList = parseParamList
   this.reloadMenuItems = reloadMenuItems
 
-  this.isMaster = this.type === 'body'
-  this.isSlave = !this.isMaster
-
-  if (this.isMaster) {
-    tinymce.getMasterHeadersFootersPlugin = function () {
-      return thisPlugin
-    }
-  }
-  this.getMaster = function () {
-    if (tinymce.getMasterHeadersFootersPlugin) {
-      return tinymce.getMasterHeadersFootersPlugin()
-    } else {
-      return null
-    }
-  }
-
   if (this.isMaster && window.env === 'development') {
     window.mceHF = this
   }
   this.isHeader = isHeader
   this.isBody = isBody
   this.isFooter = isFooter
+  this.getMaster = getMaster
+  this.isMaster = isMaster
 
   this.headerFooterFactory = null
 
@@ -273,4 +259,12 @@ function isBody () {
 
 function isFooter () {
   return this.type === 'footer'
+}
+
+function getMaster () {
+  return this.page && this.page.body ? this.page.body : null
+}
+
+function isMaster () {
+  return this.isBody()
 }
