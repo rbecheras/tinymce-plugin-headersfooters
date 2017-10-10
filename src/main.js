@@ -52,6 +52,7 @@ tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
  */
 function tinymcePluginHeadersFooters (editor, url) {
   var thisPlugin = this
+  this.editor = editor
 
   this.type = editor.settings.headersfooters_type
   this.bodyClass = editor.settings.body_class
@@ -82,11 +83,13 @@ function tinymcePluginHeadersFooters (editor, url) {
   if (this.isMaster && window.env === 'development') {
     window.mceHF = this
   }
+  this.isHeader = isHeader
+  this.isBody = isBody
+  this.isFooter = isFooter
 
   this.headerFooterFactory = null
 
   this.units = units
-  this.editor = editor
 
   this.documentBody = null
   this.documentBodies = {
@@ -257,4 +260,16 @@ function reloadMenuItems () {
       this.menuItemsList.removeFooter.hide()
     }
   }
+}
+
+function isHeader () {
+  return this.type === 'header'
+}
+
+function isBody () {
+  return this.type === 'body'
+}
+
+function isFooter () {
+  return this.type === 'footer'
 }
