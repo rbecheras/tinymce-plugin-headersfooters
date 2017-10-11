@@ -23,11 +23,8 @@
  * @license GNU GPL-v2 http://www.tinymce.com/license
  */
 
-/**
- * Tinymce library - injected by the plugin loader.
- * @external tinymce
- * @see {@link https://www.tinymce.com/docs/api/class/tinymce/|Tinymce API Reference}
- */
+import Paginator from './classes/Paginator'
+
 var tinymce = window.tinymce
 
 var menuItems = require('./components/menu-items')
@@ -56,7 +53,6 @@ function tinymcePluginHeadersFooters (editor, url) {
 
   this.type = editor.settings.headersfooters_type
   this.bodyClass = editor.settings.body_class
-  this.pageNumber = editor.settings.headersfooters_pageNumber
 
   // bind plugin methods
   this.enable = enable
@@ -70,17 +66,14 @@ function tinymcePluginHeadersFooters (editor, url) {
   this.getMaster = getMaster
   this.isMaster = isMaster
 
-  var headersfootersPluginClass = tinymce.PluginManager.lookup.headersfooters
-  headersfootersPluginClass.paginator = headersfootersPluginClass.paginator || {}
-  this.paginator = headersfootersPluginClass.paginator
-  this.paginator.pages = this.paginator.pages || {}
-  this.paginator.pages[this.pageNumber] = this.paginator.pages[this.pageNumber] || {}
-  this.page = this.paginator.pages[this.pageNumber]
-  this.page.pageNumber = this.pageNumber
-  this.page[this.type] = this
+  var hfPluginClass = tinymce.PluginManager.lookup.headersfooters
+  hfPluginClass.paginator = hfPluginClass.paginator || new Paginator()
+  this.paginator = hfPluginClass.paginator
+
+  this.page = this.paginator.initPage(this, editor.settings.headersfooters_pageNumber)
 
   if (window.env === 'development') {
-    window.mceHF = headersfootersPluginClass
+    window.mceHF = hfPluginClass
   }
 
   this.headerFooterFactory = null
@@ -104,16 +97,6 @@ function tinymcePluginHeadersFooters (editor, url) {
     toolbar: null,
     editarea: null,
     statusbar: null
-  }
-
-  this.page.pageLayout = this.page.pageLayout || {
-    pageWrapper: null,
-    pagePanel: null,
-    headerWrapper: null,
-    headerPanel: null,
-    bodyPanel: null,
-    footerWrapper: null,
-    footerPanel: null
   }
 
   this.availableFormats = {}
