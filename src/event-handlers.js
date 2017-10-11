@@ -19,7 +19,8 @@ module.exports = {
   'SetContent': {},
   'BeforeSetContent': {},
   'Focus': {
-    enterHeadFoot: enterHeadFoot
+    enterHeadFoot: enterHeadFoot,
+    selectCurrentPage: selectCurrentPage
   },
   'Blur': {
     leaveHeadFoot: leaveHeadFoot
@@ -92,5 +93,19 @@ function reloadMenuItems (evt) {
   var editor = evt.target
   if (editor && editor.plugins && editor.plugins.headersfooters) {
     editor.plugins.headersfooters.reloadMenuItems()
+  }
+}
+
+function selectCurrentPage (evt) {
+  let editor = evt.target
+  let plugin = editor.plugins.headersfooters
+  let paginator, page
+  if (editor && plugin) {
+    paginator = plugin.paginator
+    page = plugin.page
+    if (paginator && page) {
+      paginator.selectCurrentPage(page)
+      editor.plugins.headersfooters.reloadMenuItems()
+    }
   }
 }

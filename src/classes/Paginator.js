@@ -5,6 +5,7 @@ import PaginatorPage from './PaginatorPage'
 export default class Paginator {
   constructor () {
     this.pages = {}
+    this.currentPage = null
   }
 
   initPage (plugin, pageNumber) {
@@ -24,5 +25,11 @@ export default class Paginator {
 
   getPage (pageNumber) {
     return this.pages[pageNumber]
+  }
+
+  selectCurrentPage (page) {
+    if (page && page.pageNumber) {
+      this.currentPage = page
+    }
   }
 }
