@@ -44,9 +44,8 @@ export default class Paginator {
 
       if (section.isBody()) {
         let maxBodyHeight = units.getValueFromStyle(format.calculateBodyHeight())
-        console.log({sectionHeight, maxBodyHeight})
-        if (sectionHeight > maxBodyHeight) {
-          window.alert('STOP!')
+        if (contentHeight > maxBodyHeight) {
+          this.pageOverflows(this.currentPage)
         }
       }
     }
