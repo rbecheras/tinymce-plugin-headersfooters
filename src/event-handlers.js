@@ -15,7 +15,9 @@ module.exports = {
     setPageLayout: setPageLayout,
     reloadMenuItems: reloadMenuItems
   },
-  'NodeChange': {},
+  'NodeChange': {
+    checkBodyHeight: checkBodyHeight
+  },
   'SetContent': {},
   'BeforeSetContent': {},
   'Focus': {
@@ -106,6 +108,19 @@ function selectCurrentPage (evt) {
     if (paginator && page) {
       paginator.selectCurrentPage(page)
       editor.plugins.headersfooters.reloadMenuItems()
+    }
+  }
+}
+
+function checkBodyHeight (evt) {
+  let editor = evt.target
+  let plugin = editor.plugins.headersfooters
+  let paginator, page
+  if (editor && plugin) {
+    paginator = plugin.paginator
+    page = plugin.page
+    if (paginator && page) {
+      paginator.checkBodyHeight()
     }
   }
 }
