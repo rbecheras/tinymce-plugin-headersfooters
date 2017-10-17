@@ -15,6 +15,7 @@ _createDpiTestElements()
 module.exports = {
   getValueFromStyle: getValueFromStyle,
   getUnitFromStyle: getUnitFromStyle,
+  getValueInPxFromAnyUnit: getValueInPxFromAnyUnit,
   getDpi: getDpi,
 
   in2mm: in2mm,
@@ -231,3 +232,40 @@ function mm2cm (qmm) {
   return Number(qmm) / 10
 }
 
+/**
+ * Converts things like:
+ * - Xmm -> Ypx
+ * - Xpt -> Ypx
+ * - Xin -> Ypx
+ * - Xpx -> Xpx
+ * - Xcm -> Ypx
+ * @static
+ * @param {String} valueWithUnit ex: "3mm"
+ * @throws Error
+ * @returns {Number}
+ */
+function getValueInPxFromAnyUnit (valueWithUnit) {
+  let value = getValueFromStyle(valueWithUnit)
+  let unit = getUnitFromStyle(valueWithUnit)
+  let valueInPx
+  switch (unit) {
+    case 'px':
+      valueInPx = value
+      break
+    case 'mm':
+      valueInPx = mm2px(value)
+      break
+    case 'cm':
+      valueInPx = mm2px(cm2mm(value))
+      break
+    case 'pt':
+      valueInPx = pt2px(value)
+      break
+    case 'in':
+      valueInPx = in2px(value)
+      break
+    default:
+      throw new Error('InvalidUnitError')
+  }
+  return valueInPx
+}
