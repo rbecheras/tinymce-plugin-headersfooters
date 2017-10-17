@@ -51,4 +51,8 @@ export default class Paginator {
       }
     }
   }
+
+  pageOverflows (page) {
+    console.error('Page Overflows !')
+  }
 }
