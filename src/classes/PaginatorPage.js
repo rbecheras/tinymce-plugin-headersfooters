@@ -1,8 +1,11 @@
 'use strict'
 
+import ui from '../utils/ui'
+
 export default class PaginatorPage {
   constructor (pageNumber) {
     this.pageNumber = pageNumber
+    this.currentSection = null
   }
 
   /**
@@ -24,5 +27,17 @@ export default class PaginatorPage {
       footerWrapper: null,
       footerPanel: null
     }
+  }
+
+  getSectionByType (type) {
+    return this[type]
+  }
+
+  setCurrentSection (section) {
+    this.currentSection = section
+  }
+
+  getSectionHeight () {
+    return ui.getElementHeight(this.currentSection.editor.getBody(), this.currentSection.editor.getWin(), false)
   }
 }
