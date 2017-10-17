@@ -106,7 +106,7 @@ function selectCurrentPage (evt) {
     paginator = plugin.paginator
     page = plugin.page
     if (paginator && page) {
-      paginator.selectCurrentPage(page)
+      paginator.selectCurrentPage(page, plugin.type)
       editor.plugins.headersfooters.reloadMenuItems()
     }
   }
