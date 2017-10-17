@@ -1,6 +1,7 @@
 'use strict'
 
 import PaginatorPage from './PaginatorPage'
+import units from '../utils/units'
 
 export default class Paginator {
   constructor () {
@@ -31,6 +32,23 @@ export default class Paginator {
     if (page && page.pageNumber) {
       this.currentPage = page
       page.setCurrentSection(page.getSectionByType(type))
+    }
+  }
+
+  checkBodyHeight () {
+    let page = this.currentPage
+    if (page && page.currentSection) {
+      let section = page.currentSection
+      let sectionHeight = page.getSectionHeight()
+      let format = this.currentFormat
+
+      if (section.isBody()) {
+        let maxBodyHeight = units.getValueFromStyle(format.calculateBodyHeight())
+        console.log({sectionHeight, maxBodyHeight})
+        if (sectionHeight > maxBodyHeight) {
+          window.alert('STOP!')
+        }
+      }
     }
   }
 }
