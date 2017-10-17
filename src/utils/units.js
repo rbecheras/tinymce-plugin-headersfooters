@@ -30,7 +30,10 @@ module.exports = {
   pt2in: pt2in,
 
   px2pt: px2pt,
-  pt2px: pt2px
+  pt2px: pt2px,
+
+  cm2mm: cm2mm,
+  mm2cm: mm2cm
 }
 
 // expose the module to the global scope in development environment
@@ -219,3 +222,12 @@ function px2pt (px) {
 function pt2px (qpt) {
   return in2px(pt2in(qpt))
 }
+
+function cm2mm (qcm) {
+  return Number(qcm) * 10
+}
+
+function mm2cm (qmm) {
+  return Number(qmm) / 10
+}
+
