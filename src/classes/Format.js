@@ -365,19 +365,19 @@ function applyToPlugin (plugin) {
 function calculateBodyHeight (editor) {
   var that = this
   var ret
-  var height = units.getValueFromStyle(this.height)
-  var marginTop = units.getValueFromStyle(this.margins.top)
-  var marginBottom = units.getValueFromStyle(this.margins.bottom)
-  var headerHeight = units.getValueFromStyle(this.header.height)
-  var headerMarginBottom = units.getValueFromStyle(this.header.margins.bottom)
-  var footerHeight = units.getValueFromStyle(this.footer.height)
-  var footerMarginTop = units.getValueFromStyle(this.footer.margins.top)
+  var height = units.getValueInPxFromAnyUnit(this.height)
+  var marginTop = units.getValueInPxFromAnyUnit(this.margins.top)
+  var marginBottom = units.getValueInPxFromAnyUnit(this.margins.bottom)
+  var headerHeight = units.getValueInPxFromAnyUnit(this.header.height)
+  var headerMarginBottom = units.getValueInPxFromAnyUnit(this.header.margins.bottom)
+  var footerHeight = units.getValueInPxFromAnyUnit(this.footer.height)
+  var footerMarginTop = units.getValueInPxFromAnyUnit(this.footer.margins.top)
 
   var value = height - marginTop - marginBottom -
     headerHeight - headerMarginBottom -
     footerHeight - footerMarginTop
 
-  ret = value + 'mm'
+  ret = value + 'px'
   // console.log('calculateBodyHeight() => ', ret)
   if (value <= 0) {
     if (this.showAlert) {
