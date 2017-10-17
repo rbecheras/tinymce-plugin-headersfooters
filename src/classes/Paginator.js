@@ -39,7 +39,7 @@ export default class Paginator {
     let page = this.currentPage
     if (page && page.currentSection) {
       let section = page.currentSection
-      let sectionHeight = page.getSectionHeight()
+      let contentHeight = page.getSectionContentHeight()
       let format = this.currentFormat
 
       if (section.isBody()) {
