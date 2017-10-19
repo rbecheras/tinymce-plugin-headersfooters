@@ -79,4 +79,12 @@ export default class Paginator {
     }
     return nextPage
   }
+
+  getNumberOfPages () {
+    return this.pages.length
+  }
+
+  getLastPage () {
+    return this.pages[this.getNumberOfPages() - 1]
+  }
 }
