@@ -19,7 +19,8 @@ module.exports = {
   autoAddMenuItems: autoAddMenuItems,
   mapMceLayoutElements: mapMceLayoutElements,
   mapPageLayoutElements: mapPageLayoutElements,
-  getElementHeight: getElementHeight
+  getElementHeight: getElementHeight,
+  cutLastNode: cutLastNode
 }
 
 /**
@@ -132,4 +133,10 @@ function getElementHeight (element, win, isBorderBox) {
   function px (style) {
     return Number(units.getValueFromStyle(style))
   }
+}
+
+function cutLastNode ($, bodyElement) {
+  let last = $(bodyElement).children().last()
+  $(last).remove()
+  return last
 }
