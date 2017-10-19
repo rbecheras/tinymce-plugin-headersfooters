@@ -8,6 +8,7 @@ export default class Paginator {
     this.pages = []
     this.currentPage = null
     this.shouldCheckPageHeight = true
+    this.appendingNewPages = {}
   }
 
   initPage (plugin, pageNumber) {
@@ -69,6 +70,41 @@ export default class Paginator {
     }
 
     this.rawPages = pages
+  }
+
+  /**
+   * Append a new raw page and return a promise that resolves when the matching editor has init and trigger `mcePluginHeadersFooter:appendPage`
+   * @returns {Promise} Paginator#appendingNewPages[pageNumber]
+   */
+  appendNewPage () {
+    let paginator = this
+    let pageNumber = this.getNumberOfPages() + 1
+    this.appendingNewPages[pageNumber] = new Promise((resolve, reject) => {
+      let $body = window.$('body')
+      $body.bind('mcePluginHeadersFooter:appendNewPage', appendNewPageEventHandler(pageNumber))
+      $body.trigger('mcePluginHeadersFooter:appendNewPage', {
+        appendingStatus: 'start',
+        pageNumber
+      })
+
+      try {
+        this.rawPages.push({})
+      } catch (e) {
+        reject(e)
+      }
+
+      function appendNewPageEventHandler () {
+        let handler = (evt, data) => {
+          if (data.appendingStatus === 'done') {
+            $('body').unbind('mcePluginHeadersFooter:appendNewPage', handler)
+            // resolve the new created page
+            resolve(paginator.getPage(data.pageNumber))
+          }
+        }
+        return handler
+      }
+    })
+    return this.appendingNewPages[pageNumber]
   }
 
   getNextPage (page) {
