@@ -7,6 +7,7 @@
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.0.1",
     "babel-plugin-module-resolver": "^2.7.1",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.0",
     "commander": "^2.9.0",
@@ -25,7 +26,7 @@
     "standard": "^10.0.3"
   },
   "scripts": {
-    "build:babel": "./node_modules/.bin/babel src --out-dir build --source-maps",
+    "build:babel": "./node_modules/.bin/babel --plugins transform-runtime src --out-dir build --source-maps",
     "build": "npm run build:babel && grunt build",
     "test": "echo \"Error: no test specified\" && exit 1",
     "jsdoc": "jsdoc -p -d jsdoc -c jsdoc.json -t ./node_modules/ink-docstrap/template  src/*",
@@ -56,6 +57,7 @@
   },
   "homepage": "https://github.com/rbecheras/tinymce-plugin-headersfooters#readme",
   "dependencies": {
+    "babel-runtime": "^6.26.0",
     "q": "^1.4.1"
   },
   "standard": {
