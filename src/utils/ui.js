@@ -20,7 +20,8 @@ module.exports = {
   mapMceLayoutElements: mapMceLayoutElements,
   mapPageLayoutElements: mapPageLayoutElements,
   getElementHeight: getElementHeight,
-  cutLastNode: cutLastNode
+  cutLastNode: cutLastNode,
+  cutLastWord: cutLastWord
 }
 
 /**
@@ -139,4 +140,13 @@ function cutLastNode ($, bodyElement) {
   let last = $(bodyElement).children().last()
   $(last).remove()
   return last
+}
+
+function cutLastWord ($, element) {
+  let $el = $(element)
+  let words = $el.text().split(' ')
+  // let words = $el.html().split(' ')
+  let lastWord = words.pop()
+  $el.html(words.join(' '))
+  return lastWord
 }
