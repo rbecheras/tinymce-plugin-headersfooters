@@ -1,6 +1,7 @@
 'use strict'
 
 import PaginatorPage from './PaginatorPage'
+import ui from '../utils/ui'
 import units from '../utils/units'
 
 export default class Paginator {
@@ -70,6 +71,61 @@ export default class Paginator {
     }
 
     this.rawPages = pages
+  }
+
+  async fixOverflow () {
+    console.info('Handle Page Overflow...')
+    let editor = this.currentPage.currentSection.editor
+    let lastNodes = []
+    let $ = editor.$
+    let $body = $(editor.getBody())
+    this.shouldCheckPageHeight = false
+
+    // cut overflowing nodes
+    let stop = false
+    while (!stop) {
+      let lastNode = ui.cutLastNode($, editor.getBody())
+      if (lastNode) {
+        lastNodes.splice(0, 0, lastNode)
+      }
+      if (!this.isCurrentPageOverflows()) {
+        stop = true
+      }
+    }
+
+    // reappend the last cut node and cut its overflowing words
+    if (lastNodes.length) {
+      stop = false
+      let lastWords = []
+      let lastCutNode = lastNodes.shift()
+      $body.append($(lastCutNode))
+      while (!stop) {
+        let lastWord = ui.cutLastWord($, lastCutNode)
+        if (lastWord) {
+          lastWords.splice(0, 0, lastWord)
+        }
+        if (!this.isCurrentPageOverflows()) {
+          stop = true
+        }
+      }
+
+      if (lastWords.length) {
+        let $splittedNodeClone = $(lastCutNode).clone()
+        $splittedNodeClone.html(lastWords.join(' '))
+        lastNodes.splice(0, 0, $splittedNodeClone[0])
+      }
+    }
+
+    if (lastNodes.length) {
+      let nextPage = this.getNextPage() || await this.appendNewPage()
+      let editor = nextPage.body.editor
+      let $ = editor.$
+      console.info(`prepend ${lastNodes.length} last cut nodes in page ${nextPage.pageNumber}`, lastNodes)
+      $(editor.getBody()).prepend($(lastNodes))
+    }
+
+    // re-enable page height checking (y-overflow)
+    this.shouldCheckPageHeight = true
   }
 
   /**
