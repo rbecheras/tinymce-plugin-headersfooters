@@ -7,6 +7,7 @@ export default class Paginator {
   constructor () {
     this.pages = []
     this.currentPage = null
+    this.shouldCheckPageHeight = true
   }
 
   initPage (plugin, pageNumber) {
@@ -35,7 +36,7 @@ export default class Paginator {
     }
   }
 
-  isBodyOverflows () {
+  isCurrentPageOverflows () {
     let page = this.currentPage
     if (page && page.currentSection) {
       let section = page.currentSection
@@ -45,9 +46,16 @@ export default class Paginator {
       if (section.isBody()) {
         let maxBodyHeight = units.getValueFromStyle(format.calculateBodyHeight())
         if (contentHeight > maxBodyHeight) {
-          this.pageOverflows(this.currentPage)
+          return true
         }
       }
+    }
+    return false
+  }
+
+  checkBodyHeight () {
+    if (this.shouldCheckPageHeight && this.isCurrentPageOverflows()) {
+      this.pageOverflows(this.currentPage)
     }
   }
 
