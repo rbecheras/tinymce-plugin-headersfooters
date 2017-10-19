@@ -62,7 +62,8 @@ export default class Paginator {
   }
 
   pageOverflows (page) {
-    console.error('Page Overflows !')
+    console.info(`Page N°${page.pageNumber} Overflows !`)
+    this.fixOverflow()
   }
 
   setRawPages ({pages}) {
