@@ -35,7 +35,7 @@ export default class Paginator {
     }
   }
 
-  checkBodyHeight () {
+  isBodyOverflows () {
     let page = this.currentPage
     if (page && page.currentSection) {
       let section = page.currentSection
