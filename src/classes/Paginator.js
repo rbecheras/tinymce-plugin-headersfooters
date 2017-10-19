@@ -70,4 +70,13 @@ export default class Paginator {
 
     this.rawPages = pages
   }
+
+  getNextPage (page) {
+    let nextPage = null
+    page = page || this.currentPage
+    if (this.pages.length >= page.pageNumber) {
+      nextPage = this.pages[page.pageNumber]
+    }
+    return nextPage
+  }
 }
