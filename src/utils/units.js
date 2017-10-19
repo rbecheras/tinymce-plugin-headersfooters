@@ -264,6 +264,10 @@ function getValueInPxFromAnyUnit (valueWithUnit) {
     case 'in':
       valueInPx = in2px(value)
       break
+    case '0':
+    case 0:
+      valueInPx = 0
+      break
     default:
       throw new Error('InvalidUnitError')
   }
