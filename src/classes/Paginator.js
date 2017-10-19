@@ -5,7 +5,7 @@ import units from '../utils/units'
 
 export default class Paginator {
   constructor () {
-    this.pages = {}
+    this.pages = []
     this.currentPage = null
   }
 
@@ -21,11 +21,11 @@ export default class Paginator {
   }
 
   addPage (page) {
-    this.pages[page.pageNumber] = page
+    this.pages.push(page)
   }
 
   getPage (pageNumber) {
-    return this.pages[pageNumber]
+    return this.pages[pageNumber - 1]
   }
 
   selectCurrentPage (page, type) {
