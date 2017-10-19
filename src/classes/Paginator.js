@@ -135,10 +135,11 @@ export default class Paginator {
    * @returns {Promise} Paginator#appendingNewPages[pageNumber]
    */
   appendNewPage () {
-    let paginator = this
-    let pageNumber = this.getNumberOfPages() + 1
+    const paginator = this
+    const pageNumber = this.getNumberOfPages() + 1
+    const $body = window.$('body')
+
     this.appendingNewPages[pageNumber] = new Promise((resolve, reject) => {
-      let $body = window.$('body')
       $body.bind('mcePluginHeadersFooter:appendNewPage', appendNewPageEventHandler(pageNumber))
       $body.trigger('mcePluginHeadersFooter:appendNewPage', {
         appendingStatus: 'start',
@@ -154,7 +155,7 @@ export default class Paginator {
       function appendNewPageEventHandler () {
         let handler = (evt, data) => {
           if (data.appendingStatus === 'done') {
-            $('body').unbind('mcePluginHeadersFooter:appendNewPage', handler)
+            $body.unbind('mcePluginHeadersFooter:appendNewPage', handler)
             // resolve the new created page
             resolve(paginator.getPage(data.pageNumber))
           }
