@@ -69,6 +69,7 @@ function tinymcePluginHeadersFooters (editor, url) {
   var hfPluginClass = tinymce.PluginManager.lookup.headersfooters
   hfPluginClass.paginator = hfPluginClass.paginator || new Paginator()
   this.paginator = hfPluginClass.paginator
+  this.paginator.setRawPages(editor.settings.headersfooters_rawPaginator)
 
   this.page = this.paginator.initPage(this, editor.settings.headersfooters_pageNumber)
 
