@@ -9,6 +9,7 @@ export default class Paginator {
     this.pages = []
     this.currentPage = null
     this.shouldCheckPageHeight = true
+    this.lastSelection = {}
     this.appendingNewPages = {}
   }
 
@@ -179,5 +180,33 @@ export default class Paginator {
 
   getLastPage () {
     return this.pages[this.getNumberOfPages() - 1]
+  }
+
+  saveSelection () {
+    let page, section, editor, selection
+    page = this.currentPage
+    if (page) {
+      section = page.currentSection
+      if (section) {
+        editor = section.editor
+        if (editor) {
+          selection = editor.selection
+          this.lastSelection.page = page
+          this.lastSelection.section = section
+          this.lastSelection.editor = editor
+          this.lastSelection.selection = editor.selection
+          this.lastSelection.bookmark = selection.getBookmark()
+        }
+      }
+    }
+  }
+
+  restoreSelection () {
+    if (this.lastSelection.page) {
+      let {page, section, editor, selection, bookmark} = this.lastSelection
+      this.selectCurrentPage(page, section.type)
+      editor.focus()
+      selection.moveToBookmark(bookmark)
+    }
   }
 }
