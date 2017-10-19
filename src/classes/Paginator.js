@@ -62,4 +62,12 @@ export default class Paginator {
   pageOverflows (page) {
     console.error('Page Overflows !')
   }
+
+  setRawPages ({pages}) {
+    if (!Array.isArray(pages)) {
+      throw new Error('Raw "pages" must be an array')
+    }
+
+    this.rawPages = pages
+  }
 }
