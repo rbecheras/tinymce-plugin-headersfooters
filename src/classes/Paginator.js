@@ -9,6 +9,7 @@ export default class Paginator {
     this.pages = []
     this.currentPage = null
     this.shouldCheckPageHeight = true
+    this.shouldCheckPresenceOfALastEmptyPage = true
     this.lastSelection = {}
     this.appendingNewPages = {}
   }
@@ -208,6 +209,24 @@ export default class Paginator {
       this.selectCurrentPage(page, section.type)
       editor.focus()
       selection.moveToBookmark(bookmark)
+    }
+  }
+
+  async shouldCheckPresenceOfALastEmptyPage () {
+    this.saveSelection()
+    this.shouldCheckPresenceOfALastEmptyPage = false
+    let lastPage = this.getLastPage()
+    if (lastPage.body && lastPage.body) {
+      let ed = lastPage.body.editor
+      let $ = ed.$
+      let textContent = $(ed.getBody()).text().trim()
+      console.log(`Text content of page ${lastPage.pageNumber} / ${this.getNumberOfPages()}:`, !!textContent)
+      if (textContent) {
+        console.log('Appending an new empty page...')
+        await this.appendNewPage()
+        this.restoreSelection()
+        this.shouldCheckPresenceOfALastEmptyPage = true
+      }
     }
   }
 }
