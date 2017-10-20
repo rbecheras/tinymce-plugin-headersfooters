@@ -20,6 +20,9 @@ module.exports = {
   },
   'SetContent': {},
   'BeforeSetContent': {},
+  'Change': {
+    checkPresenceOfALastEmptyPage: checkPresenceOfALastEmptyPage
+  },
   'Focus': {
     enterHeadFoot: enterHeadFoot,
     selectCurrentPage: selectCurrentPage
@@ -121,6 +124,18 @@ function checkBodyHeight (evt) {
     page = plugin.page
     if (paginator && page) {
       paginator.checkBodyHeight()
+    }
+  }
+}
+
+function checkPresenceOfALastEmptyPage (evt) {
+  // console.log(evt)
+  let editor = evt.target
+  let plugin = editor.plugins.headersfooters
+  if (editor && plugin) {
+    let paginator = plugin.paginator
+    if (paginator && paginator.shouldCheckPresenceOfALastEmptyPage) {
+      paginator.checkPresenceOfALastEmptyPage()
     }
   }
 }
