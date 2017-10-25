@@ -24,18 +24,15 @@
  */
 
 import Paginator from './classes/Paginator'
+import * as menuItems from './components/menu-items'
+import * as units from './utils/units'
+import * as uiUtils from './utils/ui'
+import { eventHandlers, debugEventHandlers } from './event-handlers'
+import Format from './classes/Format'
+import editFormatOpenMainWin from './components/edit-format-window'
+import autoBindImplementedEventCallbacks from './utils/events'
 
-var tinymce = window.tinymce
-
-var menuItems = require('./components/menu-items')
-
-var units = require('./utils/units')
-var events = require('./utils/events')
-var uiUtils = require('./utils/ui')
-
-var eventHandlers = require('./event-handlers')
-var Format = require('./classes/Format')
-var editFormatOpenMainWin = require('./components/edit-format-window')
+const tinymce = window.tinycmce
 
 // Add the plugin to the tinymce PluginManager
 tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
@@ -48,7 +45,6 @@ tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
  * @returns void
  */
 function tinymcePluginHeadersFooters (editor, url) {
-  var thisPlugin = this
   this.editor = editor
 
   this.type = editor.settings.headersfooters_type
@@ -66,7 +62,7 @@ function tinymcePluginHeadersFooters (editor, url) {
   this.getMaster = getMaster
   this.isMaster = isMaster
 
-  var hfPluginClass = tinymce.PluginManager.lookup.headersfooters
+  const hfPluginClass = tinymce.PluginManager.lookup.headersfooters
   hfPluginClass.paginator = hfPluginClass.paginator || new Paginator()
   this.paginator = hfPluginClass.paginator
   this.paginator.setRawPages(editor.settings.headersfooters_rawPaginator)
@@ -111,17 +107,17 @@ function tinymcePluginHeadersFooters (editor, url) {
   this.menuItemsList = menuItems.create(editor)
   uiUtils.autoAddMenuItems.call(this)
 
-  editor.addCommand('insertPageNumberCmd', function () {
-    editor.insertContent('{{page}}')
-  })
-  editor.addCommand('insertNumberOfPagesCmd', function () {
-    editor.insertContent('{{pages}}')
-  })
-  editor.addCommand('editFormatCmd', function () {
-    editFormatOpenMainWin(editor)(thisPlugin.paginator.currentFormat)
+  editor.addCommand('insertPageNumberCmd', () => { editor.insertContent('{{page}}') })
+  editor.addCommand('insertNumberOfPagesCmd', () => { editor.insertContent('{{pages}}') })
+  editor.addCommand('editFormatCmd', () => {
+    const openWindow = editFormatOpenMainWin(editor)
+    openWindow(this.paginator.currentFormat)
   })
 
-  events.autoBindImplementedEventCallbacks.call(this, editor, eventHandlers)
+  autoBindImplementedEventCallbacks.call(this, editor, eventHandlers)
+  if (window.debugEventHandlers) {
+    autoBindImplementedEventCallbacks.call(this, editor, debugEventHandlers)
+  }
 }
 
 function enable () {
@@ -152,41 +148,35 @@ function disable () {
 }
 
 function _setAvailableFormats () {
-  var that = this
-  var settings = this.editor.settings
+  const settings = this.editor.settings
 
   // set enabled default formats
-  var userEnabledDefaultFormats = this.parseParamList(settings.headersfooters_formats)
-  .map(function (formatName) {
-    return Format.defaults[formatName]
-  })
-  .filter(function (v) {
-    return !!v
-  })
+  const userEnabledDefaultFormats = this.parseParamList(settings.headersfooters_formats)
+  .map(formatName => Format.defaults[formatName])
+  .filter(v => !!v)
+
   if (userEnabledDefaultFormats.length) {
     this.formats = userEnabledDefaultFormats
   } else {
     this.formats = []
     for (var name in Format.defaults) {
-      that.formats.push(Format.defaults[name])
+      this.formats.push(Format.defaults[name])
     }
   }
 
   // set user custom formats
   this.customFormats = (settings.headersfooters_custom_formats || [])
-  .map(function (f) {
-    return new Format(f.name, f.config)
-  })
+  .map(f => new Format(f.name, f.config))
 
   // set the formats available for the editor
   this.availableFormats = {}
   // use enabled default formats
-  this.formats.map(function (f) {
-    that.availableFormats[f.name] = f
+  this.formats.map(f => {
+    this.availableFormats[f.name] = f
   })
   // add or override custom formats
-  this.customFormats.map(function (f) {
-    that.availableFormats[f.name] = f
+  this.customFormats.map(f => {
+    this.availableFormats[f.name] = f
   })
 
   // select a default format for new doc
