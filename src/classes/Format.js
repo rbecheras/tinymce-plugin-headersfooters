@@ -123,11 +123,11 @@ function applyToPlugin (plugin) {
   var paginator = plugin.paginator
   var editor, win, body
 
-  $.each(paginator.pages, function (pageNumber, pager) {
-    ;['header', 'body', 'footer'].map(function (pageType) {
-      var pagePlugin = pager[pageType]
-      if (pagePlugin && pagePlugin.editor.initialized && pagePlugin.documentBody) {
-        plugin = pagePlugin
+  $.each(paginator.pages, function (pageNumber, page) {
+    ;['header', 'body', 'footer'].map(function (sectionType) {
+      var section = page.getSection(sectionType)
+      if (section && section.editor.initialized && section.documentBody) {
+        plugin = section
         editor = plugin.editor
         win = editor.getWin()
         body = editor.getBody()
