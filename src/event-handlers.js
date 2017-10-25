@@ -28,16 +28,9 @@ module.exports = {
   'Blur': {
     leaveHeadFoot: leaveHeadFoot
   },
-  'KeyDown KeyPress KeyUp': {
-    // logKeyPress: logKeyPress
-  },
   'KeyDown': {
-    logKeyPress: logKeyPress,
     moveCursorToNeededPage: moveCursorToNeededPage,
     removePageIfEmptyAndNotFirst: removePageIfEmptyAndNotFirst
-  },
-  'ExecCommand': {
-    logExecCommand: logExecCommand
   },
   'Focus Blur Paste SetContent NodeChange HeadersFooters:SetFormat': {
     applyCurrentFormat: applyCurrentFormat,
@@ -46,6 +39,13 @@ module.exports = {
   'HeadersFooters:Error:NegativeBodyHeight': {
     alertErrorNegativeBodyHeight: alertErrorNegativeBodyHeight
   }
+  // },
+  // 'KeyDown KeyPress KeyUp': {
+  //   logKeyPress: logKeyPress
+  // },
+  // 'ExecCommand': {
+  //   logExecCommand: logExecCommand
+  // }
 }
 
 function setBodies (evt) {
@@ -137,14 +137,6 @@ function checkBodyHeight (evt) {
   }
 }
 
-function logKeyPress (evt, data) {
-  console.log(`Keyboard pressed (${evt.type})`, evt, data)
-}
-
-function logExecCommand (evt, data) {
-  // console.log(`Command executing (${evt.command})`, evt, data)
-}
-
 function removePageIfEmptyAndNotFirst (evt) {
   const {key, keyCode, altKey, ctrlKey} = evt
   if (key === 'Backspace' && keyCode === 8 && !altKey && !ctrlKey) {
@@ -166,3 +158,11 @@ function moveCursorToNeededPage (evt) {
     }
   }
 }
+
+// function logKeyPress (evt, data) {
+//   console.log(`Keyboard pressed (${evt.type})`, evt, data)
+// }
+
+// function logExecCommand (evt, data) {
+//   console.log(`Command executing (${evt.command})`, evt, data)
+// }
