@@ -16,7 +16,7 @@ export default class PaginatorPage {
   /**
    * Init a page section
    * @param {*} plugin the plugin instance specific to the page section
-   * @example page.header = somePlugin
+   * @example page.sections.header = somePlugin
    */
   initSection (plugin) {
     this.sections[plugin.type] = plugin
@@ -36,6 +36,18 @@ export default class PaginatorPage {
 
   getSection (type) {
     return this.sections[type]
+  }
+
+  getHeader () {
+    return this.getSection('header')
+  }
+
+  getBody () {
+    return this.getSection('body')
+  }
+
+  getFooter () {
+    return this.getSection('footer')
   }
 
   setCurrentSection (section) {
