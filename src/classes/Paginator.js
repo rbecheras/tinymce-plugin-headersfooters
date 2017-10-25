@@ -211,6 +211,14 @@ export default class Paginator {
     }
   }
 
+  removeCurrentPageIfEmptyAndNotFirst () {
+    const page = this.currentPage
+    const section = page.currentSection
+    if (page.pageNumber !== 1 && section.isBody() && page.isEmpty()) {
+      this.removePage(page)
+    }
+  }
+
   removePageByNumber (pageNumber) {
     return this.removePage(this.getPage(pageNumber))
   }
