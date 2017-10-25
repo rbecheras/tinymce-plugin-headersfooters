@@ -247,7 +247,7 @@ function isFooter () {
 }
 
 function getMaster () {
-  return this.page && this.page.body ? this.page.body : null
+  return this.page && this.page.getBody() ? this.page.getBody() : null
 }
 
 function isMaster () {
