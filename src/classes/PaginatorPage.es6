@@ -6,6 +6,11 @@ export default class PaginatorPage {
   constructor (pageNumber) {
     this.pageNumber = pageNumber
     this.currentSection = null
+    this.sections = {
+      header: null,
+      body: null,
+      footer: null
+    }
   }
 
   /**
@@ -14,7 +19,7 @@ export default class PaginatorPage {
    * @example page.header = somePlugin
    */
   initSection (plugin) {
-    this[plugin.type] = plugin
+    this.sections[plugin.type] = plugin
   }
 
   initPageLayout () {
@@ -29,8 +34,8 @@ export default class PaginatorPage {
     }
   }
 
-  getSectionByType (type) {
-    return this[type]
+  getSection (type) {
+    return this.sections[type]
   }
 
   setCurrentSection (section) {

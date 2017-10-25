@@ -35,7 +35,7 @@ export default class Paginator {
   selectCurrentPage (page, type) {
     if (page && page.pageNumber) {
       this.currentPage = page
-      page.setCurrentSection(page.getSectionByType(type))
+      page.setCurrentSection(page.getSection(type))
     }
   }
 
