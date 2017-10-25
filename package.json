@@ -34,7 +34,7 @@
   },
   "scripts": {
     "build:babel": "./node_modules/.bin/babel --plugins transform-runtime src --out-dir build --source-maps",
-    "build": "npm run build:babel && grunt build",
+    "build": "npm run build:babel && grunt build && yarn run analysis",
     "test": "echo \"Error: no test specified\" && exit 1",
     "jsdoc": "jsdoc -p -d jsdoc -c jsdoc.json -t ./node_modules/ink-docstrap/template  src/*",
     "release-patch": "node ./scripts/release.js patch",
@@ -43,7 +43,10 @@
     "prerelease": "node ./scripts/release.js prerelease",
     "prerelease-patch": "node ./scripts/release.js prepatch",
     "prerelease-minor": "node ./scripts/release.js preminor",
-    "prerelease-major": "node ./scripts/release.js premajor"
+    "prerelease-major": "node ./scripts/release.js premajor",
+    "analysis": "yarn run analysis:plato",
+    "analysis:plato": "yarn run plato -r -t \"SWAP Code Report\" -d report -e .eslintrc src",
+    "analysis:serve": "yarn run http-server -p 9292 report"
   },
   "repository": {
     "type": "git",
