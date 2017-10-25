@@ -210,4 +210,17 @@ export default class Paginator {
       selection.moveToBookmark(bookmark)
     }
   }
+
+  removePage (removingPage) {
+    const removingPageNumber = removingPage.pageNumber
+    const pageIndex = removingPageNumber - 1
+    ;[this.rawPages, this.pages].forEach(pagesArray => {
+      pagesArray.splice(pageIndex, 1)
+      pagesArray.forEach(page => {
+        if (page.pageNumber > removingPageNumber) {
+          page.pageNumber = removingPageNumber - 1
+        }
+      })
+    })
+  }
 }
