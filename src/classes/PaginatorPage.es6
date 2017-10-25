@@ -66,7 +66,7 @@ export default class PaginatorPage {
   }
 
   isEmpty () {
-    const section = this.currentPage.currentSection
+    const section = this.currentSection
     const editor = section.editor
     // const body = editor.getBody()
     let selection = editor.selection
@@ -74,8 +74,8 @@ export default class PaginatorPage {
       let range = selection.getRng()
       // console.log(`Range offset are: ${range.startOffset} and ${range.endOffset}.`)
       if (range.startOffset === 0) {
-        console.error(`Paginator.removePageByNumber(${this.currentPage.pageNumber})`)
-        // this.removePageByNumber(this.currentPage.pageNumber)
+        console.error(`Paginator.removePageByNumber(${this.pageNumber})`)
+        // this.removePageByNumber(this.pageNumber)
       }
     }
   }
