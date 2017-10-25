@@ -9,44 +9,24 @@
 const uiUtils = require('./utils/ui')
 const tinymce = window.tinymce
 
-module.exports = {
-  'Init': {
-    setBodies: setBodies,
-    setStackedLayout: setStackedLayout,
-    setPageLayout: setPageLayout,
-    reloadMenuItems: reloadMenuItems
-  },
-  'NodeChange': {
-    checkBodyHeight: checkBodyHeight
-  },
+const eventHandlers = {
+  'Init': { setBodies, setStackedLayout, setPageLayout, reloadMenuItems },
+  'NodeChange': { checkBodyHeight },
   'SetContent': {},
   'BeforeSetContent': {},
-  'Focus': {
-    enterHeadFoot: enterHeadFoot,
-    selectCurrentPage: selectCurrentPage
-  },
-  'Blur': {
-    leaveHeadFoot: leaveHeadFoot
-  },
-  'KeyDown': {
-    moveCursorToNeededPage: moveCursorToNeededPage,
-    removePageIfEmptyAndNotFirst: removePageIfEmptyAndNotFirst
-  },
-  'Focus Blur Paste SetContent NodeChange HeadersFooters:SetFormat': {
-    applyCurrentFormat: applyCurrentFormat,
-    reloadMenuItems: reloadMenuItems
-  },
-  'HeadersFooters:Error:NegativeBodyHeight': {
-    alertErrorNegativeBodyHeight: alertErrorNegativeBodyHeight
-  }
-  // },
-  // 'KeyDown KeyPress KeyUp': {
-  //   logKeyPress: logKeyPress
-  // },
-  // 'ExecCommand': {
-  //   logExecCommand: logExecCommand
-  // }
+  'Focus': { enterHeadFoot, selectCurrentPage },
+  'Blur': { leaveHeadFoot },
+  'KeyDown': { moveCursorToNeededPage, removePageIfEmptyAndNotFirst },
+  'Focus Blur Paste SetContent NodeChange HeadersFooters:SetFormat': { applyCurrentFormat, reloadMenuItems },
+  'HeadersFooters:Error:NegativeBodyHeight': { alertErrorNegativeBodyHeight }
 }
+
+const debugEventHandlers = {
+  'KeyDown KeyPress KeyUp': { logKeyPress },
+  'ExecCommand': { logExecCommand }
+}
+
+export {eventHandlers as default, debugEventHandlers}
 
 function setBodies (evt) {
   var editor = evt.target
@@ -159,10 +139,10 @@ function moveCursorToNeededPage (evt) {
   }
 }
 
-// function logKeyPress (evt, data) {
-//   console.log(`Keyboard pressed (${evt.type})`, evt, data)
-// }
+function logKeyPress (evt, data) {
+  console.log(`Keyboard pressed (${evt.type})`, evt, data)
+}
 
-// function logExecCommand (evt, data) {
-//   console.log(`Command executing (${evt.command})`, evt, data)
-// }
+function logExecCommand (evt, data) {
+  console.log(`Command executing (${evt.command})`, evt, data)
+}
