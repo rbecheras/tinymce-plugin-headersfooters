@@ -1,20 +1,8 @@
 'use strict'
 
-var HeadFoot = require('./HeadFoot')
-
-// var $ = window.jQuery
-
-module.exports = Body
-
-// Prototypal Inheritance
-Body.prototype = Object.create(HeadFoot.prototype)
+import HeadFoot from './HeadFoot'
 
 /**
  * Body class
- * @class
- * @augments HeadFoot
- * @param {Editor} editor The current editor
  */
-function Body (editor) {
-  HeadFoot.call(editor)
-}
+export default class Body extends HeadFoot {}
