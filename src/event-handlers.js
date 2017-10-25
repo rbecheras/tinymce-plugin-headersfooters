@@ -6,7 +6,8 @@
  * @name eventHandlers
  */
 
-var uiUtils = require('./utils/ui')
+const uiUtils = require('./utils/ui')
+const tinymce = window.tinymce
 
 module.exports = {
   'Init': {
@@ -26,6 +27,15 @@ module.exports = {
   },
   'Blur': {
     leaveHeadFoot: leaveHeadFoot
+  },
+  'KeyDown KeyPress KeyUp': {
+    // logKeyPress: logKeyPress
+  },
+  'KeyDown': {
+    logKeyPress: logKeyPress
+  },
+  'ExecCommand': {
+    logExecCommand: logExecCommand
   },
   'Focus Blur Paste SetContent NodeChange HeadersFooters:SetFormat': {
     applyCurrentFormat: applyCurrentFormat,
@@ -124,3 +134,12 @@ function checkBodyHeight (evt) {
     }
   }
 }
+
+function logKeyPress (evt, data) {
+  console.log(`Keyboard pressed (${evt.type})`, evt, data)
+}
+
+function logExecCommand (evt, data) {
+  // console.log(`Command executing (${evt.command})`, evt, data)
+}
+
