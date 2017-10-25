@@ -45,7 +45,7 @@
     "prerelease-minor": "node ./scripts/release.js preminor",
     "prerelease-major": "node ./scripts/release.js premajor",
     "analysis": "yarn run analysis:plato",
-    "analysis:plato": "yarn run plato -r -t \"SWAP Code Report\" -d report -e .eslintrc src",
+    "analysis:plato": "rm -rf report && yarn run plato -r -t \"SWAP Code Report\" -d report -e .eslintrc src",
     "analysis:serve": "yarn run http-server -p 9292 report"
   },
   "repository": {
