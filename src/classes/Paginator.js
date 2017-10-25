@@ -120,7 +120,7 @@ export default class Paginator {
 
     if (lastNodes.length) {
       let nextPage = this.getNextPage() || await this.appendNewPage()
-      let editor = nextPage.body.editor
+      let editor = nextPage.getBody().editor
       let $ = editor.$
       console.info(`prepend ${lastNodes.length} last cut nodes in page ${nextPage.pageNumber}`, lastNodes)
       $(editor.getBody()).prepend($(lastNodes))
