@@ -211,6 +211,10 @@ export default class Paginator {
     }
   }
 
+  removePageByNumber (pageNumber) {
+    return this.removePage(this.getPage(pageNumber))
+  }
+
   removePage (removingPage) {
     const removingPageNumber = removingPage.pageNumber
     const pageIndex = removingPageNumber - 1
