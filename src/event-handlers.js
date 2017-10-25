@@ -32,7 +32,9 @@ module.exports = {
     // logKeyPress: logKeyPress
   },
   'KeyDown': {
-    logKeyPress: logKeyPress
+    logKeyPress: logKeyPress,
+    moveCursorToNeededPage: moveCursorToNeededPage,
+    removePageIfEmptyAndNotFirst: removePageIfEmptyAndNotFirst
   },
   'ExecCommand': {
     logExecCommand: logExecCommand
@@ -143,3 +145,24 @@ function logExecCommand (evt, data) {
   // console.log(`Command executing (${evt.command})`, evt, data)
 }
 
+function removePageIfEmptyAndNotFirst (evt) {
+  const {key, keyCode, altKey, ctrlKey} = evt
+  if (key === 'Backspace' && keyCode === 8 && !altKey && !ctrlKey) {
+    const editor = tinymce.activeEditor
+    const plugin = editor.plugins.headersfooters
+    if (plugin.isBody()) {
+      plugin.paginator.removeCurrentPageIfEmptyAndNotFirst()
+    }
+  }
+}
+
+function moveCursorToNeededPage (evt) {
+  const {key, keyCode, altKey, ctrlKey} = evt
+  if (key === 'ArrowDown' && keyCode === 8 && !altKey && !ctrlKey) {
+    const editor = tinymce.activeEditor
+    const plugin = editor.plugins.headersfooters
+    if (plugin.isBody()) {
+      plugin.paginator.removeCurrentPageIfEmptyAndNotFirst()
+    }
+  }
+}
