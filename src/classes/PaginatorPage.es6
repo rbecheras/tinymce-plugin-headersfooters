@@ -64,4 +64,19 @@ export default class PaginatorPage {
       return body.scrollHeight
     }
   }
+
+  isEmpty () {
+    const section = this.currentPage.currentSection
+    const editor = section.editor
+    // const body = editor.getBody()
+    let selection = editor.selection
+    if (selection.isCollapsed()) {
+      let range = selection.getRng()
+      // console.log(`Range offset are: ${range.startOffset} and ${range.endOffset}.`)
+      if (range.startOffset === 0) {
+        console.error(`Paginator.removePageByNumber(${this.currentPage.pageNumber})`)
+        // this.removePageByNumber(this.currentPage.pageNumber)
+      }
+    }
+  }
 }
