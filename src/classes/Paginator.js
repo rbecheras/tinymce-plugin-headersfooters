@@ -224,6 +224,7 @@ export default class Paginator {
   }
 
   removePage (removingPage) {
+    console.error(`Remove Page ${this.pageNumber}`)
     const removingPageNumber = removingPage.pageNumber
     const pageIndex = removingPageNumber - 1
     ;[this.rawPages, this.pages].forEach(pagesArray => {

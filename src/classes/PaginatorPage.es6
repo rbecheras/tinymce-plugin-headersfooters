@@ -72,6 +72,7 @@ export default class PaginatorPage {
     let selection = editor.selection
     if (selection.isCollapsed()) {
       let range = selection.getRng()
+      console.error(`Range offset are: ${range.startOffset} and ${range.endOffset}.`)
       if (range.startOffset === 0) {
         return true
       } else {
