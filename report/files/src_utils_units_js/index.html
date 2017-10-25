@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - src/utils/units.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>src/utils/units.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">77.23</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">275</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">30.46</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">0.87</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">&#039;use strict&#039;
+
+/**
+ * A set of static helper methods to work with units.
+ * It is imported from tinymce-plugin-paragraph.
+ * @module utils/units
+ * @see https://github.com/sirap-group/tinymce-plugin-paragraph
+ * @see https://github.com/sirap-group/tinymce-plugin-paragraph/blob/master/src/lib/units.js
+ */
+
+var document = window.document
+
+_createDpiTestElements()
+
+module.exports = {
+  getValueFromStyle: getValueFromStyle,
+  getUnitFromStyle: getUnitFromStyle,
+  getValueInPxFromAnyUnit: getValueInPxFromAnyUnit,
+  getDpi: getDpi,
+
+  in2mm: in2mm,
+  mm2in: mm2in,
+
+  px2in: px2in,
+  in2px: in2px,
+
+  px2mm: px2mm,
+  mm2px: mm2px,
+
+  in2pt: in2pt,
+  pt2in: pt2in,
+
+  px2pt: px2pt,
+  pt2px: pt2px,
+
+  cm2mm: cm2mm,
+  mm2cm: mm2cm
+}
+
+// expose the module to the global scope in development environment
+if (window.env === &#039;development&#039; &amp;&amp; !window._units) {
+  window._units = module.exports
+}
+
+/**
+ * Get the numerc value of a style value with unit (remove the 2-digits unit and cast as number)
+ * For example, returns `11` from a style value of `11px`
+ * @method
+ * @static
+ * @param {string} styleValue A style value with a 2-digits unit
+ * @returns {number} - The absolute value of the given style value
+ */
+function getValueFromStyle (styleValue) {
+  return styleValue.slice(0, styleValue.length - 2)
+}
+
+/**
+ * Get the 2-digit unit representation of a style value with unit.
+ * For example, returns `px` from a style value of `11px`
+ * @method
+ * @static
+ * @param {string} styleValue A style value with a 2-digits unit
+ * @returns {string} - The unit as a 2-digits representation
+ */
+function getUnitFromStyle (styleValue) {
+  return styleValue.slice(styleValue.length - 2, styleValue.length)
+}
+
+/**
+* Evaluate the DPI of the device&#039;s screen (pixels per inche).
+* It creates and inpect a dedicated and hidden `data-dpi-test` DOM element to
+* deduct the screen DPI.
+* @method
+* @static
+* @returns {number} - The current screen DPI, so in pixels per inch.
+*/
+function getDpi () {
+  return document.getElementById(&#039;dpi-test&#039;).offsetHeight
+}
+
+/**
+* @function
+* @inner
+*/
+function _createDpiTestElements () {
+  var getDpiHtmlStyle = &#039;data-dpi-test { height: 1in; left: -100%; position: absolute; top: -100%; width: 1in; }&#039;
+
+  var head = document.getElementsByTagName(&#039;head&#039;)[0]
+  var getDPIElement = document.createElement(&#039;style&#039;)
+  getDPIElement.setAttribute(&#039;type&#039;, &#039;text/css&#039;)
+  getDPIElement.setAttribute(&#039;rel&#039;, &#039;stylesheet&#039;)
+  getDPIElement.innerHTML = getDpiHtmlStyle
+  head.appendChild(getDPIElement)
+
+  var body = document.getElementsByTagName(&#039;body&#039;)[0]
+  var dpiTestElement = document.createElement(&#039;data-dpi-test&#039;)
+  dpiTestElement.setAttribute(&#039;id&#039;, &#039;dpi-test&#039;)
+  body.appendChild(dpiTestElement)
+}
+
+/**
+ * Converts a quantity of inches to a quantity of milimeters
+ * 1 in = 25.4 mm
+ * @method
+ * @static
+ * @param {Number} qPx The quantity of inches to convert to milimeters
+ * @returns {Number} qMm The resulting length in milimeters
+ */
+function in2mm (qIn) {
+  return Number(qIn) * 25.4
+}
+
+/**
+ * Converts milimeters (mm) to inches (in)
+ * 1 in = 25.4 mm
+ * @method
+ * @static
+ * @param {number} mm Number of milimeters to convert to inches
+ * @returns {number} - Resulting number of inches (in)
+ */
+function mm2in (qmm) {
+  return Number(qmm) / 25.4
+}
+
+/**
+* Converts pixels (px) to inches (in)
+* dpi = px / in
+* =&gt; in = px / dpi
+* @method
+* @static
+* @param {number} px Number of pixels to convert to inches
+* @returns {number} - Resulting number of inches (in)
+*/
+function px2in (px) {
+  var dpi = getDpi()
+  return Number(px) / Number(dpi)
+}
+
+/**
+* Converts pixels (px) to inches (in)
+* dpi = px / in
+* =&gt; px = in * dpi
+* @method
+* @static
+* @param {number} in Number of inches to convert to pixels
+* @returns {number} - Resulting number of pixels (px)
+*/
+function in2px (qin) {
+  var dpi = getDpi()
+  return Number(qin) * Number(dpi)
+}
+
+/**
+* Converts a quantity of pixels to a quantity of milimeters
+* 1 in = 25.4 mm
+* Calculate pixels to inches then inches to milimeters
+* @method
+* @static
+* @param {Number} qPx The quantity of pixels to convert to milimeters
+* @returns {Number} qMm The resuluting quantity of milimeters
+*/
+function px2mm (qPx) {
+  return in2mm(px2in(qPx))
+}
+
+/**
+ * Converts milimeters (mm) to pixels (px)
+ * mm2in -&gt; in2px
+ * @method
+ * @static
+ * @param {number} qmm Number of milimeters to convert to pixels
+ * @returns {number} - Resulting number of pixels (px)
+ */
+function mm2px (qmm) {
+  return in2px(mm2in(qmm))
+}
+
+/**
+* Converts inches (in) to points (pt)
+* 72 = pt / in -&gt; pt = 72 * in
+* @method
+* @static
+* @param {number} inches Number of inches (in) to convet to points (pt)
+* @returns {number} - Resulting number of points (pt)
+*/
+function in2pt (inches) {
+  return Number(inches) * 72
+}
+
+/**
+* Converts point (pt) to inches (in)
+* 72 = pt / in -&gt; in = pt / 72
+* @method
+* @static
+* @param {number} inches Number of inches (in) to convet to points (pt)
+* @returns {number} - Resulting number of points (pt)
+*/
+function pt2in (qpt) {
+  return qpt / 72
+}
+
+/**
+ * Converts pixels (px) to points (pt)
+ * px2in -&gt; in2pt
+ * @method
+ * @static
+ * @param {number} px Number of pixels to convert to points
+ * @returns {number} - Resulting number of points (pt)
+ */
+function px2pt (px) {
+  var inches = px2in(px)
+  return in2pt(inches)
+}
+
+/**
+ * Converts point (pt) to pixels (px)
+ * pt2in -&gt; in2px
+ * @method
+ * @static
+ * @param {number} pt Number of points to convert to pixels
+ * @returns {number} - Resulting number of pixels (px)
+ */
+function pt2px (qpt) {
+  return in2px(pt2in(qpt))
+}
+
+function cm2mm (qcm) {
+  return Number(qcm) * 10
+}
+
+function mm2cm (qmm) {
+  return Number(qmm) / 10
+}
+
+/**
+ * Converts things like:
+ * - Xmm -&gt; Ypx
+ * - Xpt -&gt; Ypx
+ * - Xin -&gt; Ypx
+ * - Xpx -&gt; Xpx
+ * - Xcm -&gt; Ypx
+ * @static
+ * @param {String} valueWithUnit ex: &quot;3mm&quot;
+ * @throws Error
+ * @returns {Number}
+ */
+function getValueInPxFromAnyUnit (valueWithUnit) {
+  let value = getValueFromStyle(valueWithUnit)
+  let unit = getUnitFromStyle(valueWithUnit)
+  let valueInPx
+  switch (unit) {
+    case &#039;px&#039;:
+      valueInPx = value
+      break
+    case &#039;mm&#039;:
+      valueInPx = mm2px(value)
+      break
+    case &#039;cm&#039;:
+      valueInPx = mm2px(cm2mm(value))
+      break
+    case &#039;pt&#039;:
+      valueInPx = pt2px(value)
+      break
+    case &#039;in&#039;:
+      valueInPx = in2px(value)
+      break
+    case &#039;0&#039;:
+    case 0:
+      valueInPx = 0
+      break
+    default:
+      throw new Error(&#039;InvalidUnitError&#039;)
+  }
+  return valueInPx
+}</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

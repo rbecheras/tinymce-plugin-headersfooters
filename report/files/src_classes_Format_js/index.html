@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - src/classes/Format.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>src/classes/Format.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">54.44</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">414</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">64.16</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">4.92</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">&#039;use strict&#039;
+
+var uiUtils = require(&#039;../utils/ui&#039;)
+var units = require(&#039;../utils/units&#039;)
+var $ = uiUtils.jQuery
+
+module.exports = Format
+
+Format.prototype.applyToPlugin = applyToPlugin
+Format.prototype.calculateBodyHeight = calculateBodyHeight
+Format.prototype.hasHeader = hasHeader
+Format.prototype.hasFooter = hasFooter
+Format.prototype.hasHeaderBorder = hasHeaderBorder
+Format.prototype.hasFooterBorder = hasFooterBorder
+
+Format.defaults = {}
+Format.defaults[&#039;A4&#039;] = new Format(&#039;A4&#039;, {
+  height: &#039;297mm&#039;,
+  width: &#039;210mm&#039;,
+  margins: { top: &#039;10mm&#039;, right: &#039;10mm&#039;, bottom: &#039;10mm&#039;, left: &#039;10mm&#039; },
+  header: {
+    height: &#039;0&#039;,
+    // height: &#039;auto&#039;,
+    margins: { right: &#039;0&#039;, bottom: &#039;10mm&#039;, left: &#039;0&#039; },
+    border: { color: &#039;black&#039;, style: &#039;solid&#039;, width: &#039;0&#039; }
+  },
+  footer: {
+    height: &#039;0&#039;,
+    // height: &#039;auto&#039;,
+    margins: { right: &#039;0&#039;, top: &#039;10mm&#039;, left: &#039;0&#039; },
+    border: { color: &#039;black&#039;, style: &#039;solid&#039;, width: &#039;0&#039; }
+  },
+  body: {
+    border: { color: &#039;black&#039;, style: &#039;solid&#039;, width: &#039;0&#039; }
+  }
+})
+
+if (window.env === &#039;development&#039;) {
+  Format.defaults[&#039;dev-small&#039;] = new Format(&#039;dev-small&#039;, {
+    height: &#039;150mm&#039;,
+    width: &#039;100mm&#039;,
+    margins: { top: &#039;10mm&#039;, right: &#039;10mm&#039;, bottom: &#039;10mm&#039;, left: &#039;10mm&#039; },
+    header: {
+      height: &#039;10mm&#039;,
+      // height: &#039;auto&#039;,
+      margins: { right: &#039;15mm&#039;, bottom: &#039;10mm&#039;, left: &#039;5mm&#039; },
+      border: { color: &#039;red&#039;, style: &#039;dashed&#039;, width: &#039;1mm&#039; }
+    },
+    footer: {
+      height: &#039;10mm&#039;,
+      // height: &#039;auto&#039;,
+      margins: { right: &#039;0&#039;, top: &#039;1cm&#039;, left: &#039;0&#039; },
+      border: { color: &#039;red&#039;, style: &#039;dashed&#039;, width: &#039;1mm&#039; }
+    },
+    body: {
+      border: { color: &#039;red&#039;, style: &#039;dashed&#039;, width: &#039;1mm&#039; }
+    }
+  })
+}
+
+/**
+ * @param {string} name
+ * @param {object} config
+ */
+function Format (name, config) {
+  this.name = name
+  this.orientation = (config.height &gt; config.width) ? &#039;portrait&#039; : &#039;paysage&#039;
+  this.width = config.width
+  this.height = config.height
+  this.margins = {
+    top: config.margins ? config.margins.top : &#039;0&#039;,
+    right: config.margins ? config.margins.right : &#039;0&#039;,
+    bottom: config.margins ? config.margins.bottom : &#039;0&#039;,
+    left: config.margins ? config.margins.left : &#039;0&#039;
+  }
+  this.header = {
+    height: config.header ? config.header.height : &#039;0&#039;,
+    margins: {
+      right: config.header &amp;&amp; config.header.margins ? config.header.margins.right : &#039;0&#039;,
+      bottom: config.header &amp;&amp; config.header.margins ? config.header.margins.bottom : &#039;0&#039;,
+      left: config.header &amp;&amp; config.header.margins ? config.header.margins.left : &#039;0&#039;
+    },
+    border: {
+      color: config.header &amp;&amp; config.header.border ? config.header.border.color : &#039;black&#039;,
+      style: config.header &amp;&amp; config.header.border ? config.header.border.style : &#039;none&#039;,
+      width: config.header &amp;&amp; config.header.border ? config.header.border.width : &#039;0&#039;
+    }
+  }
+  this.footer = {
+    height: config.footer ? config.footer.height : &#039;0&#039;,
+    margins: {
+      top: config.footer &amp;&amp; config.footer.margins ? config.footer.margins.top : &#039;0&#039;,
+      right: config.footer &amp;&amp; config.footer.margins ? config.footer.margins.right : &#039;0&#039;,
+      left: config.footer &amp;&amp; config.footer.margins ? config.footer.margins.left : &#039;0&#039;
+    },
+    border: {
+      color: config.footer &amp;&amp; config.footer.border ? config.footer.border.color : &#039;black&#039;,
+      style: config.footer &amp;&amp; config.footer.border ? config.footer.border.style : &#039;none&#039;,
+      width: config.footer &amp;&amp; config.footer.border ? config.footer.border.width : &#039;0&#039;
+    }
+  }
+  this.body = {
+    border: {
+      color: config.body &amp;&amp; config.body.border ? config.body.border.color : &#039;black&#039;,
+      style: config.body &amp;&amp; config.body.border ? config.body.border.style : &#039;none&#039;,
+      width: config.body &amp;&amp; config.body.border ? config.body.border.width : &#039;0&#039;
+    }
+  }
+  this.showAlert = true
+}
+
+/**
+ * Apply the current format to the DOM and fires the `AppliedToBody` event to
+ * permit the main app to bind the format object definition to the document
+ * object to be saved with.
+ * @method
+ * @param {HeadersFooters} plugin The current HeaderFooters plugin instance
+ * @fires `HeadersFooters:Format:AppliedToBody`
+ * @returns {undefined}
+ */
+function applyToPlugin (plugin) {
+  var that = this
+  var paginator = plugin.paginator
+  var editor, win, body
+
+  $.each(paginator.pages, function (pageNumber, pager) {
+    ;[&#039;header&#039;, &#039;body&#039;, &#039;footer&#039;].map(function (pageType) {
+      var pagePlugin = pager[pageType]
+      if (pagePlugin &amp;&amp; pagePlugin.editor.initialized &amp;&amp; pagePlugin.documentBody) {
+        plugin = pagePlugin
+        editor = plugin.editor
+        win = editor.getWin()
+        body = editor.getBody()
+        apply()
+      }
+    })
+  })
+
+  function apply () {
+    applyToStackedLayout()
+    applyToBody()
+
+    editor.fire(&#039;HeadersFooters:Format:AppliedToBody&#039;, {
+      documentFormat: that
+    })
+  }
+
+  function applyToStackedLayout () {
+    // var bodyHeight = uiUtils.getElementHeight(body)
+    var bodyHeight
+    if (plugin.isBody()) {
+      bodyHeight = that.calculateBodyHeight(editor)
+    } else {
+      bodyHeight = that[plugin.type].height
+    }
+    var rules = {
+      boxSizing: &#039;border-box&#039;,
+      height: bodyHeight,
+      minHeight: bodyHeight,
+      maxHeight: bodyHeight
+    }
+
+    plugin.stackedLayout.editarea.css({border: 0})
+    plugin.stackedLayout.iframe.css(rules)
+
+    setBodyCss()
+  }
+
+  function applyToBody () {
+    // NOTE: set padding to zero to fix unknown bug
+    // where all iframe&#039;s body paddings are set to &#039;2cm&#039;...
+    // TODO: remove this statement if the 2cm padding source is found.
+    $(body, win).css({
+      margin: 0,
+      padding: 0,
+      overflow: &#039;hidden&#039;
+    })
+
+    // Allow body panel overflow
+    if (plugin.isBody()) {
+      $(body, win).css({
+        overflowY: &#039;auto&#039;
+      })
+    }
+
+    // var bodyHeight = uiUtils.getElementHeight(body, win)
+    if (plugin.isBody()) {
+      plugin.page.pageLayout.pageWrapper.css({
+        overflow: &#039;auto&#039;, // TODO: update model spec
+        background: &#039;#464646&#039;,
+        // height: &#039;auto&#039;, // TODO: update model spec
+        position: &#039;absolute&#039;, // TODO: update model spec
+        top: 0, // TODO: update model spec
+        right: 0, // TODO: update model spec
+        left: 0, // TODO: update model spec
+        bottom: 0, // TODO: update model spec
+        margin: 0
+        // padding: &#039;3cm 0 3cm 0&#039;,
+        // width: &#039;100%&#039;
+      })
+
+      plugin.page.pageLayout.pagePanel.css({
+        overflow: &#039;hidden&#039;, // TODO: update model spec
+        background: &#039;white&#039;,
+        border: 0,
+        boxSizing: &#039;border-box&#039;,
+        // minHeight: that.height, // @TODO update for pagination
+        height: that.height, // @TODO update for pagination
+        margin: &#039;5mm auto&#039;,
+        paddingTop: that.margins.top,
+        paddingRight: that.margins.right,
+        paddingBottom: that.margins.bottom,
+        paddingLeft: that.margins.left,
+        width: that.width
+      })
+
+      var firstPage = plugin.page.pageLayout.pagePanel.get(0)
+      var lastPageIndex = plugin.page.pageLayout.pagePanel.length - 1
+      var lastPage = plugin.page.pageLayout.pagePanel.get(lastPageIndex)
+      // first page margin top
+      $(firstPage).css({ marginTop: &#039;2.5cm&#039; })
+      // last page margin bottom
+      $(lastPage).css({ marginBottom: &#039;2cm&#039; })
+
+      plugin.page.pageLayout.headerWrapper.css({
+        overflow: &#039;hidden&#039;, // TODO: update model spec
+        // border: 0,
+        boxSizing: &#039;border-box&#039;,
+        height: that.header.height + that.header.margins.bottom,
+        margin: 0,
+        padding: 0
+        // width: &#039;100%&#039; // TODO: update model spec
+      })
+
+      /* TODO: split border to top/right/bottom/left */
+      var hasHeader = that.hasHeader()
+      var headerHasBorder = that.hasHeaderBorder()
+      plugin.page.pageLayout.headerPanel.css({
+        overflow: &#039;hidden&#039;, // TODO: update model spec
+        borderColor: (hasHeader &amp;&amp; !headerHasBorder) ? &#039;black&#039; : that.header.border.color,
+        borderStyle: (hasHeader &amp;&amp; !headerHasBorder) ? &#039;solid&#039; : that.header.border.style,
+        borderWidth: (hasHeader &amp;&amp; !headerHasBorder) ? &#039;0&#039; : that.header.border.width,
+        boxSizing: &#039;border-box&#039;,
+        height: that.header.height,
+        marginTop: 0,
+        marginRight: that.header.margins.right,
+        marginBottom: that.header.margins.bottom,
+        marginLeft: that.header.margins.left,
+        padding: 0
+        // width: &#039;100%&#039; // TODO: update model spec
+      })
+      if (plugin.page.pageLayout.headerIframe) {
+        plugin.page.pageLayout.headerIframe.css({
+          height: that.header.height,
+          minHeight: that.header.height,
+          maxHeight: that.header.height
+        })
+      }
+
+      var bodyHeight = that.calculateBodyHeight(editor)
+      // var bodyWrapperHeight = Number(units.getValueFromStyle(bodyHeight)) +
+      //   Number(units.getValueFromStyle(that.body.border.width)) * 2
+      // bodyWrapperHeight += &#039;mm&#039;
+      plugin.page.pageLayout.bodyWrapper.css({
+        // overflow: &#039;hidden&#039;, // TODO: update model spec
+        overflow: &#039;auto&#039;, // TODO: update for pagination
+        border: 0,
+        boxSizing: &#039;border-box&#039;,
+        height: bodyHeight, // bodyWrapperHeight
+        margin: 0,
+        padding: 0,
+        width: &#039;100%&#039;
+      })
+      plugin.page.pageLayout.bodyPanel.css({
+        // overflow: &#039;hidden&#039;, // TODO: update model spec
+        overflow: &#039;auto&#039;, // TODO: update for pagination
+        borderColor: that.body.border.color,
+        borderStyle: that.body.border.style,
+        borderWidth: that.body.border.width,
+        boxSizing: &#039;border-box&#039;,
+        // minHeight: that.calculateBodyHeight(), // @TODO update for pagination
+        height: bodyHeight, // @TODO update for pagination
+        margin: 0,
+        padding: 0,
+        width: &#039;100%&#039;
+      })
+      plugin.page.pageLayout.footerWrapper.css({
+        overflow: &#039;hidden&#039;, // TODO: update model spec
+        border: 0,
+        // borderTop: &#039;dashed 1px gray&#039;, // TODO update model spec?
+        boxSizing: &#039;border-box&#039;,
+        height: that.footer.height + that.footer.margins.top,
+        margin: 0,
+        padding: 0
+        // width: &#039;100%&#039; // TODO: update model spec
+      })
+
+      var hasFooter = that.hasFooter()
+      var footerHasBorder = that.hasFooterBorder()
+      /* TODO: split border to top/right/bottom/left */
+      plugin.page.pageLayout.footerPanel.css({
+        overflow: &#039;hidden&#039;, // TODO: update model spec
+        borderColor: (hasFooter &amp;&amp; !footerHasBorder) ? &#039;black&#039; : that.footer.border.color,
+        borderStyle: (hasFooter &amp;&amp; !footerHasBorder) ? &#039;solid&#039; : that.footer.border.style,
+        borderWidth: (hasFooter &amp;&amp; !footerHasBorder) ? &#039;0&#039; : that.footer.border.width,
+        boxSizing: &#039;border-box&#039;,
+        height: that.footer.height,
+        marginTop: that.footer.margins.top,
+        marginRight: that.footer.margins.right,
+        marginBottom: 0,
+        marginLeft: that.footer.margins.left,
+        padding: 0
+        // width: &#039;100%&#039; // TODO: update model spec
+      })
+      if (plugin.page.pageLayout.footerIframe) {
+        plugin.page.pageLayout.footerIframe.css({
+          height: that.footer.height,
+          minHeight: that.footer.height,
+          maxHeight: that.footer.height
+        })
+      }
+    }
+  }
+
+  /**
+   * Set iframes -&gt; &lt;body&gt; CSS style:
+   * - overflow-y,
+   * - height
+   * - border
+   * @param {tinymce.Plugin} plugin
+   */
+  function setBodyCss () {
+    var $ = editor.$
+    var ctx = editor.getDoc()
+    var borderWidth = plugin.stackedLayout.root.css(&#039;border-width&#039;)
+    if (borderWidth === &#039;0px&#039;) {
+      // use default dashed gray border of 1px
+      borderWidth = &#039;1px&#039;
+    }
+    window.winroot = plugin.stackedLayout.root
+    $(&#039;html, body&#039;, ctx).css({
+      &#039;overflow-y&#039;: &#039;hidden&#039;
+    })
+    // $(&#039;body.body-panel&#039;, ctx).css({
+    //   &#039;overflow-y&#039;: &#039;auto&#039;
+    // })
+    $(&#039;html&#039;, ctx).css({
+      &#039;height&#039;: &#039;calc(100% - &#039; + borderWidth + &#039; - &#039; + borderWidth + &#039;)&#039;
+    })
+    $(&#039;body&#039;, ctx).css({
+      // &#039;height&#039;: &#039;calc(100% - &#039; + borderWidth + &#039; - &#039; + borderWidth + &#039;)&#039;,
+      &#039;height&#039;: &#039;100%&#039;,
+      &#039;border&#039;: &#039;1px dashed gray&#039;
+    })
+  }
+}
+
+/**
+ * Caluculate the document Body height depending the Format propeties
+ * @param {Editor}
+ * @returns {String} the body height (in mm for now)
+ * @fires HeadersFooters:Error:NegativeBodyHeight
+ * @TODO support other size units (cm, pt)
+ */
+function calculateBodyHeight (editor) {
+  var that = this
+  var ret
+  var height = units.getValueInPxFromAnyUnit(this.height)
+  var marginTop = units.getValueInPxFromAnyUnit(this.margins.top)
+  var marginBottom = units.getValueInPxFromAnyUnit(this.margins.bottom)
+  var headerHeight = units.getValueInPxFromAnyUnit(this.header.height)
+  var headerMarginBottom = units.getValueInPxFromAnyUnit(this.header.margins.bottom)
+  var footerHeight = units.getValueInPxFromAnyUnit(this.footer.height)
+  var footerMarginTop = units.getValueInPxFromAnyUnit(this.footer.margins.top)
+
+  var value = height - marginTop - marginBottom -
+    headerHeight - headerMarginBottom -
+    footerHeight - footerMarginTop
+
+  ret = value + &#039;px&#039;
+  // console.log(&#039;calculateBodyHeight() =&gt; &#039;, ret)
+  if (value &lt;= 0) {
+    if (this.showAlert) {
+      var message
+      this.showAlert = false
+      message = &#039;Inconsistant Custom Format: « Body height &lt; 0 ». Do you want to fix it ?&#039;
+
+      editor.fire(&#039;HeadersFooters:Error:NegativeBodyHeight&#039;)
+      editor.windowManager.confirm(message, function (conf) {
+        if (conf) {
+          editor.execCommand(&#039;editFormatCmd&#039;)
+        }
+        that.showAlert = true
+      })
+    }
+  }
+  return ret
+}
+
+function hasHeader () {
+  return !this.header || (this.header.height &amp;&amp; this.header.height !== &#039;0&#039;)
+}
+
+function hasFooter () {
+  return !this.footer || (this.footer.height &amp;&amp; this.footer.height !== &#039;0&#039;)
+}
+
+function hasHeaderBorder () {
+  return !this.hasHeader() || (this.header.border.width &amp;&amp; this.header.border.width !== &#039;0&#039;)
+}
+
+function hasFooterBorder () {
+  return !this.hasFooter() || (this.footer.border.width &amp;&amp; this.footer.border.width !== &#039;0&#039;)
+}</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

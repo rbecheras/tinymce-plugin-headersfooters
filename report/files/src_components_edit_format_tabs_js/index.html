@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - src/components/edit-format-tabs.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>src/components/edit-format-tabs.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">57.51</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">323</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">29.34</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">3.19</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">&#039;use strict&#039;
+
+var uiHelpers = require(&#039;../utils/ui-helpers&#039;)
+// var eventHandlers = require(&#039;../event-handlers&#039;)
+
+var tinymce = window.tinymce
+
+module.exports = {
+  createFormatTab: createFormatTab,
+  createMarginsTab: createMarginsTab,
+  createHeaderTab: createHeaderTab,
+  createFooterTab: createFooterTab,
+  createBodyTab: createBodyTab
+}
+
+/**
+ * Create the general tab component that show form inputs for:
+ * - paper labeled formats,
+ * - paper custom size
+ * @method
+ * @returns {TabPanel} formatTab
+ */
+function createFormatTab (format) {
+  // format select box
+  var formats = tinymce.activeEditor.plugins.headersfooters.availableFormats
+  var formatValues = []
+  for (var name in formats) {
+    var f = formats[name]
+    formatValues.push({
+      text: f.name,
+      value: f.name
+    })
+  }
+  var formatSelectBox = uiHelpers.createSelectBox(&#039;Format&#039;, &#039;newformat&#039;, formatValues, 150)
+
+  // orientation select box
+  var orientationSelectBox = uiHelpers.createSelectBox(&#039;Orientation&#039;, &#039;orientation&#039;, [
+    {text: &#039;paysage&#039;, value: &#039;paysage&#039;},
+    {text: &#039;portrait&#039;, value: &#039;portrait&#039;}
+  ], 150)
+
+  // page height form inputs
+  var pageHeightTextBox = uiHelpers.createTextBox(&#039;Page height&#039;, &#039;pageHeight&#039;, 65)
+  var pageHeightUnitSelect = uiHelpers.createUnitSelectBox(&#039;pageHeightUnit&#039;, &#039;mm&#039;)
+
+  // page width form inputs
+  var pageWidthTextBox = uiHelpers.createTextBox(&#039;Page width&#039;, &#039;pageWidth&#039;, 65)
+  var pageWidthUnitSelect = uiHelpers.createUnitSelectBox(&#039;pageWidthUnit&#039;, &#039;mm&#039;)
+
+  formatSelectBox.on(&#039;select&#039;, function (e) {
+    var selectValue = e.control.value()
+    var _format = formats[selectValue]
+    pageHeightTextBox.value(_format.height.slice(0, -2)) // using raw &#039;mm&#039; value
+    pageWidthTextBox.value(_format.width.slice(0, -2)) // using raw &#039;mm&#039; value
+  })
+  orientationSelectBox.on(&#039;select&#039;, function (e) {
+    var orientation = orientationSelectBox.value()
+    var height = pageHeightTextBox.value()
+    var width = pageWidthTextBox.value()
+    var max, min
+    if (height &gt;= width) {
+      max = height
+      min = width
+    } else {
+      max = width
+      min = height
+    }
+    if (orientation === &#039;portrait&#039;) {
+      pageHeightTextBox.value(max) // using raw &#039;mm&#039; value
+      pageWidthTextBox.value(min) // using raw &#039;mm&#039; value
+    } else {
+      pageHeightTextBox.value(min) // using raw &#039;mm&#039; value
+      pageWidthTextBox.value(max) // using raw &#039;mm&#039; value
+    }
+  })
+
+  // paperSize fieldset form
+  var formatForm = uiHelpers.createForm([
+    formatSelectBox,
+    orientationSelectBox
+  ], 1)
+
+  // paperSize fieldset form
+  var paperSizeForm = uiHelpers.createForm([
+    pageHeightTextBox, pageHeightUnitSelect,
+    pageWidthTextBox, pageWidthUnitSelect
+  ], 2)
+
+  // format fieldset
+  var formatFieldSet = uiHelpers.createFieldset(&#039;Format&#039;, [formatForm], null, 300)
+
+  // format fieldset
+  var paperSizeFieldSet = uiHelpers.createFieldset(&#039;Paper Size&#039;, [paperSizeForm], 460)
+
+  // tab
+  var tab = uiHelpers.createTab(&#039;Paper&#039;, [formatFieldSet, paperSizeFieldSet])
+
+  return tab
+}
+
+/**
+ * Create the margins tab component that show form inputs for:
+ * - paper margins
+ * @method
+ * @returns {TabPanel} marginTab
+ */
+function createMarginsTab (format) {
+  var marginTopTextBox = uiHelpers.createTextBox(&#039;Margin top&#039;, &#039;marginTop&#039;, 65)
+  var marginTopUnitSelect = uiHelpers.createUnitSelectBox(&#039;marginTopUnit&#039;, &#039;mm&#039;)
+
+  var marginRightTextBox = uiHelpers.createTextBox(&#039;Margin right&#039;, &#039;marginRight&#039;, 65)
+  var marginRightUnitSelect = uiHelpers.createUnitSelectBox(&#039;marginRightUnit&#039;, &#039;mm&#039;)
+
+  var marginBottomTextBox = uiHelpers.createTextBox(&#039;Margin bottom&#039;, &#039;marginBottom&#039;, 65)
+  var marginBottomUnitSelect = uiHelpers.createUnitSelectBox(&#039;marginBottomUnit&#039;, &#039;mm&#039;)
+
+  var marginLeftTextBox = uiHelpers.createTextBox(&#039;Margin left&#039;, &#039;marginLeft&#039;, 65)
+  var marginLeftUnitSelect = uiHelpers.createUnitSelectBox(&#039;marginLeftUnit&#039;, &#039;mm&#039;)
+
+  // paperSize fieldset form
+  var form = uiHelpers.createForm([
+    marginTopTextBox, marginTopUnitSelect,
+    marginRightTextBox, marginRightUnitSelect,
+    marginBottomTextBox, marginBottomUnitSelect,
+    marginLeftTextBox, marginLeftUnitSelect
+  ], 2)
+
+  var fieldSet = uiHelpers.createFieldset(&#039;Margins&#039;, [form], 460)
+
+  // tab
+  var tab = uiHelpers.createTab(&#039;Margin&#039;, [fieldSet])
+
+  return tab
+}
+
+/**
+ * Create the margins tab component that show form inputs for:
+ * - paper margins
+ * @method
+ * @returns {TabPanel} marginTab
+ */
+function createHeaderTab (format) {
+  // header height
+  var heightTextBox = uiHelpers.createTextBox(&#039;Height&#039;, &#039;headerHeight&#039;, 65)
+  var heightUnitSelect = uiHelpers.createUnitSelectBox(&#039;headerHeightUnit&#039;, &#039;mm&#039;)
+
+  var heightForm = uiHelpers.createForm([
+    heightTextBox, heightUnitSelect
+  ], 2)
+
+  var heightFieldSet = uiHelpers.createFieldset(&#039;Header dimensions&#039;, [heightForm], 460)
+
+  // header margins
+
+  var marginRightTextBox = uiHelpers.createTextBox(&#039;Margin right&#039;, &#039;headerMarginRight&#039;, 65)
+  var marginRightUnitSelect = uiHelpers.createUnitSelectBox(&#039;headerMarginRightUnit&#039;, &#039;mm&#039;)
+
+  var marginBottomTextBox = uiHelpers.createTextBox(&#039;Margin bottom&#039;, &#039;headerMarginBottom&#039;, 65)
+  var marginBottomUnitSelect = uiHelpers.createUnitSelectBox(&#039;headerMarginBottomUnit&#039;, &#039;mm&#039;)
+
+  var marginLeftTextBox = uiHelpers.createTextBox(&#039;Margin left&#039;, &#039;headerMarginLeft&#039;, 65)
+  var marginLeftUnitSelect = uiHelpers.createUnitSelectBox(&#039;headerMarginLeftUnit&#039;, &#039;mm&#039;)
+
+  var form = uiHelpers.createForm([
+    marginRightTextBox, marginRightUnitSelect,
+    marginBottomTextBox, marginBottomUnitSelect,
+    marginLeftTextBox, marginLeftUnitSelect
+  ], 2)
+
+  var marginsFieldSet = uiHelpers.createFieldset(&#039;Header margins&#039;, [form], 460)
+
+  // header borders
+  var borderWidthTextBox = uiHelpers.createTextBox(&#039;Border width&#039;, &#039;headerBorderWidth&#039;, 65)
+  var borderWidthUnitSelect = uiHelpers.createUnitSelectBox(&#039;headerBorderWidthUnit&#039;, &#039;mm&#039;)
+
+  // border style
+  var borderStyleItemNone = uiHelpers.createListBoxItem(&#039;none&#039;)
+  var borderStyleItemHidden = uiHelpers.createListBoxItem(&#039;hidden&#039;)
+  var borderStyleItemDotted = uiHelpers.createListBoxItem(&#039;dotted&#039;)
+  var borderStyleItemDashed = uiHelpers.createListBoxItem(&#039;dashed&#039;)
+  var borderStyleItemSolid = uiHelpers.createListBoxItem(&#039;solid&#039;)
+  var borderStyleItemDouble = uiHelpers.createListBoxItem(&#039;double&#039;)
+  var borderStyleItemGroove = uiHelpers.createListBoxItem(&#039;groove&#039;)
+  var borderStyleItemRidge = uiHelpers.createListBoxItem(&#039;ridge&#039;)
+  var borderStyleItemInset = uiHelpers.createListBoxItem(&#039;inset&#039;)
+  var borderStyleItemOutset = uiHelpers.createListBoxItem(&#039;outset&#039;)
+  var borderStyleValues = [
+    borderStyleItemNone, borderStyleItemHidden, borderStyleItemDotted,
+    borderStyleItemDashed, borderStyleItemSolid, borderStyleItemDouble,
+    borderStyleItemGroove, borderStyleItemRidge, borderStyleItemInset,
+    borderStyleItemOutset
+  ]
+  var borderStyleListBox = uiHelpers.createListBox(&#039;Border style&#039;, &#039;headerBorderStyle&#039;, borderStyleValues, borderStyleItemNone, 90)
+
+  // border color picker
+  var borderColorPicker = uiHelpers.createColorPicker(&#039;Border color&#039;, &#039;headerBorderColor&#039;, function () {})
+
+  // create form
+  var borderForm1 = uiHelpers.createForm([ borderWidthTextBox, borderWidthUnitSelect ])
+  var borderForm2 = uiHelpers.createForm([ borderStyleListBox, borderColorPicker ], 1)
+  // create field set
+  var borderFieldset = uiHelpers.createFieldset(&#039;Header borders&#039;, [ borderForm1, borderForm2 ], 460)
+
+  // tab
+  var tab = uiHelpers.createTab(&#039;Header&#039;, [heightFieldSet, marginsFieldSet, borderFieldset])
+
+  return tab
+}
+
+/**
+ * Create the footer tab component that show form inputs for:
+ * - footer height
+ * - footer margins
+ * - footer borders
+ * @method
+ * @returns {TabPanel} footerTab
+ */
+function createFooterTab (format) {
+  // header height
+  var heightTextBox = uiHelpers.createTextBox(&#039;Height&#039;, &#039;footerHeight&#039;, 65)
+  var heightUnitSelect = uiHelpers.createUnitSelectBox(&#039;footerHeightUnit&#039;, &#039;mm&#039;)
+
+  var heightForm = uiHelpers.createForm([
+    heightTextBox, heightUnitSelect
+  ], 2)
+
+  var heightFieldSet = uiHelpers.createFieldset(&#039;Footer dimensions&#039;, [heightForm], 460)
+
+  // header margins
+
+  var marginTopTextBox = uiHelpers.createTextBox(&#039;Margin top&#039;, &#039;footerMarginTop&#039;, 65)
+  var marginTopUnitSelect = uiHelpers.createUnitSelectBox(&#039;footerMarginTopUnit&#039;, &#039;mm&#039;)
+
+  var marginRightTextBox = uiHelpers.createTextBox(&#039;Margin right&#039;, &#039;footerMarginRight&#039;, 65)
+  var marginRightUnitSelect = uiHelpers.createUnitSelectBox(&#039;footerMarginRightUnit&#039;, &#039;mm&#039;)
+
+  var marginLeftTextBox = uiHelpers.createTextBox(&#039;Margin left&#039;, &#039;footerMarginLeft&#039;, 65)
+  var marginLeftUnitSelect = uiHelpers.createUnitSelectBox(&#039;footerMarginLeftUnit&#039;, &#039;mm&#039;)
+
+  var form = uiHelpers.createForm([
+    marginTopTextBox, marginTopUnitSelect,
+    marginRightTextBox, marginRightUnitSelect,
+    marginLeftTextBox, marginLeftUnitSelect
+  ], 2)
+
+  var marginsFieldSet = uiHelpers.createFieldset(&#039;Footer margins&#039;, [form], 460)
+
+  // footer borders
+  var borderWidthTextBox = uiHelpers.createTextBox(&#039;Border width&#039;, &#039;footerBorderWidth&#039;, 65)
+  var borderWidthUnitSelect = uiHelpers.createUnitSelectBox(&#039;footerBorderWidthUnit&#039;, &#039;mm&#039;)
+
+  // border style
+  var borderStyleItemNone = uiHelpers.createListBoxItem(&#039;none&#039;)
+  var borderStyleItemHidden = uiHelpers.createListBoxItem(&#039;hidden&#039;)
+  var borderStyleItemDotted = uiHelpers.createListBoxItem(&#039;dotted&#039;)
+  var borderStyleItemDashed = uiHelpers.createListBoxItem(&#039;dashed&#039;)
+  var borderStyleItemSolid = uiHelpers.createListBoxItem(&#039;solid&#039;)
+  var borderStyleItemDouble = uiHelpers.createListBoxItem(&#039;double&#039;)
+  var borderStyleItemGroove = uiHelpers.createListBoxItem(&#039;groove&#039;)
+  var borderStyleItemRidge = uiHelpers.createListBoxItem(&#039;ridge&#039;)
+  var borderStyleItemInset = uiHelpers.createListBoxItem(&#039;inset&#039;)
+  var borderStyleItemOutset = uiHelpers.createListBoxItem(&#039;outset&#039;)
+  var borderStyleValues = [
+    borderStyleItemNone, borderStyleItemHidden, borderStyleItemDotted,
+    borderStyleItemDashed, borderStyleItemSolid, borderStyleItemDouble,
+    borderStyleItemGroove, borderStyleItemRidge, borderStyleItemInset,
+    borderStyleItemOutset
+  ]
+  var borderStyleListBox = uiHelpers.createListBox(&#039;Border style&#039;, &#039;footerBorderStyle&#039;, borderStyleValues, borderStyleItemNone, 90)
+
+  // border color picker
+  var borderColorPicker = uiHelpers.createColorPicker(&#039;Border color&#039;, &#039;footerBorderColor&#039;, function () {})
+
+  // create form
+  var borderForm1 = uiHelpers.createForm([ borderWidthTextBox, borderWidthUnitSelect ])
+  var borderForm2 = uiHelpers.createForm([ borderStyleListBox, borderColorPicker ], 1)
+  // create field set
+  var borderFieldset = uiHelpers.createFieldset(&#039;Footer borders&#039;, [ borderForm1, borderForm2 ], 460)
+
+  // tab
+  var tab = uiHelpers.createTab(&#039;Footer&#039;, [heightFieldSet, marginsFieldSet, borderFieldset])
+
+  return tab
+}
+
+function createBodyTab (format) {
+  // body borders
+  var borderWidthTextBox = uiHelpers.createTextBox(&#039;Border width&#039;, &#039;bodyBorderWidth&#039;, 65)
+  var borderWidthUnitSelect = uiHelpers.createUnitSelectBox(&#039;bodyBorderWidthUnit&#039;, &#039;mm&#039;)
+
+  // border style
+  var borderStyleItemNone = uiHelpers.createListBoxItem(&#039;none&#039;)
+  var borderStyleItemHidden = uiHelpers.createListBoxItem(&#039;hidden&#039;)
+  var borderStyleItemDotted = uiHelpers.createListBoxItem(&#039;dotted&#039;)
+  var borderStyleItemDashed = uiHelpers.createListBoxItem(&#039;dashed&#039;)
+  var borderStyleItemSolid = uiHelpers.createListBoxItem(&#039;solid&#039;)
+  var borderStyleItemDouble = uiHelpers.createListBoxItem(&#039;double&#039;)
+  var borderStyleItemGroove = uiHelpers.createListBoxItem(&#039;groove&#039;)
+  var borderStyleItemRidge = uiHelpers.createListBoxItem(&#039;ridge&#039;)
+  var borderStyleItemInset = uiHelpers.createListBoxItem(&#039;inset&#039;)
+  var borderStyleItemOutset = uiHelpers.createListBoxItem(&#039;outset&#039;)
+  var borderStyleValues = [
+    borderStyleItemNone, borderStyleItemHidden, borderStyleItemDotted,
+    borderStyleItemDashed, borderStyleItemSolid, borderStyleItemDouble,
+    borderStyleItemGroove, borderStyleItemRidge, borderStyleItemInset,
+    borderStyleItemOutset
+  ]
+  var borderStyleListBox = uiHelpers.createListBox(&#039;Border style&#039;, &#039;bodyBorderStyle&#039;, borderStyleValues, borderStyleItemNone, 90)
+
+  // border color picker
+  var borderColorPicker = uiHelpers.createColorPicker(&#039;Border color&#039;, &#039;bodyBorderColor&#039;, function () {})
+
+  // create form
+  var borderForm1 = uiHelpers.createForm([ borderWidthTextBox, borderWidthUnitSelect ])
+  var borderForm2 = uiHelpers.createForm([ borderStyleListBox, borderColorPicker ], 1)
+  // create field set
+  var borderFieldset = uiHelpers.createFieldset(&#039;Body borders&#039;, [ borderForm1, borderForm2 ], 460)
+
+  // tab
+  var tab = uiHelpers.createTab(&#039;Body&#039;, [borderFieldset])
+
+  return tab
+}</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

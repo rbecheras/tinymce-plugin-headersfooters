@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - src/components/edit-format-window.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>src/components/edit-format-window.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">48.29</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">123</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">37.39</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.86</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">&#039;use strict&#039;
+
+// var units = require(&#039;../units&#039;)
+var editFormatTabs = require(&#039;./edit-format-tabs&#039;)
+var Format = require(&#039;../classes/Format&#039;)
+
+module.exports = openMainWinFunction
+
+/**
+ * Make the openMainWin function as a closure
+ * @method
+ * @param {Editor} editor The tinymce active editor instance
+ * @returns {function} openMainWin The openMainWin closure function
+ */
+function openMainWinFunction (editor) {
+  return openMainWin
+
+  /**
+   * Open the main paragraph properties window
+   * @function
+   * @inner
+   * @returns {undefined}
+   */
+  function openMainWin (format) {
+    var formatTab = editFormatTabs.createFormatTab(format)
+    var marginsTab = editFormatTabs.createMarginsTab(format)
+    var headerTab = editFormatTabs.createHeaderTab(format)
+    var footerTab = editFormatTabs.createFooterTab(format)
+    var bodyTab = editFormatTabs.createBodyTab(format)
+
+    editor.windowManager.open({
+      bodyType: &#039;tabpanel&#039;,
+      title: &#039;Edit Document Format&#039;,
+      body: [ formatTab, marginsTab, headerTab, footerTab, bodyTab ],
+      data: {
+        newformat: format.name,
+        orientation: format.orientation,
+        pageHeight: format.height.slice(0, -2),
+        pageWidth: format.width.slice(0, -2),
+        marginTop: format.margins.top.slice(0, -2),
+        marginRight: format.margins.right.slice(0, -2),
+        marginBottom: format.margins.bottom.slice(0, -2),
+        marginLeft: format.margins.left.slice(0, -2),
+        headerBorderWidth: format.header.border.width.slice(0, -2),
+        headerBorderColor: format.header.border.color,
+        headerBorderStyle: format.header.border.style,
+        headerMarginLeft: format.header.margins.left.slice(0, -2),
+        headerMarginBottom: format.header.margins.bottom.slice(0, -2),
+        headerMarginRight: format.header.margins.right.slice(0, -2),
+        headerHeight: format.header.height.slice(0, -2),
+        footerBorderWidth: format.footer.border.width.slice(0, -2),
+        footerBorderColor: format.footer.border.color,
+        footerBorderStyle: format.footer.border.style,
+        footerMarginLeft: format.footer.margins.left.slice(0, -2),
+        footerMarginTop: format.footer.margins.top.slice(0, -2),
+        footerMarginRight: format.footer.margins.right.slice(0, -2),
+        footerHeight: format.footer.height.slice(0, -2),
+        bodyBorderWidth: format.body.border.width.slice(0, -2),
+        bodyBorderColor: format.body.border.color,
+        bodyBorderStyle: format.body.border.style
+      },
+      onsubmit: onMainWindowSubmit
+    })
+
+    /**
+     * Open edit format window submit callback
+     *
+     * @TODO implement heightUnit
+     * @TODO implement widthUnit (etc...)
+     */
+    function onMainWindowSubmit () {
+      // handle all forms values in `d` for `data`
+      var d = this.toJSON()
+      var formatToApply = {
+        name: &#039;custom&#039;,
+        orientation: (d.orientation) ? d.orientation : &#039;portrait&#039;,
+        height: (d.pageHeight) ? d.pageHeight + &#039;mm&#039; : format.height,
+        width: (d.pageWidth) ? d.pageWidth + &#039;mm&#039; : format.width,
+        margins: {
+          bottom: (d.marginBottom) ? d.marginBottom + &#039;mm&#039; : format.margins.bottom,
+          left: (d.marginLeft) ? d.marginLeft + &#039;mm&#039; : format.margins.left,
+          right: (d.marginRight) ? d.marginRight + &#039;mm&#039; : format.margins.right,
+          top: (d.marginTop) ? d.marginTop + &#039;mm&#039; : format.margins.top
+        },
+        header: {
+          border: {
+            color: d.headerBorderColor || format.header.border.color,
+            style: d.headerBorderStyle || format.header.border.style,
+            width: (d.headerBorderWidth) ? d.headerBorderWidth + &#039;mm&#039; : format.header.border.width
+          },
+          height: (d.headerHeight) ? d.headerHeight + &#039;mm&#039; : format.header.height,
+          margins: {
+            bottom: (d.headerMarginBottom) ? d.headerMarginBottom + &#039;mm&#039; : format.header.margins.bottom,
+            left: (d.headerMarginLeft) ? d.headerMarginLeft + &#039;mm&#039; : format.header.margins.left,
+            right: (d.headerMarginRight) ? d.headerMarginRight + &#039;mm&#039; : format.header.margins.right
+          }
+        },
+        footer: {
+          border: {
+            color: d.footerBorderColor || format.footer.border.color,
+            style: d.footerBorderStyle || format.footer.border.style,
+            width: (d.footerBorderWidth) ? d.footerBorderWidth + &#039;mm&#039; : format.footer.border.width
+          },
+          height: (d.footerHeight) ? d.footerHeight + &#039;mm&#039; : format.footer.height,
+          margins: {
+            top: (d.footerMarginTop) ? d.footerMarginTop + &#039;mm&#039; : format.footer.margins.top,
+            left: (d.footerMarginLeft) ? d.footerMarginLeft + &#039;mm&#039; : format.footer.margins.left,
+            right: (d.footerMarginRight) ? d.footerMarginRight + &#039;mm&#039; : format.footer.margins.right
+          }
+        },
+        body: {
+          border: {
+            color: d.bodyBorderColor || format.body.border.color,
+            style: d.bodyBorderStyle || format.body.border.style,
+            width: (d.bodyBorderWidth) ? d.bodyBorderWidth + &#039;mm&#039; : format.body.border.width
+          }
+        }
+      }
+      editor.plugins.headersfooters.paginator.currentFormat = new Format(&#039;custom&#039;, formatToApply)
+      editor.plugins.headersfooters.paginator.currentFormat.applyToPlugin(editor.plugins.headersfooters)
+    }
+  }
+}</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>
