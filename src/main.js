@@ -24,15 +24,15 @@
  */
 
 import Paginator from './classes/Paginator'
-import * as menuItems from './components/menu-items'
+import Format from './classes/Format'
+import createMenuItems from './components/menu-items'
+import editFormatOpenMainWin from './components/edit-format-window'
 import * as units from './utils/units'
 import * as uiUtils from './utils/ui'
+import { autoBindImplementedEventCallbacks } from './utils/events'
 import { eventHandlers, debugEventHandlers } from './event-handlers'
-import Format from './classes/Format'
-import editFormatOpenMainWin from './components/edit-format-window'
-import autoBindImplementedEventCallbacks from './utils/events'
 
-const tinymce = window.tinycmce
+const tinymce = window.tinymce
 
 // Add the plugin to the tinymce PluginManager
 tinymce.PluginManager.add('headersfooters', tinymcePluginHeadersFooters)
@@ -104,7 +104,7 @@ function tinymcePluginHeadersFooters (editor, url) {
 
   _setAvailableFormats.call(this)
 
-  this.menuItemsList = menuItems.create(editor)
+  this.menuItemsList = createMenuItems(editor)
   uiUtils.autoAddMenuItems.call(this)
 
   editor.addCommand('insertPageNumberCmd', () => { editor.insertContent('{{page}}') })
