@@ -196,13 +196,19 @@ export default class Paginator {
     return false
   }
 
+  /**
+   * Restore a selection previously saved with `paginator.saveSelection()`
+   * @returns {boolean} true if a selection has been restored, else false
+   */
   restoreSelection () {
     if (this.lastSelection.page) {
       let {page, section, editor, selection, bookmark} = this.lastSelection
       this.selectCurrentPage(page, section.type)
       editor.focus()
       selection.moveToBookmark(bookmark)
+      return true
     }
+    return false
   }
 
   removePageByNumber (pageNumber) {
