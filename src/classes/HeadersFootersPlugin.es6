@@ -168,6 +168,10 @@ export default class HeadersFootersPlugin {
   }
 }
 
+/**
+ * @method
+ * @private
+ */
 function _setAvailableFormats () {
   const settings = this.editor.settings
 
