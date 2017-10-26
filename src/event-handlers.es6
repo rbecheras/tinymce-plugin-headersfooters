@@ -12,7 +12,7 @@ const tinymce = window.tinymce
 
 const eventHandlers = {
   'Init': { setBodies, setStackedLayout, setPageLayout, reloadMenuItems },
-  'NodeChange': { checkBodyHeight },
+  'NodeChange': { checkBodyHeight, bookmarkSelection },
   'SetContent': {},
   'BeforeSetContent': {},
   'Focus': { enterHeadFoot, selectCurrentPage },
@@ -131,6 +131,13 @@ function logKeyPress (evt, data) {
 
 function logExecCommand (evt, data) {
   console.log(`Command executing (${evt.command})`, evt, data)
+}
+
+function bookmarkSelection (evt, data) {
+  const {paginator} = _getContext()
+  if (paginator && paginator.saveSelection()) {
+    console.log(`Selection saved for page ${paginator.lastSelection.page.pageNumber}`)
+  }
 }
 
 function _getContext () {
