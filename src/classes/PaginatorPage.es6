@@ -36,6 +36,10 @@ export default class PaginatorPage {
     }
   }
 
+  getFormat () {
+    return this.paginator.currentFormat
+  }
+
   getSection (type) {
     return this.sections[type]
   }
