@@ -170,6 +170,11 @@ export default class Paginator {
     return this.pages[this.getNumberOfPages() - 1]
   }
 
+  /**
+   * Save the current editor selection in the property `paginator.lastSelection`.
+   * A saved selection can be restored with the method `paginator.restoreSelection()`
+   * @returns {boolean} true if a selection has been saved, else false
+   */
   saveSelection () {
     let page, section, editor, selection
     page = this.currentPage
@@ -184,9 +189,11 @@ export default class Paginator {
           this.lastSelection.editor = editor
           this.lastSelection.selection = editor.selection
           this.lastSelection.bookmark = selection.getBookmark()
+          return true
         }
       }
     }
+    return false
   }
 
   restoreSelection () {
