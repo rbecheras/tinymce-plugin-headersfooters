@@ -150,3 +150,13 @@ function logKeyPress (evt, data) {
 function logExecCommand (evt, data) {
   console.log(`Command executing (${evt.command})`, evt, data)
 }
+
+function _getContext () {
+  const editor = tinymce.activeEditor
+  const plugin = editor ? editor.plugins.headersfooters : null
+  const paginator = plugin ? plugin.paginator : null
+  const page = plugin ? plugin.page : null
+  const currentPage = paginator ? paginator.currentPage : null
+  const section = page ? page.currentSection : null
+  return {editor, plugin, paginator, page, currentPage, section}
+}
