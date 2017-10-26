@@ -1,8 +1,8 @@
 'use strict'
 
 import PaginatorPage from './PaginatorPage'
-import ui from '../utils/ui'
-import units from '../utils/units'
+import {cutLastNode, cutLastWord} from '../utils/ui'
+import {getValueFromStyle} from '../utils/units'
 
 export default class Paginator {
   constructor () {
@@ -47,7 +47,7 @@ export default class Paginator {
       let format = this.currentFormat
 
       if (section.isBody()) {
-        let maxBodyHeight = units.getValueFromStyle(format.calculateBodyHeight())
+        let maxBodyHeight = getValueFromStyle(format.calculateBodyHeight())
         if (contentHeight > maxBodyHeight) {
           return true
         }
@@ -86,7 +86,7 @@ export default class Paginator {
     // cut overflowing nodes
     let stop = false
     while (!stop) {
-      let lastNode = ui.cutLastNode($, editor.getBody())
+      let lastNode = cutLastNode($, editor.getBody())
       if (lastNode) {
         lastNodes.splice(0, 0, lastNode)
       }
@@ -102,7 +102,7 @@ export default class Paginator {
       let lastCutNode = lastNodes.shift()
       $body.append($(lastCutNode))
       while (!stop) {
-        let lastWord = ui.cutLastWord($, lastCutNode)
+        let lastWord = cutLastWord($, lastCutNode)
         if (lastWord) {
           lastWords.splice(0, 0, lastWord)
         }
