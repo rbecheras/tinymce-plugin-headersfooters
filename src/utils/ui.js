@@ -1,8 +1,5 @@
 'use strict'
 
-var units = require('./units')
-var $ = window.jQuery
-
 /**
  * User interface module
  * @module
@@ -10,40 +7,30 @@ var $ = window.jQuery
  * @description A module to provide configured ui elements to the plugin
  */
 
-module.exports = {
-  jQuery: $,
-  lockNode: lockNode,
-  unlockNode: unlockNode,
-  addUnselectableCSSClass: addUnselectableCSSClass,
-  resetMenuItemState: resetMenuItemState,
-  autoAddMenuItems: autoAddMenuItems,
-  mapMceLayoutElements: mapMceLayoutElements,
-  mapPageLayoutElements: mapPageLayoutElements,
-  getElementHeight: getElementHeight,
-  cutLastNode: cutLastNode,
-  cutLastWord: cutLastWord
-}
+import * as units from './units'
+
+const $ = window.jQuery
+
+export {$ as jQuery}
 
 /**
  * Lock a node
- * @method
  * @mixin
  * @returns {undefined}
  */
-function lockNode () {
-  var $this = $(this)
+export function lockNode () {
+  let $this = $(this)
   $this.attr('contenteditable', false)
   $this.addClass('unselectable')
 }
 
 /**
  * Unlock a node
- * @method
  * @mixin
  * @returns {undefined}
  */
-function unlockNode () {
-  var $this = $(this)
+export function unlockNode () {
+  let $this = $(this)
   $this.attr('contenteditable', true)
   $this.removeClass('unselectable')
   $this.focus()
@@ -51,43 +38,39 @@ function unlockNode () {
 
 /**
  * Create and apply the unselectable CSS class to the active document
- * @method
- * @static
  * @param {Editor} editor The tinymce active editor
  * @returns {undefined}
  */
-function addUnselectableCSSClass (editor) {
-  var head = $('head', editor.getDoc())
-  var unselectableCSSRules = '.unselectable { -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }'
-  var style = $('<style>').attr('type', 'text/css').html(unselectableCSSRules)
+export function addUnselectableCSSClass (editor) {
+  const unselectableCSSRules = '.unselectable { -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }'
+  let head = $('head', editor.getDoc())
+  let style = $('<style>').attr('type', 'text/css').html(unselectableCSSRules)
   style.appendTo(head)
 }
 
 /**
  * Reset a menu item state
- * @method
- * @static
  * @param {Editor} editor The tinymce active editor
  * @param {String} selector The selector to use to DO WHAT ?
  * @TODO finish to describe the selector parameter
  */
-function resetMenuItemState (editor, selector) {
-  var selectedElement = editor.selection.getStart()
-  var $sel = $(selectedElement)
-  var parents = $sel.parents(selector)
+export function resetMenuItemState (editor, selector) {
+  let selectedElement = editor.selection.getStart()
+  let $sel = $(selectedElement)
+  let parents = $sel.parents(selector)
   this.disabled(!parents.length)
 }
 
 /**
  * Add the plugin's menu items
  */
-function autoAddMenuItems () {
-  for (var itemName in this.menuItemsList) {
+export function autoAddMenuItems () {
+  for (let itemName in this.menuItemsList) {
     this.editor.addMenuItem(itemName, this.menuItemsList[itemName])
   }
 }
 
-function mapMceLayoutElements (bodyClass, stackedLayout) {
+export function mapMceLayoutElements (bodyClass, stackedLayout) {
   stackedLayout.root = $('.' + bodyClass)
   stackedLayout.wrapper = stackedLayout.root.children('.mce-tinymce')
   stackedLayout.layout = stackedLayout.wrapper.children('.mce-stack-layout')
@@ -103,13 +86,13 @@ function mapMceLayoutElements (bodyClass, stackedLayout) {
   stackedLayout.statusbar.resizehandle = stackedLayout.layout.children('.mce-resizehandle')
 }
 
-function mapPageLayoutElements (pageLayout) {
+export function mapPageLayoutElements (pageLayout) {
   pageLayout.pageWrapper = $('.page-wrapper')
   pageLayout.pagePanel = $('.page-panel')
 
   pageLayout.headerWrapper = $('.header-wrapper')
   pageLayout.headerPanel = $('.header-panel')
-  setTimeout(function () {
+  setTimeout(() => {
     pageLayout.headerIframe = pageLayout.headerPanel.find('iframe')
   }, 100)
 
@@ -118,15 +101,28 @@ function mapPageLayoutElements (pageLayout) {
 
   pageLayout.footerWrapper = $('.footer-wrapper')
   pageLayout.footerPanel = $('.footer-panel')
-  setTimeout(function () {
+  setTimeout(() => {
     pageLayout.footerIframe = pageLayout.footerPanel.find('iframe')
   }, 100)
 }
 
-function getElementHeight (element, win, isBorderBox) {
+/**
+ * Provides the real height of an element in function of its border-box property, without the unit digits.
+ * @example
+ * ```js
+ * getElementHeight(document.body, window)
+ * // => `12` but not `12px`
+ * ```
+ * @todo complete implementation in function of `isBorderBox`
+ * @param {HTMLElement} element
+ * @param {Window} win
+ * @param {boolean} isBorderBox
+ * @returns {Number} the element height in pixels
+ */
+export function getElementHeight (element, win, isBorderBox) {
   win = win || window
-  var style = win.getComputedStyle(element)
-  var height = px(style.height) // +
+  let style = win.getComputedStyle(element)
+  let height = px(style.height) // +
     // px(style.paddingTop) + px(style.paddingBottom) +
     // px(style.marginTop) + px(style.marginBottom)
   return height
@@ -136,13 +132,13 @@ function getElementHeight (element, win, isBorderBox) {
   }
 }
 
-function cutLastNode ($, bodyElement) {
+export function cutLastNode ($, bodyElement) {
   let last = $(bodyElement).children().last()
   $(last).remove()
   return last
 }
 
-function cutLastWord ($, element) {
+export function cutLastWord ($, element) {
   let $el = $(element)
   let words = $el.text().split(' ')
   // let words = $el.html().split(' ')
