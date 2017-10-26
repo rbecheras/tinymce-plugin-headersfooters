@@ -1,9 +1,11 @@
 'use strict'
 
 import ui from '../utils/ui'
+import {getValueFromStyle} from '../utils/units'
 
 export default class PaginatorPage {
-  constructor (pageNumber) {
+  constructor (paginator, pageNumber) {
+    this.paginator = paginator
     this.pageNumber = pageNumber
     this.currentSection = null
     this.sections = {

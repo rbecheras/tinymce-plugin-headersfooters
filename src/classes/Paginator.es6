@@ -16,7 +16,7 @@ export default class Paginator {
   initPage (plugin, pageNumber) {
     let page = this.getPage(pageNumber)
     if (!page) {
-      page = new PaginatorPage(pageNumber)
+      page = new PaginatorPage(this, pageNumber)
       this.addPage(page)
     }
     page.initSection(plugin)
