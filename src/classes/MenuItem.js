@@ -1,7 +1,7 @@
 'use strict'
 
 import q from 'q'
-import timestamp from '../utils/time'
+import { timestamp } from '../utils/time'
 
 const $ = window.jQuery
 
