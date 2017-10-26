@@ -173,10 +173,12 @@ export default class Paginator {
   /**
    * Save the current editor selection in the property `paginator.lastSelection`.
    * A saved selection can be restored with the method `paginator.restoreSelection()`
+   * If the current selection is the same as the last saved, it returns false
    * @returns {boolean} true if a selection has been saved, else false
    */
   saveSelection () {
-    let page, section, editor, selection
+    let page, section, editor, selection, bookmark, oldSelection
+    oldSelection = this.lastSelection
     page = this.currentPage
     if (page) {
       section = page.currentSection
@@ -184,12 +186,17 @@ export default class Paginator {
         editor = section.editor
         if (editor) {
           selection = editor.selection
-          this.lastSelection.page = page
-          this.lastSelection.section = section
-          this.lastSelection.editor = editor
-          this.lastSelection.selection = editor.selection
-          this.lastSelection.bookmark = selection.getBookmark()
-          return true
+          bookmark = selection.getBookmark()
+          if (
+            page !== oldSelection.page ||
+            section !== oldSelection.section ||
+            editor !== oldSelection.editor ||
+            selection !== oldSelection.selectCurrentPage ||
+            bookmark !== oldSelection.bookmark
+          ) {
+            this.lastSelection = { page, section, editor, selection, bookmark }
+            return true
+          }
         }
       }
     }
