@@ -123,7 +123,11 @@ function removePageIfEmptyAndNotFirst (evt) {
     const editor = tinymce.activeEditor
     const plugin = editor.plugins.headersfooters
     if (plugin.isBody()) {
-      plugin.paginator.removeCurrentPageIfEmptyAndNotFirst()
+      const page = plugin.paginator.currentPage
+      const section = page.currentSection
+      if (page.pageNumber !== 1 && section.isBody() && page.isEmpty()) {
+        plugin.paginator.removePage(page)
+      }
     }
   }
 }
