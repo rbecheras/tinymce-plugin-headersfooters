@@ -6,7 +6,8 @@
  * @name eventHandlers
  */
 
-const uiUtils = require('./utils/ui')
+import {mapPageLayoutElements, mapMceLayoutElements} from './utils/ui'
+
 const tinymce = window.tinymce
 
 const eventHandlers = {
@@ -29,7 +30,7 @@ const debugEventHandlers = {
 export {eventHandlers as default, eventHandlers, debugEventHandlers}
 
 function setBodies (evt) {
-  var editor = evt.target
+  const editor = evt.target
   this.documentBodies.mce[this.type] = editor.getBody()
   if (!this.documentBodies.app) {
     this.documentBodies.app = window.document.body
@@ -38,13 +39,11 @@ function setBodies (evt) {
 }
 
 function setStackedLayout (evt) {
-  uiUtils.mapMceLayoutElements(this.bodyClass, this.stackedLayout)
+  mapMceLayoutElements(this.bodyClass, this.stackedLayout)
 }
 
 function setPageLayout (evt) {
-  if (this.isMaster()) {
-    uiUtils.mapPageLayoutElements(this.page.pageLayout)
-  }
+  this.isMaster() && mapPageLayoutElements(this.page.pageLayout)
 }
 
 function enterHeadFoot (evt) {
@@ -56,15 +55,14 @@ function leaveHeadFoot (evt) {
 }
 
 function applyCurrentFormat (evt) {
-  var that = this
-  if (this.paginator.currentFormat) {
-    // console.info('evt', that.type, evt.type)
+  const {plugin, paginator} = _getContext()
+  if (plugin && paginator && paginator.currentFormat) {
     if (evt.type === 'blur' || evt.type === 'focus') {
       setTimeout(function () {
-        that.paginator.currentFormat.applyToPlugin(that)
+        paginator.currentFormat.applyToPlugin(plugin)
       }, 200)
     } else {
-      that.paginator.currentFormat.applyToPlugin(that)
+      paginator.currentFormat.applyToPlugin(plugin)
     }
   }
 }
@@ -75,7 +73,7 @@ function applyCurrentFormat (evt) {
  * @TODO document event `HeadersFooters:Error:NegativeBodyHeight`
  */
 function alertErrorNegativeBodyHeight (evt) {
-  var editor = evt.target
+  const {editor} = _getContext()
   if (!editor.settings.SILENT_INCONSISTANT_FORMAT_WARNING) {
     // editor.execCommand('editFormatCmd')
     // throw new Error('Inconsistant custom format: body height is negative. Please fix format properties')
@@ -84,48 +82,33 @@ function alertErrorNegativeBodyHeight (evt) {
 }
 
 function reloadMenuItems (evt) {
-  var editor = evt.target
-  if (editor && editor.plugins && editor.plugins.headersfooters) {
-    editor.plugins.headersfooters.reloadMenuItems()
+  const {plugin} = _getContext()
+  if (plugin) {
+    plugin.reloadMenuItems()
   }
 }
 
 function selectCurrentPage (evt) {
-  let editor = evt.target
-  let plugin = editor.plugins.headersfooters
-  let paginator, page
-  if (editor && plugin) {
-    paginator = plugin.paginator
-    page = plugin.page
-    if (paginator && page) {
-      paginator.selectCurrentPage(page, plugin.type)
-      editor.plugins.headersfooters.reloadMenuItems()
-    }
+  const {paginator, page, plugin} = _getContext()
+  if (plugin && paginator && page) {
+    paginator.selectCurrentPage(page, plugin.type)
+    plugin.reloadMenuItems()
   }
 }
 
 function checkBodyHeight (evt) {
-  let editor = evt.target
-  let plugin = editor.plugins.headersfooters
-  let paginator, page
-  if (editor && plugin) {
-    paginator = plugin.paginator
-    page = plugin.page
-    if (paginator && page) {
-      paginator.checkBodyHeight()
-    }
+  const {paginator, page} = _getContext()
+  if (paginator && page) {
+    paginator.checkBodyHeight()
   }
 }
 
 function removePageIfEmptyAndNotFirst (evt) {
   const {key, keyCode, altKey, ctrlKey} = evt
   if (key === 'Backspace' && keyCode === 8 && !altKey && !ctrlKey) {
-    const editor = tinymce.activeEditor
-    const plugin = editor.plugins.headersfooters
-    if (plugin.isBody()) {
-      const page = plugin.paginator.currentPage
-      const section = page.currentSection
-      if (page.pageNumber !== 1 && section.isBody() && page.isEmpty()) {
+    const {plugin, page, section} = _getContext()
+    if (plugin && plugin.isBody()) {
+      if (page && page.pageNumber !== 1 && section.isBody() && page.isEmpty()) {
         plugin.paginator.removePage(page)
       }
     }
@@ -135,10 +118,9 @@ function removePageIfEmptyAndNotFirst (evt) {
 function moveCursorToNeededPage (evt) {
   const {key, keyCode, altKey, ctrlKey} = evt
   if (key === 'ArrowDown' && keyCode === 8 && !altKey && !ctrlKey) {
-    const editor = tinymce.activeEditor
-    const plugin = editor.plugins.headersfooters
-    if (plugin.isBody()) {
-      plugin.paginator.removeCurrentPageIfEmptyAndNotFirst()
+    const {plugin} = _getContext()
+    if (plugin && plugin.isBody()) {
+      console.error('moveCursorToNeededPage')
     }
   }
 }
