@@ -7,60 +7,26 @@
  * @description A module to provide a function to create all of the menu items for the plugin
  */
 
-/**
- * Class MenuItem
- * @var
- * @name MenuItem
- * @type class
- */
-var MenuItem = require('../classes/MenuItem')
-
-/**
- * UI module
- * @var
- * @name ui
- * @type {Module}
- */
-var ui = require('../utils/ui')
-
-var timeUtils = require('../utils/time')
-var timestamp = timeUtils.timestamp
+import MenuItem from '../classes/MenuItem'
+import { timestamp } from '../utils/time'
+import { resetMenuItemState } from '../utils/ui'
 
 /**
  * A selector to select the header and the footer but not the body
- * @const
- * @inner
  */
-var HEADER_FOOTER_ONLY_SELECTOR = '.header-panel, .footer-panel'
+const HEADER_FOOTER_ONLY_SELECTOR = '.header-panel, .footer-panel'
 
 /**
  * A selector to select the body but not the header and the footer
- * @const
- * @inner
  */
-var BODY_ONLY_SELECTOR = '.body-panel'
-
-// Static API
-module.exports = {
-  create: create
-}
-
-// Inner API
-// _createInsertHeaderMenuItem()
-// _createInsertFooterMenuItem()
-// _createRemoveHeaderMenuItem()
-// _createRemoveFooterMenuItem()
-// _createInsertPageNumberMenuItem(editor)
-// _createinsertNumberOfPagesMenuItem(editor)
-// _createEditFormatMenuItem(editor)
+const BODY_ONLY_SELECTOR = '.body-panel'
 
 /**
  * Create a hash of all the menu items for the plugin
- * @function
  * @param {Editor} editor The tinymce active editor
  * @returns {object} the created hash of menu items
  */
-function create (editor) {
+export default function createMenuItems (editor) {
   return {
     insertHeader: _createInsertHeaderMenuItem(editor),
     insertFooter: _createInsertFooterMenuItem(editor),
@@ -85,8 +51,8 @@ function _createInsertHeaderMenuItem (editor) {
     id: 'plugin-headersfooters-menuitem-insert-header' + timestamp(),
     context: 'document',
     onPostRender: function () {
-      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
-      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+      resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
     },
     onclick: function () {
       var master = editor.plugins.headersfooters.getMaster()
@@ -114,8 +80,8 @@ function _createRemoveHeaderMenuItem (editor) {
     id: 'plugin-headersfooters-menuitem-remove-header' + timestamp(),
     context: 'document',
     onPostRender: function () {
-      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
-      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+      resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
     },
     onclick: function () {
       var master = editor.plugins.headersfooters.getMaster()
@@ -142,8 +108,8 @@ function _createInsertFooterMenuItem (editor) {
     icon: 'template',
     context: 'document',
     onPostRender: function () {
-      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
-      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+      resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
     },
     onclick: function () {
       var master = editor.plugins.headersfooters.getMaster()
@@ -170,8 +136,8 @@ function _createRemoveFooterMenuItem (editor) {
     icon: 'undo',
     context: 'document',
     onPostRender: function () {
-      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
-      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+      resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
     },
     onclick: function () {
       var master = editor.plugins.headersfooters.getMaster()
@@ -197,8 +163,8 @@ function _createInsertPageNumberMenuItem (editor) {
     text: 'Insérer le numéro de page',
     context: 'document',
     onPostRender: function () {
-      ui.resetMenuItemState.call(this, editor, HEADER_FOOTER_ONLY_SELECTOR)
-      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, HEADER_FOOTER_ONLY_SELECTOR))
+      resetMenuItemState.call(this, editor, HEADER_FOOTER_ONLY_SELECTOR)
+      editor.on('NodeChange', resetMenuItemState.bind(this, editor, HEADER_FOOTER_ONLY_SELECTOR))
     },
     cmd: 'insertPageNumberCmd'
   })
@@ -216,8 +182,8 @@ function _createinsertNumberOfPagesMenuItem (editor) {
     // icon: 'text',
     context: 'document',
     onPostRender: function () {
-      ui.resetMenuItemState.call(this, editor, HEADER_FOOTER_ONLY_SELECTOR)
-      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, HEADER_FOOTER_ONLY_SELECTOR))
+      resetMenuItemState.call(this, editor, HEADER_FOOTER_ONLY_SELECTOR)
+      editor.on('NodeChange', resetMenuItemState.bind(this, editor, HEADER_FOOTER_ONLY_SELECTOR))
     },
     cmd: 'insertNumberOfPagesCmd'
   })
@@ -235,8 +201,8 @@ function _createEditFormatMenuItem (editor) {
     icon: 'newdocument',
     context: 'document',
     onPostRender: function () {
-      ui.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
-      editor.on('NodeChange', ui.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+      resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
     },
     cmd: 'editFormatCmd'
   })
