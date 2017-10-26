@@ -26,7 +26,7 @@ const debugEventHandlers = {
   'ExecCommand': { logExecCommand }
 }
 
-export {eventHandlers as default, debugEventHandlers}
+export {eventHandlers as default, eventHandlers, debugEventHandlers}
 
 function setBodies (evt) {
   var editor = evt.target
