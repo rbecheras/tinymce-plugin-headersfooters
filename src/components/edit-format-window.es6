@@ -1,7 +1,7 @@
 'use strict'
 
 import Format from '../classes/Format'
-import editFormatTabs from './edit-format-tabs'
+import * as editFormatTabs from './edit-format-tabs'
 // import * as units from '../units'
 
 /**
