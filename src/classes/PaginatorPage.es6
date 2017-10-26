@@ -86,4 +86,10 @@ export default class PaginatorPage {
       }
     }
   }
+
+  isOverflowing () {
+    let contentHeight = this.getSectionContentHeight()
+    let maxBodyHeight = getValueFromStyle(this.getFormat().calculateBodyHeight())
+    return contentHeight > maxBodyHeight
+  }
 }
