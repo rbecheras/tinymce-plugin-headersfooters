@@ -2,7 +2,6 @@
 
 import PaginatorPage from './PaginatorPage'
 import {cutLastNode, cutLastWord} from '../utils/ui'
-import {getValueFromStyle} from '../utils/units'
 
 export default class Paginator {
   constructor () {
@@ -39,25 +38,13 @@ export default class Paginator {
     }
   }
 
-  isCurrentPageOverflows () {
-    let page = this.currentPage
-    if (page && page.currentSection) {
-      let section = page.currentSection
-      let contentHeight = page.getSectionContentHeight()
-      let format = this.currentFormat
-
-      if (section.isBody()) {
-        let maxBodyHeight = getValueFromStyle(format.calculateBodyHeight())
-        if (contentHeight > maxBodyHeight) {
-          return true
-        }
-      }
-    }
-    return false
+  isCurrentPageOverflowing () {
+    let p = this.currentPage
+    return p && p.currentSection && p.currentSection.isBody() && p.isOverflowing()
   }
 
   checkBodyHeight () {
-    if (this.shouldCheckPageHeight && this.isCurrentPageOverflows()) {
+    if (this.shouldCheckPageHeight && this.isCurrentPageOverflowing()) {
       this.pageOverflows(this.currentPage)
     }
   }
@@ -90,7 +77,7 @@ export default class Paginator {
       if (lastNode) {
         lastNodes.splice(0, 0, lastNode)
       }
-      if (!this.isCurrentPageOverflows()) {
+      if (!this.isCurrentPageOverflowing()) {
         stop = true
       }
     }
@@ -106,7 +93,7 @@ export default class Paginator {
         if (lastWord) {
           lastWords.splice(0, 0, lastWord)
         }
-        if (!this.isCurrentPageOverflows()) {
+        if (!this.isCurrentPageOverflowing()) {
           stop = true
         }
       }
