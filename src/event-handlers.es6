@@ -117,7 +117,7 @@ function removePageIfEmptyAndNotFirst (evt) {
 
 function moveCursorToNeededPage (evt) {
   const {key, keyCode, altKey, ctrlKey} = evt
-  if (key === 'ArrowDown' && keyCode === 8 && !altKey && !ctrlKey) {
+  if (key === 'ArrowDown' && keyCode === 40 && !altKey && !ctrlKey) {
     const {plugin} = _getContext()
     if (plugin && plugin.isBody()) {
       console.error('moveCursorToNeededPage')
