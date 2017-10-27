@@ -20,3 +20,19 @@ export function elementIsEmpty (element, contextWindow) {
   }
   return !element.textContent.trim()
 }
+
+/**
+ * Get the closest parent of an element beeing not a bookmark element.
+ * If the element itself is not a bookmark, it is returned as its own parent.
+ * @method
+ * @static
+ * @param {jQuery} $bookmarkElement the bookmark (or not) element.
+ * @returns {HTMLElement} the closest parent beeing not a bookmark or itself
+ */
+export function getClosestNotBookmarkParent ($, bookmarkElement) {
+  let $bookmarkElement = $(bookmarkElement)
+  let $parents = $bookmarkElement.parents()
+  $parents.splice(0, 0, bookmarkElement)
+  let parents = $parents.filter((i, el) => $(el).attr('data-mce-type') !== 'bookmark')
+  return parents.length ? parents[0] : null
+}
