@@ -55,7 +55,7 @@ function leaveHeadFoot (evt) {
 }
 
 function applyCurrentFormat (evt) {
-  const {plugin, paginator} = _getContext()
+  const {plugin, paginator} = _getActiveContext()
   if (plugin && paginator && paginator.currentFormat) {
     if (evt.type === 'blur' || evt.type === 'focus') {
       setTimeout(function () {
@@ -73,7 +73,7 @@ function applyCurrentFormat (evt) {
  * @TODO document event `HeadersFooters:Error:NegativeBodyHeight`
  */
 function alertErrorNegativeBodyHeight (evt) {
-  const {editor} = _getContext()
+  const {editor} = _getActiveContext()
   if (!editor.settings.SILENT_INCONSISTANT_FORMAT_WARNING) {
     // editor.execCommand('editFormatCmd')
     // throw new Error('Inconsistant custom format: body height is negative. Please fix format properties')
@@ -82,14 +82,14 @@ function alertErrorNegativeBodyHeight (evt) {
 }
 
 function reloadMenuItems (evt) {
-  const {plugin} = _getContext()
+  const {plugin} = _getActiveContext()
   if (plugin) {
     plugin.reloadMenuItems()
   }
 }
 
 function selectCurrentPage (evt) {
-  const {paginator, page, plugin} = _getContext()
+  const {paginator, page, plugin} = _getActiveContext()
   if (plugin && paginator && page) {
     paginator.selectCurrentPage(page, plugin.type)
     plugin.reloadMenuItems()
@@ -97,7 +97,7 @@ function selectCurrentPage (evt) {
 }
 
 function checkBodyHeight (evt) {
-  const {paginator, page} = _getContext()
+  const {paginator, page} = _getActiveContext()
   if (paginator && page) {
     paginator.checkBodyHeight()
   }
@@ -106,7 +106,7 @@ function checkBodyHeight (evt) {
 function removePageIfEmptyAndNotFirst (evt) {
   const {key, keyCode, altKey, ctrlKey} = evt
   if (key === 'Backspace' && keyCode === 8 && !altKey && !ctrlKey) {
-    const {plugin, page, section} = _getContext()
+    const {plugin, page, section} = _getActiveContext()
     if (plugin && plugin.isBody()) {
       if (page && page.pageNumber > 1) {
         let isBody = section.isBody()
@@ -122,7 +122,7 @@ function removePageIfEmptyAndNotFirst (evt) {
 function moveCursorToNeededPage (evt) {
   const {key, keyCode, altKey, ctrlKey} = evt
   if (key === 'ArrowDown' && keyCode === 40 && !altKey && !ctrlKey) {
-    const {plugin} = _getContext()
+    const {plugin} = _getActiveContext()
     if (plugin && plugin.isBody()) {
       console.error('moveCursorToNeededPage')
     }
@@ -138,11 +138,17 @@ function logExecCommand (evt, data) {
 }
 
 function bookmarkSelection (evt, data) {
-  const {paginator} = _getContext()
+  const {paginator} = _getActiveContext()
   paginator && paginator.saveSelection()
 }
 
-function _getContext () {
+/**
+ * Get back a hash of useful object references depending of the active editor's context.
+ * @function
+ * @inner
+ * @returns {object} a hash filled with the following references: `{editor, plugin, paginator, page, currentPage, section}`
+ */
+function _getActiveContext () {
   const editor = tinymce.activeEditor
   const plugin = editor ? editor.plugins.headersfooters : null
   const paginator = plugin ? plugin.paginator : null
