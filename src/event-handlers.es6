@@ -108,8 +108,12 @@ function removePageIfEmptyAndNotFirst (evt) {
   if (key === 'Backspace' && keyCode === 8 && !altKey && !ctrlKey) {
     const {plugin, page, section} = _getContext()
     if (plugin && plugin.isBody()) {
-      if (page && page.pageNumber !== 1 && section.isBody() && page.isEmpty()) {
-        plugin.paginator.removePage(page)
+      if (page && page.pageNumber > 1) {
+        let isBody = section.isBody()
+        let isEmpty = page.isEmpty()
+        if (isBody && isEmpty) {
+          plugin.paginator.removePage(page)
+        }
       }
     }
   }
