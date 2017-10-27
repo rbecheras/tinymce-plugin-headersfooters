@@ -1,9 +1,5 @@
 'use strict'
 
-module.exports = {
-  elementIsEmpty: elementIsEmpty
-}
-
 /**
  * Tells if an element is empty (pure JS)
  * i.e. if:
@@ -16,7 +12,7 @@ module.exports = {
  * @param {window} [contextWindow] The contextual window for this element
  * @returns {Boolean} true if the element is considered empty.
  */
-function elementIsEmpty (element, contextWindow) {
+export function elementIsEmpty (element, contextWindow) {
   if (!contextWindow) { contextWindow = window }
   if (!(element instanceof window.HTMLElement || element instanceof contextWindow.HTMLElement)) {
     console.error('TypeError element: ', element, 'contextWindow', contextWindow)
