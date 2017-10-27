@@ -2,12 +2,14 @@
 
 import PaginatorPage from './PaginatorPage'
 import {cutLastNode, cutLastWord} from '../utils/ui'
+import {getClosestNotBookmarkParent} from '../utils/dom'
 
 export default class Paginator {
   constructor () {
     this.pages = []
     this.currentPage = null
     this.shouldCheckPageHeight = true
+    this.savingBookmarkAllowed = true
     this.lastSelection = {}
     this.appendingNewPages = {}
   }
@@ -177,30 +179,36 @@ export default class Paginator {
    * @returns {boolean} true if a selection has been saved, else false
    */
   saveSelection () {
-    let page, section, editor, selection, bookmark, oldSelection
-    oldSelection = this.lastSelection
-    page = this.currentPage
-    if (page) {
-      section = page.currentSection
-      if (section) {
-        editor = section.editor
-        if (editor) {
-          selection = editor.selection
-          bookmark = selection.getBookmark()
-          if (
-            page !== oldSelection.page ||
-            section !== oldSelection.section ||
-            editor !== oldSelection.editor ||
-            selection !== oldSelection.selectCurrentPage ||
-            bookmark !== oldSelection.bookmark
-          ) {
-            this.lastSelection = { page, section, editor, selection, bookmark }
-            return true
+    let returnValue = false
+    if (this.savingBookmarkAllowed) {
+      this.savingBookmarkAllowed = false
+      let page = this.currentPage
+      let oldSelection = this.lastSelection
+      if (page) {
+        let section = page.currentSection
+        if (section) {
+          let editor = section.editor
+          if (editor) {
+            let node = getClosestNotBookmarkParent(editor.$, editor.selection.getNode())
+            // @todo: préciser la sélection avec le range
+            // - soit le range du bookmark selectionné dans le noeud non bookmark parent
+            // - soit le range du curseur dans le noeud non bookmark parent
+            // let range = editor.selection.getRng()
+            if (
+              page !== oldSelection.page ||
+              section !== oldSelection.section ||
+              node !== oldSelection.node
+            ) {
+              let bookmark = editor.selection.getBookmark()
+              this.lastSelection = { page, section, node, bookmark }
+              returnValue = true
+            }
           }
         }
       }
+      this.savingBookmarkAllowed = true
     }
-    return false
+    return returnValue
   }
 
   /**
