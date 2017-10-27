@@ -11,7 +11,7 @@ export default class Paginator {
     this.shouldCheckPageHeight = true
     this.savingLastSelectionAllowed = true
     this.currentSelection = {}
-    this.lastSelection = {}
+    this.previousSelection = {}
     this.appendingNewPages = {}
   }
 
@@ -200,7 +200,7 @@ export default class Paginator {
               node !== this.currentSelection.node
             ) {
               let bookmark = editor.selection.getBookmark()
-              this.lastSelection = this.currentSelection
+              this.previousSelection = this.currentSelection
               this.currentSelection = { page, section, node, bookmark }
               rv = true
             }
@@ -218,7 +218,7 @@ export default class Paginator {
    */
   restoreSelection () {
     if (this.lastSelection.page) {
-      let {page, section, bookmark} = this.lastSelection
+      let {page, section, bookmark} = this.previousSelection
       this.selectCurrentPage(page, section.type)
       section.editor.focus()
       section.editor.selection.moveToBookmark(bookmark)
