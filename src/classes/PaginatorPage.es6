@@ -74,17 +74,20 @@ export default class PaginatorPage {
   isEmpty () {
     const section = this.currentSection
     const editor = section.editor
-    // const body = editor.getBody()
-    let selection = editor.selection
-    if (selection.isCollapsed()) {
-      let range = selection.getRng()
-      console.error(`Range offset are: ${range.startOffset} and ${range.endOffset}.`)
-      if (range.startOffset === 0) {
-        return true
-      } else {
-        return false
-      }
+    const body = editor.getBody()
+    const $ = editor.$
+
+    let $body = $(body)
+    let $children = $body.children()
+
+    if ($children.length > 1) {
+    // the page is not empty if there is more than one node
+      return false
     }
+
+    let $child = $children.first()
+    // the page is empty if the unique node has no text content
+    return !$child.text().trim().length
   }
 
   isOverflowing () {
