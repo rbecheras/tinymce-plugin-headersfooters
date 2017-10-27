@@ -217,10 +217,10 @@ export default class Paginator {
    */
   restoreSelection () {
     if (this.lastSelection.page) {
-      let {page, section, editor, selection, bookmark} = this.lastSelection
+      let {page, section, bookmark} = this.lastSelection
       this.selectCurrentPage(page, section.type)
-      editor.focus()
-      selection.moveToBookmark(bookmark)
+      section.editor.focus()
+      section.editor.selection.moveToBookmark(bookmark)
       return true
     }
     return false
