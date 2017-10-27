@@ -9,7 +9,8 @@ export default class Paginator {
     this.pages = []
     this.currentPage = null
     this.shouldCheckPageHeight = true
-    this.savingBookmarkAllowed = true
+    this.savingLastSelectionAllowed = true
+    this.currentSelection = {}
     this.lastSelection = {}
     this.appendingNewPages = {}
   }
@@ -179,11 +180,10 @@ export default class Paginator {
    * @returns {boolean} true if a selection has been saved, else false
    */
   saveSelection () {
-    let returnValue = false
-    if (this.savingBookmarkAllowed) {
-      this.savingBookmarkAllowed = false
+    let rv = false
+    if (this.savingLastSelectionAllowed) {
+      this.savingLastSelectionAllowed = false
       let page = this.currentPage
-      let oldSelection = this.lastSelection
       if (page) {
         let section = page.currentSection
         if (section) {
@@ -195,20 +195,21 @@ export default class Paginator {
             // - soit le range du curseur dans le noeud non bookmark parent
             // let range = editor.selection.getRng()
             if (
-              page !== oldSelection.page ||
-              section !== oldSelection.section ||
-              node !== oldSelection.node
+              page !== this.currentSelection.page ||
+              section !== this.currentSelection.section ||
+              node !== this.currentSelection.node
             ) {
               let bookmark = editor.selection.getBookmark()
-              this.lastSelection = { page, section, node, bookmark }
-              returnValue = true
+              this.lastSelection = this.currentSelection
+              this.currentSelection = { page, section, node, bookmark }
+              rv = true
             }
           }
         }
       }
-      this.savingBookmarkAllowed = true
+      this.savingLastSelectionAllowed = true
     }
-    return returnValue
+    return rv
   }
 
   /**

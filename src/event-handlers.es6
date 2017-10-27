@@ -136,7 +136,9 @@ function logExecCommand (evt, data) {
 function bookmarkSelection (evt, data) {
   const {paginator} = _getContext()
   if (paginator && paginator.saveSelection()) {
-    console.log(`Selection saved for page ${paginator.lastSelection.page.pageNumber}`, paginator.lastSelection)
+    let {currentSelection, lastSelection} = paginator
+    console.log(`Selection saved for page ${currentSelection.page.pageNumber}`)
+    console.log({currentSelection, lastSelection})
   }
 }
 
