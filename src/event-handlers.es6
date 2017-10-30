@@ -13,7 +13,7 @@ const $ = window.jQuery
 
 export const eventHandlers = {
   'Init': { setBodies, setStackedLayout, setPageLayout, reloadMenuItems, firesNewPageAppendedEvent },
-  'NodeChange': { checkBodyHeight, bookmarkSelection },
+  'NodeChange': { checkPageOverflow, bookmarkSelection },
   'SetContent': {},
   'BeforeSetContent': {},
   'Focus': { enterHeadFoot, selectCurrentPage },
@@ -116,10 +116,10 @@ function selectCurrentPage (evt) {
   }
 }
 
-function checkBodyHeight (evt) {
+function checkPageOverflow (evt) {
   const {paginator, page} = _getActiveContext()
   if (paginator && page) {
-    paginator.checkBodyHeight()
+    paginator.checkPageOverflow()
   }
 }
 

@@ -46,15 +46,11 @@ export default class Paginator {
     return p && p.currentSection && p.currentSection.isBody() && p.isOverflowing()
   }
 
-  checkBodyHeight () {
+  checkPageOverflow () {
     if (this.shouldCheckPageHeight && this.isCurrentPageOverflowing()) {
-      this.pageOverflows(this.currentPage)
+      console.info(`Page N°${this.currentPage.pageNumber} Overflows !`)
+      this.fixOverflow()
     }
-  }
-
-  pageOverflows (page) {
-    console.info(`Page N°${page.pageNumber} Overflows !`)
-    this.fixOverflow()
   }
 
   setRawPages ({pages}) {
