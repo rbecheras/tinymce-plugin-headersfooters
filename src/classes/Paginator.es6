@@ -210,7 +210,13 @@ export default class Paginator {
    * @returns {boolean} true if a selection has been restored, else false
    */
   restoreSelection () {
-    if (this.lastSelection.page) {
+    let pageToRestore = this.previousSelection
+      ? this.previousSelection.page
+      : this.currentSelection
+        ? this.currentSelection.page
+        : null
+    if (pageToRestore && pageToRestore.isAvailable()) {
+      console.error(`Restoring selection on page ${pageToRestore.pageNumber}`)
       let {page, section, bookmark} = this.previousSelection
       this.selectCurrentPage(page, section.type)
       section.editor.focus()
