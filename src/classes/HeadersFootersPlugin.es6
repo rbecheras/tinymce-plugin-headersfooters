@@ -83,6 +83,8 @@ export default class HeadersFootersPlugin {
   }
 
   enable () {
+    this.enabled = true
+    this.disabled = false
     this.stackedLayout.menubar.show()
     this.stackedLayout.toolbar.show()
     this.stackedLayout.statusbar.wrapper.show()
@@ -93,9 +95,12 @@ export default class HeadersFootersPlugin {
     this.stackedLayout.statusbar.wrapper.css({left: 0, right: 0, zIndex: 9999})
 
     this.editor.$('body').css({opacity: 1})
+    this.editor.focus()
   }
 
   disable () {
+    this.enabled = false
+    this.disabled = true
     this.stackedLayout.menubar.hide()
     this.stackedLayout.toolbar.hide()
     this.stackedLayout.statusbar.wrapper.hide()
