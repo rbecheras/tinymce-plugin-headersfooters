@@ -162,6 +162,10 @@ export default class Paginator {
     return this.pages[this.getNumberOfPages() - 1]
   }
 
+  getCurrentPage () {
+    return this.currentPage
+  }
+
   /**
    * Save the current editor selection in the property `paginator.lastSelection`.
    * A saved selection can be restored with the method `paginator.restoreSelection()`
