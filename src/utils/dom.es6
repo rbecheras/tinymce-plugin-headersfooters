@@ -39,21 +39,41 @@ export function getClosestNotBookmarkParent ($, bookmarkElement) {
 
 export function focusToBottom (editor) {
   // get all Textnodes from lastchild, calc length
-  var textnodes = getTextNodes(editor.getBody().lastChild)
-  // set Cursor to last position
-  var lastTextNode = textnodes[textnodes.length - 1]
-  var lastTextNodeContentLength = lastTextNode.textContent.length
-  editor.selection.setCursorLocation(lastTextNode, lastTextNodeContentLength)
+  const $ = editor.$
+  const $body = $(editor.getBody())
+  let bodyChildren = $body.children()
+  let $bodyChildren = $(bodyChildren).filter((i, node) => {
+    return !!$(node).text().trim()
+  })
+  let $lastChild = $bodyChildren.last()
+  let cursorLocation, cursorLocationOffset
+  if ($lastChild.length) {
+    let lastChild = $lastChild[0]
+    let textnodes = getTextNodes(lastChild)
+
+    // set Cursor to last position
+    let lastTextNode = textnodes[textnodes.length - 1]
+    let lastTextNodeContentLength = lastTextNode.textContent.length
+    cursorLocation = lastTextNode
+    cursorLocationOffset = lastTextNodeContentLength
+  }
+
+  // if cursorLocation is undefinded, the location will be at top of the document
+  editor.selection.setCursorLocation(cursorLocation, cursorLocationOffset)
 }
 
 export function getTextNodes (node, nodeType, result) {
-  var children = node.childNodes
+  if (!node || !node.ownerDocument || !node.ownerDocument.defaultView || !node.ownerDocument.defaultView.Node || !(node instanceof node.ownerDocument.defaultView.Node)) {
+    throw new TypeError('first arg must be a node')
+  }
+
+  let children = node.childNodes
   nodeType = nodeType || 3
   result = !result ? [] : result
   if (node.nodeType === nodeType) {
     result.push(node)
   }
-  for (var i = 0; i < children.length; i++) {
+  for (let i = 0; i < children.length; i++) {
     result = getTextNodes(children[i], nodeType, result)
   }
   return result
