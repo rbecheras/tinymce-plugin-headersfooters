@@ -140,4 +140,15 @@ export default class PaginatorPage {
   isAvailable () {
     return this.getBody() && this.getBody().editor && this.getBody().editor.initialized
   }
+
+  iterateOnSections (func, thisArg) {
+    let sections = []
+    let h = this.getHeader()
+    if (h) sections.push(h)
+    let b = this.getBody()
+    if (b) sections.push(b)
+    let f = this.getFooter()
+    if (f) sections.push(f)
+    return sections.forEach(func, thisArg)
+  }
 }
