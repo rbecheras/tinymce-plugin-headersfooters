@@ -68,10 +68,33 @@ function setPageLayout (evt) {
 
 function enterHeadFoot (evt) {
   this.enable()
+  this.page.iterateOnSections((section) => {
+    if (this.type !== section.type) {
+      section.disable()
+    }
+  })
 }
 
+/**
+ * Leave the current HeadFoot instance unless it is a body section
+ * NB: here, `this` is the plugin instance
+ * @param evt
+ */
 function leaveHeadFoot (evt) {
-  this.disable()
+  if (!this.isBody()) {
+    this.disable()
+  }
+  setTimeout(() => {
+    let isOneEnabled = false
+    this.page.iterateOnSections((section) => {
+      if (section.enabled) {
+        isOneEnabled = true
+      }
+    })
+    if (!isOneEnabled) {
+      this.page.getBody().enable()
+    }
+  }, 50)
 }
 
 function applyCurrentFormat (evt) {
