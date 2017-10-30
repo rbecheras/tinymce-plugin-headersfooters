@@ -36,3 +36,16 @@ export function getClosestNotBookmarkParent ($, bookmarkElement) {
   let parents = $parents.filter((i, el) => $(el).attr('data-mce-type') !== 'bookmark')
   return parents.length ? parents[0] : null
 }
+
+export function getTextNodes (node, nodeType, result) {
+  var children = node.childNodes
+  nodeType = nodeType || 3
+  result = !result ? [] : result
+  if (node.nodeType === nodeType) {
+    result.push(node)
+  }
+  for (var i = 0; i < children.length; i++) {
+    result = getTextNodes(children[i], nodeType, result)
+  }
+  return result
+}
