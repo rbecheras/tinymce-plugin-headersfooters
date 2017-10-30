@@ -9,9 +9,10 @@
 import {mapPageLayoutElements, mapMceLayoutElements} from './utils/ui'
 
 const tinymce = window.tinymce
+const $ = window.jQuery
 
-const eventHandlers = {
-  'Init': { setBodies, setStackedLayout, setPageLayout, reloadMenuItems },
+export const eventHandlers = {
+  'Init': { setBodies, setStackedLayout, setPageLayout, reloadMenuItems, firesNewPageAppendedEvent },
   'NodeChange': { checkBodyHeight, bookmarkSelection },
   'SetContent': {},
   'BeforeSetContent': {},
@@ -22,12 +23,31 @@ const eventHandlers = {
   'HeadersFooters:Error:NegativeBodyHeight': { alertErrorNegativeBodyHeight }
 }
 
-const debugEventHandlers = {
+export const debugEventHandlers = {
   'KeyDown KeyPress KeyUp': { logKeyPress },
   'ExecCommand': { logExecCommand }
 }
 
-export {eventHandlers as default, eventHandlers, debugEventHandlers}
+export const mainBodyEventHandlers = {
+  'HeadersFooters:NewPageAppending': {},
+  'HeadersFooters:NewPageAppended': {}
+}
+
+export {eventHandlers as default}
+
+/**
+ * Fires the `HeadersFooters:NewPageAppended` event to the main body on the main frame of the whole app, not to an editor iframe.
+ * @param evt {Event}
+ * @fires `HeadersFooters:NewPageAppended`
+ */
+function firesNewPageAppendedEvent (evt) {
+  if (this.editor.settings.headersfooters_type === 'body') {
+    $('body').trigger('HeadersFooters:NewPageAppended', {
+      sectionType: this.editor.settings.headersfooters_type,
+      pageNumber: this.editor.settings.headersfooters_pageNumber
+    })
+  }
+}
 
 function setBodies (evt) {
   const editor = evt.target
