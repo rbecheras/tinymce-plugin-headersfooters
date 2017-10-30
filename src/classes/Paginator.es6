@@ -209,7 +209,7 @@ export default class Paginator {
    * Restore a selection previously saved with `paginator.saveSelection()`
    * @returns {boolean} true if a selection has been restored, else false
    */
-  restoreSelection () {
+  restoreLastSelection () {
     let pageToRestore = this.previousSelection
       ? this.previousSelection.page
       : this.currentSelection
