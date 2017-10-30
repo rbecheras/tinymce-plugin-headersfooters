@@ -1,7 +1,7 @@
 'use strict'
 
 import PaginatorPage from './PaginatorPage'
-import {cutLastNode, cutLastWord} from '../utils/ui'
+import {jQuery as $, cutLastNode, cutLastWord} from '../utils/ui'
 import {getClosestNotBookmarkParent} from '../utils/dom'
 
 export default class Paginator {
@@ -230,18 +230,57 @@ export default class Paginator {
     return this.removePage(this.getPage(pageNumber))
   }
 
+  /**
+   * Remove a page
+   * @param {Page} removingPage The page to remove
+   * @returns {Promise}
+   * @fires `HeadersFooters:PageRemoving`
+   * @fires `HeadersFooters:PageRemoved`
+   */
   removePage (removingPage) {
-    console.error(`Remove Page ${this.pageNumber}`)
+    console.error(`Remove Page ${removingPage.pageNumber}`)
+    let shouldRestoreSelection = false
     const removingPageNumber = removingPage.pageNumber
     const pageIndex = removingPageNumber - 1
-    ;[this.rawPages, this.pages].forEach(pagesArray => {
-      pagesArray.splice(pageIndex, 1)
-      pagesArray.forEach(page => {
-        if (page.pageNumber > removingPageNumber) {
-          page.pageNumber = removingPageNumber - 1
-        }
+    shouldRestoreSelection = !this.currentPage.equals(removingPage)
+
+    $('body').trigger('HeadersFooters:PageRemoving', {pageNumber: removingPageNumber})
+
+    return new Promise((resolve, reject) => {
+      let h = removingPage.getHeader().editor
+      let b = removingPage.getBody().editor
+      let f = removingPage.getFooter().editor
+      h.on('remove', () => {
+        h.destroy()
+        b.on('remove', () => {
+          b.destroy()
+          f.on('remove', () => {
+            f.destroy()
+            resolve()
+          })
+          f.remove()
+        })
+        b.remove()
       })
+      h.remove()
     })
+    .then(() => {
+      ;[this.rawPages, this.pages].forEach(pagesArray => {
+        pagesArray.splice(pageIndex, 1)
+        pagesArray.forEach(page => {
+          if (page.pageNumber > removingPageNumber) {
+            page.pageNumber = removingPageNumber - 1
+          }
+        })
+      })
+      if (shouldRestoreSelection) {
+        this.restoreLastSelection()
+      } else {
+        this.goToPage(this.getLastPage())
+      }
+      $('body').trigger('HeadersFooters:PageRemoved', {pageNumber: removingPageNumber})
+    })
+  }
 
   goToPage (page) {
     console.error(`Goto page ${page.pageNumber}`)
