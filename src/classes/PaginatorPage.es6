@@ -1,6 +1,7 @@
 'use strict'
 
 import {getElementHeight} from '../utils/ui'
+import {focusToBottom} from '../utils/dom'
 import {getValueFromStyle} from '../utils/units'
 
 export default class PaginatorPage {
@@ -113,6 +114,23 @@ export default class PaginatorPage {
     let contentHeight = this.getSectionContentHeight()
     let maxBodyHeight = getValueFromStyle(this.getFormat().calculateBodyHeight())
     return contentHeight > maxBodyHeight
+  }
+
+  focusOnHeader () {
+    this.focusOnSection(this.getHeader())
+  }
+
+  focusOnBody () {
+    this.focusOnSection(this.getBody())
+  }
+
+  focusOnFooter () {
+    this.focusOnSection(this.getFooter())
+  }
+
+  focusOnSection (section) {
+    section.editor.focus()
+    focusToBottom(section.editor)
   }
 
   isAvailable () {
