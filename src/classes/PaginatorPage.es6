@@ -101,6 +101,14 @@ export default class PaginatorPage {
     return this.pageNumber === pageToCompare.pageNumber
   }
 
+  isBefore (pageToCompare) {
+    return this.pageNumber < pageToCompare.pageNumber
+  }
+
+  isAfter (pageToCompare) {
+    return this.pageNumber > pageToCompare.pageNumber
+  }
+
   isOverflowing () {
     let contentHeight = this.getSectionContentHeight()
     let maxBodyHeight = getValueFromStyle(this.getFormat().calculateBodyHeight())
