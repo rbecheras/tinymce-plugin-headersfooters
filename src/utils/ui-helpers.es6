@@ -13,19 +13,7 @@
 
 'use strict'
 
-var tinymce = window.tinymce
-
-module.exports = {
-  createTextBox: createTextBox,
-  createUnitSelectBox: createUnitSelectBox,
-  createSelectBox: createSelectBox,
-  createTab: createTab,
-  createFieldset: createFieldset,
-  createForm: createForm,
-  createListBox: createListBox,
-  createListBoxItem: createListBoxItem,
-  createColorPicker: createColorPicker
-}
+const tinymce = window.tinymce
 
 /**
  * Create a simple text box
@@ -36,13 +24,13 @@ module.exports = {
  * @param {number} [minWidth=55] The minimum width for the input
  * @returns {TextBox} textBox The new textBox
  */
-function createTextBox (label, name, maxWidth, minWidth) {
-  var textBox = {
+export function createTextBox (label, name, maxWidth, minWidth) {
+  const textBox = {
     label: label,
     name: name,
     maxWidth: maxWidth || null,
     minWidth: minWidth || null,
-    onchange: function (e) {
+    onchange: (e) => {
       // console.log('createTextBox on action', e)
     }
   }
@@ -59,7 +47,7 @@ function createTextBox (label, name, maxWidth, minWidth) {
  * @param {number} [minWidth=55] - The minimum width for th input.
  * @returns {SelectBox} unitSelectBox The new unit select box.
  */
-function createUnitSelectBox (inputName, defaultUnit, maxWidth, minWidth) {
+export function createUnitSelectBox (inputName, defaultUnit, maxWidth, minWidth) {
   defaultUnit = defaultUnit || 'pt'
   return {
     label: 'Unit',
@@ -77,7 +65,7 @@ function createUnitSelectBox (inputName, defaultUnit, maxWidth, minWidth) {
   }
 }
 
-function createSelectBox (label, inputName, values, maxWidth, minWidth) {
+export function createSelectBox (label, inputName, values, maxWidth, minWidth) {
   return new tinymce.ui.ListBox({
     label: label,
     name: inputName,
@@ -86,7 +74,7 @@ function createSelectBox (label, inputName, values, maxWidth, minWidth) {
     maxWidth: maxWidth || null,
     text: label,
     values: values,
-    onselect: function (e) {
+    onselect: (e) => {
       // console.log('SelectBox Selected', e)
     }
   })
@@ -97,7 +85,7 @@ function createSelectBox (label, inputName, values, maxWidth, minWidth) {
  * @param
  * @returns {object}
  */
-function createTab (title, fieldsets, direction, columns) {
+export function createTab (title, fieldsets, direction, columns) {
   return {
     title: title,
     type: 'form',
@@ -122,8 +110,8 @@ function createTab (title, fieldsets, direction, columns) {
  * @param {number} [maxWidth=null] The maximum with for the fieldset, in pixels
  * @returns {Fieldset} fieldset The new field set
  */
-function createFieldset (title, items, maxWidth, minWidth) {
-  var fieldset = {
+export function createFieldset (title, items, maxWidth, minWidth) {
+  const fieldset = {
     type: 'fieldset',
     title: title,
     items: items,
@@ -138,7 +126,7 @@ function createFieldset (title, items, maxWidth, minWidth) {
  * @param
  * @returns {object}
  */
-function createForm (items, columns) {
+export function createForm (items, columns) {
   return {
     type: 'form',
     labelGapCalc: false,
@@ -163,7 +151,7 @@ function createForm (items, columns) {
  * @param {number} [maxWidth=null] The maximum width for the input
  * @returns {object}
  */
-function createListBox (label, name, values, defaultItem, maxWidth) {
+export function createListBox (label, name, values, defaultItem, maxWidth) {
   return {
     label: label,
     name: name,
@@ -181,11 +169,11 @@ function createListBox (label, name, values, defaultItem, maxWidth) {
  * @param {string|number} value A value for the item
  * @return {ListBoxItem}
  */
-function createListBoxItem (text, value) {
+export function createListBoxItem (text, value) {
   if (value === undefined) {
     value = text
   }
-  var item = {
+  const item = {
     text: text,
     value: value
   }
@@ -199,7 +187,7 @@ function createListBoxItem (text, value) {
  * @param {string} name The name to identify the color picker in the form set
  * @returns {ColorPicker} colorPicker The new color picker
  */
-function createColorPicker (label, name, callback) {
+export function createColorPicker (label, name, callback) {
   return {
     type: 'colorbox',
     label: label,
