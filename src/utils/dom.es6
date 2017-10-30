@@ -37,6 +37,15 @@ export function getClosestNotBookmarkParent ($, bookmarkElement) {
   return parents.length ? parents[0] : null
 }
 
+export function focusToBottom (editor) {
+  // get all Textnodes from lastchild, calc length
+  var textnodes = getTextNodes(editor.getBody().lastChild)
+  // set Cursor to last position
+  var lastTextNode = textnodes[textnodes.length - 1]
+  var lastTextNodeContentLength = lastTextNode.textContent.length
+  editor.selection.setCursorLocation(lastTextNode, lastTextNodeContentLength)
+}
+
 export function getTextNodes (node, nodeType, result) {
   var children = node.childNodes
   nodeType = nodeType || 3
