@@ -106,4 +106,8 @@ export default class PaginatorPage {
     let maxBodyHeight = getValueFromStyle(this.getFormat().calculateBodyHeight())
     return contentHeight > maxBodyHeight
   }
+
+  isAvailable () {
+    return this.getBody() && this.getBody().editor && this.getBody().editor.initialized
+  }
 }
