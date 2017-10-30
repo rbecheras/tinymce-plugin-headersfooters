@@ -61,6 +61,10 @@ export default class PaginatorPage {
     this.currentSection = section
   }
 
+  getCurrentSection () {
+    return this.currentSection
+  }
+
   getSectionHeight () {
     return getElementHeight(this.currentSection.editor.getBody(), this.currentSection.editor.getWin(), false)
   }
