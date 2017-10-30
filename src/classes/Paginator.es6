@@ -236,5 +236,10 @@ export default class Paginator {
         }
       })
     })
+
+  goToPage (page) {
+    console.error(`Goto page ${page.pageNumber}`)
+    this.selectCurrentPage(page, 'body')
+    page.focusOnBody()
   }
 }
