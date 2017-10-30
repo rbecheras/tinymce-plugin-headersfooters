@@ -1,6 +1,6 @@
 'use strict'
 
-import ui from '../utils/ui'
+import {getElementHeight} from '../utils/ui'
 import {getValueFromStyle} from '../utils/units'
 
 export default class PaginatorPage {
@@ -61,7 +61,7 @@ export default class PaginatorPage {
   }
 
   getSectionHeight () {
-    return ui.getElementHeight(this.currentSection.editor.getBody(), this.currentSection.editor.getWin(), false)
+    return getElementHeight(this.currentSection.editor.getBody(), this.currentSection.editor.getWin(), false)
   }
 
   getSectionContentHeight () {
