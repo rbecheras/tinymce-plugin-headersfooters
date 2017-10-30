@@ -90,6 +90,17 @@ export default class PaginatorPage {
     return !$child.text().trim().length
   }
 
+  /**
+   * Test if a given page is the same as the instance (this). The method is simply comparing the page numbers.
+   * @param pageToCompare The page to compare with this
+   * @returns {boolean} true if both are the same
+   * @throws {TypeError} if the given page is not an instance of `PaginatorPage`
+   */
+  equals (pageToCompare) {
+    if (!(pageToCompare instanceof PaginatorPage)) throw new TypeError('first argument must be an instance of PaginatorPage')
+    return this.pageNumber === pageToCompare.pageNumber
+  }
+
   isOverflowing () {
     let contentHeight = this.getSectionContentHeight()
     let maxBodyHeight = getValueFromStyle(this.getFormat().calculateBodyHeight())
