@@ -270,7 +270,7 @@ export default class Paginator {
    * @fires `HeadersFooters:PageRemoving`
    * @fires `HeadersFooters:PageRemoved`
    */
-  removePage (removingPage) {
+  async removePage (removingPage) {
     console.error(`Remove Page ${removingPage.pageNumber}`)
     let shouldRestoreSelection = false
     const removingPageNumber = removingPage.pageNumber
