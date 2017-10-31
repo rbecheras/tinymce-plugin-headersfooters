@@ -82,7 +82,11 @@ export default class HeadersFootersPlugin {
     }
   }
 
-  enable () {
+  /**
+   * Enable an editor instance (so a page section)
+   * @param {boolean} withFocus set it to true if you want to enable the editor and focus on it.
+   */
+  enable (withFocus) {
     this.enabled = true
     this.disabled = false
     this.stackedLayout.menubar.show()
@@ -95,7 +99,7 @@ export default class HeadersFootersPlugin {
     this.stackedLayout.statusbar.wrapper.css({left: 0, right: 0, zIndex: 9999})
 
     this.editor.$('body').css({opacity: 1})
-    this.editor.focus()
+    withFocus && this.editor.focus()
   }
 
   disable () {

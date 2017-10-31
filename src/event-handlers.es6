@@ -67,9 +67,14 @@ function setPageLayout (evt) {
 }
 
 function enterHeadFoot (evt) {
-  this.enable()
-  this.page.iterateOnSections((section) => {
-    (this.type !== section.type) && section.disable()
+  this.paginator.pages.forEach(page => {
+    page.iterateOnSections((section) => {
+      if (this.type === section.type) {
+        section.enable()
+      } else {
+        section.disable()
+      }
+    })
   })
 }
 
@@ -79,14 +84,16 @@ function enterHeadFoot (evt) {
  * @param evt
  */
 function leaveHeadFoot (evt) {
-  !this.isBody() && this.disable()
-  setTimeout(() => {
-    let atLeastOneEnabled = false
-    this.page.iterateOnSections((section) => {
-      section.enabled && (atLeastOneEnabled = true)
-    })
-    !atLeastOneEnabled && this.page.getBody().enable()
-  }, 50)
+  this.paginator.pages.forEach(page => {
+    setTimeout(() => {
+      let atLeastOneEnabled = false
+      this.page.iterateOnSections((section) => {
+        !this.isBody() && this.type === section.type && section.disable()
+        section.enabled && (atLeastOneEnabled = true)
+      })
+      !atLeastOneEnabled && this.page.getBody().enable()
+    }, 50)
+  })
 }
 
 function applyCurrentFormat (evt) {
