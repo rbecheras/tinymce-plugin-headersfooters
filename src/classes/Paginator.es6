@@ -73,31 +73,22 @@ export default class Paginator {
       console.info(`Page N°${this.currentPage.pageNumber} Overflows !`)
 
       // cut overflowing nodes
-      let stop = false
-      while (!stop) {
+      while (this.isCurrentPageOverflowing()) {
         let lastNode = cutLastNode($, editor.getBody())
-        if (lastNode) {
-          lastNodes.splice(0, 0, lastNode)
-        }
-        if (!this.isCurrentPageOverflowing()) {
-          stop = true
-        }
+        if (lastNode) lastNodes.unshift(lastNode)
       }
 
-      // reappend the last cut node and cut its overflowing words
+      // 1. clone the last cut node,
+      // 2. move the overflowing words from the original to the clone,
+      // 3. re-append the original to the overflowing page
+      // 4. prepend the clone to the next page
       if (lastNodes.length) {
-        stop = false
         let lastWords = []
         let lastCutNode = lastNodes.shift()
         $body.append($(lastCutNode))
-        while (!stop) {
+        while (this.isCurrentPageOverflowing()) {
           let lastWord = cutLastWord($, lastCutNode)
-          if (lastWord) {
-            lastWords.splice(0, 0, lastWord)
-          }
-          if (!this.isCurrentPageOverflowing()) {
-            stop = true
-          }
+          if (lastWord) lastWords.unshift(lastWord)
         }
 
         if (lastWords.length) {
