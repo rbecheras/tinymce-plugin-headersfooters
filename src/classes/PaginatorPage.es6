@@ -143,6 +143,12 @@ export default class PaginatorPage {
     return this.getBody() && this.getBody().editor && this.getBody().editor.initialized
   }
 
+  /**
+   * Iterate on all exinsting page sections in [header, body, footer]
+   * @param {function} func the function to iterate on each section
+   * @param thisArg if the func function should be binded to a this argument
+   * @returns {undefined}
+   */
   iterateOnSections (func, thisArg) {
     let sections = []
     let h = this.getHeader()
@@ -151,6 +157,6 @@ export default class PaginatorPage {
     if (b) sections.push(b)
     let f = this.getFooter()
     if (f) sections.push(f)
-    return sections.forEach(func, thisArg)
+    sections.forEach(func, thisArg)
   }
 }
