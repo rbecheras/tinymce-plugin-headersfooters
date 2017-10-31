@@ -75,7 +75,7 @@ export default class Paginator {
       // cut overflowing nodes
       while (this.isCurrentPageOverflowing()) {
         let lastNode = cutLastNode($, editor.getBody())
-        if (lastNode) lastNodes.unshift(lastNode)
+        lastNode && lastNodes.unshift(lastNode)
       }
 
       // 1. clone the last cut node,
@@ -88,13 +88,13 @@ export default class Paginator {
         $body.append($(lastCutNode))
         while (this.isCurrentPageOverflowing()) {
           let lastWord = cutLastWord($, lastCutNode)
-          if (lastWord) lastWords.unshift(lastWord)
+          lastWord && lastWords.unshift(lastWord)
         }
 
         if (lastWords.length) {
           let $splittedNodeClone = $(lastCutNode).clone()
           $splittedNodeClone.html(lastWords.join(' '))
-          lastNodes.splice(0, 0, $splittedNodeClone[0])
+          lastNodes.unshift($splittedNodeClone[0])
         }
       }
 
