@@ -118,7 +118,7 @@ export default class PaginatorPage {
     const contentHeight = this.getSectionContentHeight()
     const maxBodyHeight = getValueFromStyle(this.getFormat().calculateBodyHeight())
     const overflowing = contentHeight > maxBodyHeight
-    if (overflowing) console.info(`Page N°${this.pageNumber} Overflows !`)
+    if (overflowing) console.debug(`Page N°${this.pageNumber} Overflows !`)
     return overflowing
   }
 

@@ -70,7 +70,7 @@ export default class Paginator {
       let $ = editor.$
       let $body = $(editor.getBody())
       this.fixPagesOverflowEnabled = false
-      console.info(`Page N°${this.currentPage.pageNumber} Overflows !`)
+      console.debug(`Page N°${this.currentPage.pageNumber} Overflows !`)
 
       // cut overflowing nodes
       while (this.isCurrentPageOverflowing()) {
@@ -102,7 +102,7 @@ export default class Paginator {
         let nextPage = this.getNextPage() || await this.appendNewPage()
         let editor = nextPage.getBody().editor
         let $ = editor.$
-        console.info(`prepend ${lastNodes.length} last cut nodes in page ${nextPage.pageNumber}`, lastNodes)
+        console.debug(`prepend ${lastNodes.length} last cut nodes in page ${nextPage.pageNumber}`, lastNodes)
         $(editor.getBody()).prepend($(lastNodes))
       }
 
