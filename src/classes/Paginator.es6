@@ -122,7 +122,7 @@ export default class Paginator {
    * @fires `HeadersFooters:NewPageAppending`
    * @returns {Promise} Paginator#appendingNewPages[pageNumber]
    */
-  appendNewPage () {
+  async appendNewPage () {
     const paginator = this
     const pageNumber = this.getNumberOfPages() + 1
     const $body = window.$('body')
