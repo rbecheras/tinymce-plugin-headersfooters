@@ -53,7 +53,7 @@ export default class Paginator {
   checkPageOverflow () {
     if (this.shouldItFixPagesOverflow() && this.isCurrentPageOverflowing()) {
       console.info(`Page N°${this.currentPage.pageNumber} Overflows !`)
-      this.fixOverflow()
+      this.fixPagesOverflow()
     }
   }
 
@@ -65,7 +65,7 @@ export default class Paginator {
     this.rawPages = pages
   }
 
-  async fixOverflow () {
+  async fixPagesOverflow () {
     console.info('Handle Page Overflow...')
     let editor = this.currentPage.currentSection.editor
     let lastNodes = []
