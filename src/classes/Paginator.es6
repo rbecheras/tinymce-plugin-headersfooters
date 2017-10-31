@@ -8,7 +8,7 @@ export default class Paginator {
   constructor () {
     this.pages = []
     this.currentPage = null
-    this.shouldCheckPageHeight = true
+    this.fixPagesOverflowEnabled = true
     this.savingLastSelectionAllowed = true
     this.currentSelection = {}
     this.previousSelection = {}
@@ -46,8 +46,12 @@ export default class Paginator {
     return p && p.currentSection && p.currentSection.isBody() && p.isOverflowing()
   }
 
+  shouldItFixPagesOverflow () {
+    return this.fixPagesOverflowEnabled
+  }
+
   checkPageOverflow () {
-    if (this.shouldCheckPageHeight && this.isCurrentPageOverflowing()) {
+    if (this.shouldItFixPagesOverflow() && this.isCurrentPageOverflowing()) {
       console.info(`Page N°${this.currentPage.pageNumber} Overflows !`)
       this.fixOverflow()
     }
@@ -67,7 +71,7 @@ export default class Paginator {
     let lastNodes = []
     let $ = editor.$
     let $body = $(editor.getBody())
-    this.shouldCheckPageHeight = false
+    this.fixPagesOverflowEnabled = false
 
     // cut overflowing nodes
     let stop = false
@@ -113,7 +117,7 @@ export default class Paginator {
     }
 
     // re-enable page height checking (y-overflow)
-    this.shouldCheckPageHeight = true
+    this.fixPagesOverflowEnabled = true
   }
 
   /**
