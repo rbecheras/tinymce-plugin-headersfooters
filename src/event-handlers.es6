@@ -69,9 +69,7 @@ function setPageLayout (evt) {
 function enterHeadFoot (evt) {
   this.enable()
   this.page.iterateOnSections((section) => {
-    if (this.type !== section.type) {
-      section.disable()
-    }
+    (this.type !== section.type) && section.disable()
   })
 }
 
@@ -81,19 +79,13 @@ function enterHeadFoot (evt) {
  * @param evt
  */
 function leaveHeadFoot (evt) {
-  if (!this.isBody()) {
-    this.disable()
-  }
+  !this.isBody() && this.disable()
   setTimeout(() => {
-    let isOneEnabled = false
+    let atLeastOneEnabled = false
     this.page.iterateOnSections((section) => {
-      if (section.enabled) {
-        isOneEnabled = true
-      }
+      section.enabled && (atLeastOneEnabled = true)
     })
-    if (!isOneEnabled) {
-      this.page.getBody().enable()
-    }
+    !atLeastOneEnabled && this.page.getBody().enable()
   }, 50)
 }
 
