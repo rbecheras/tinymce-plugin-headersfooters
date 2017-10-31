@@ -184,7 +184,7 @@ function logExecCommand (evt, data) {
 
 function bookmarkSelection (evt, data) {
   const {paginator} = _getActiveContext()
-  paginator && paginator.saveSelection()
+  paginator && paginator.saveLastSelection()
 }
 
 /**

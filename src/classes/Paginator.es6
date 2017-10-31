@@ -4,12 +4,26 @@ import PaginatorPage from './PaginatorPage'
 import {jQuery as $, cutLastNode, cutLastWord} from '../utils/ui'
 import {getClosestNotBookmarkParent} from '../utils/dom'
 
+/**
+ * Class Paginator
+ * @property {array<PaginatorPage>} pages the list of paginated pages
+ * @property {PaginatorPage} currentPage the current selected page (the user is working on it)
+ * @property {boolean} fixPagesOverflowEnabled the action of the method fixPagesOverflow() is disabled (do nothing) if this property is on false
+ * @property {boolean} saveLastSelectionsEnabled the action of the method saveLastSelections() is disabled (do nothing) if this property is on false
+ * @property {object} currentSelection the current selection (saved by saveLastSelections())
+ * @property {object} previousSelection the previous selection (saved by saveLastSelections())
+ * @property {object} appendingNewPages a hash of promises resolved by the appended page number when the page is appended
+ * @listens `HeadersFooters:NewPageAppended`
+ * @fires `HeadersFooters:NewPageAppending`
+ * @fires `HeadersFooters:PageRemoving`
+ * @fires `HeadersFooters:PageRemoved`
+ */
 export default class Paginator {
   constructor () {
     this.pages = []
     this.currentPage = null
     this.fixPagesOverflowEnabled = true
-    this.savingLastSelectionAllowed = true
+    this.saveLastSelectionsEnabled = true
     this.currentSelection = {}
     this.previousSelection = {}
     this.appendingNewPages = {}
@@ -54,12 +68,36 @@ export default class Paginator {
     return this.fixPagesOverflowEnabled
   }
 
+  shouldItSaveLastSelections () {
+    return this.saveLastSelectionsEnabled
+  }
+
   setRawPages ({pages}) {
     if (!Array.isArray(pages)) {
       throw new Error('Raw "pages" must be an array')
     }
 
     this.rawPages = pages
+  }
+
+  /**
+   * Enable or disable the action of paginator.fixPagesOverflow()
+   * @param {boolean} bool pass true to enable and false to disable
+   * @returns {undefined}
+   */
+  enableFixPagesOverflow (bool) {
+    if (typeof bool !== 'boolean') throw new TypeError('first argument must be a boolean to enable or disable the feature')
+    this.fixPagesOverflowEnabled = !!bool
+  }
+
+  /**
+   * Enable or disable the action of paginator.saveLastSelection()
+   * @param {boolean} bool pass true to enable and false to disable
+   * @returns {undefined}
+   */
+  enableSaveLastSelections (bool) {
+    if (typeof bool !== 'boolean') throw new TypeError('first argument must be a boolean to enable or disable the feature')
+    this.saveLastSelectionsEnabled = !!bool
   }
 
   async fixPagesOverflow () {
@@ -69,7 +107,7 @@ export default class Paginator {
       let lastNodes = []
       let $ = editor.$
       let $body = $(editor.getBody())
-      this.fixPagesOverflowEnabled = false
+      this.enableFixPagesOverflow(false)
       console.debug(`Page N°${this.currentPage.pageNumber} Overflows !`)
 
       // cut overflowing nodes
@@ -167,10 +205,10 @@ export default class Paginator {
    * If the current selection is the same as the last saved, it returns false
    * @returns {boolean} true if a selection has been saved, else false
    */
-  saveSelection () {
+  saveLastSelection () {
     let rv = false
-    if (this.savingLastSelectionAllowed) {
-      this.savingLastSelectionAllowed = false
+    if (this.saveLastSelectionsEnabled) {
+      this.enableSaveLastSelections(false)
       let page = this.currentPage
       if (page) {
         let section = page.currentSection
@@ -195,7 +233,7 @@ export default class Paginator {
           }
         }
       }
-      this.savingLastSelectionAllowed = true
+      this.enableSaveLastSelections(true)
     }
     return rv
   }
