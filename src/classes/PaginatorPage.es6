@@ -115,9 +115,11 @@ export default class PaginatorPage {
   }
 
   isOverflowing () {
-    let contentHeight = this.getSectionContentHeight()
-    let maxBodyHeight = getValueFromStyle(this.getFormat().calculateBodyHeight())
-    return contentHeight > maxBodyHeight
+    const contentHeight = this.getSectionContentHeight()
+    const maxBodyHeight = getValueFromStyle(this.getFormat().calculateBodyHeight())
+    const overflowing = contentHeight > maxBodyHeight
+    if (overflowing) console.info(`Page N°${this.currentPage.pageNumber} Overflows !`)
+    return overflowing
   }
 
   focusOnHeader () {

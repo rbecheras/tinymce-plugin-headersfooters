@@ -141,8 +141,10 @@ function selectCurrentPage (evt) {
 
 function checkPageOverflow (evt) {
   const {paginator, page} = _getActiveContext()
-  if (paginator && page) {
-    paginator.checkPageOverflow()
+  if (paginator && page && paginator.shouldItFixPagesOverflow()) {
+    if (paginator.isCurrentPageOverflowing()) {
+      paginator.fixPagesOverflow()
+    }
   }
 }
 

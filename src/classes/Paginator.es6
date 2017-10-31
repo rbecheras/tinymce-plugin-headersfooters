@@ -41,20 +41,17 @@ export default class Paginator {
     }
   }
 
+  /**
+   * Tells if the current page is overflowing or not
+   * @returns {boolean} true if the current page is overflowing
+   */
   isCurrentPageOverflowing () {
-    let p = this.currentPage
+    const p = this.currentPage
     return p && p.currentSection && p.currentSection.isBody() && p.isOverflowing()
   }
 
   shouldItFixPagesOverflow () {
     return this.fixPagesOverflowEnabled
-  }
-
-  checkPageOverflow () {
-    if (this.shouldItFixPagesOverflow() && this.isCurrentPageOverflowing()) {
-      console.info(`Page N°${this.currentPage.pageNumber} Overflows !`)
-      this.fixPagesOverflow()
-    }
   }
 
   setRawPages ({pages}) {
@@ -66,58 +63,61 @@ export default class Paginator {
   }
 
   async fixPagesOverflow () {
-    console.info('Handle Page Overflow...')
-    let editor = this.currentPage.currentSection.editor
-    let lastNodes = []
-    let $ = editor.$
-    let $body = $(editor.getBody())
-    this.fixPagesOverflowEnabled = false
+    if (this.shouldItFixPagesOverflow()) {
+      console.debug('Fixing Pages Overflow...')
+      let editor = this.currentPage.currentSection.editor
+      let lastNodes = []
+      let $ = editor.$
+      let $body = $(editor.getBody())
+      this.fixPagesOverflowEnabled = false
+      console.info(`Page N°${this.currentPage.pageNumber} Overflows !`)
 
-    // cut overflowing nodes
-    let stop = false
-    while (!stop) {
-      let lastNode = cutLastNode($, editor.getBody())
-      if (lastNode) {
-        lastNodes.splice(0, 0, lastNode)
-      }
-      if (!this.isCurrentPageOverflowing()) {
-        stop = true
-      }
-    }
-
-    // reappend the last cut node and cut its overflowing words
-    if (lastNodes.length) {
-      stop = false
-      let lastWords = []
-      let lastCutNode = lastNodes.shift()
-      $body.append($(lastCutNode))
+      // cut overflowing nodes
+      let stop = false
       while (!stop) {
-        let lastWord = cutLastWord($, lastCutNode)
-        if (lastWord) {
-          lastWords.splice(0, 0, lastWord)
+        let lastNode = cutLastNode($, editor.getBody())
+        if (lastNode) {
+          lastNodes.splice(0, 0, lastNode)
         }
         if (!this.isCurrentPageOverflowing()) {
           stop = true
         }
       }
 
-      if (lastWords.length) {
-        let $splittedNodeClone = $(lastCutNode).clone()
-        $splittedNodeClone.html(lastWords.join(' '))
-        lastNodes.splice(0, 0, $splittedNodeClone[0])
+      // reappend the last cut node and cut its overflowing words
+      if (lastNodes.length) {
+        stop = false
+        let lastWords = []
+        let lastCutNode = lastNodes.shift()
+        $body.append($(lastCutNode))
+        while (!stop) {
+          let lastWord = cutLastWord($, lastCutNode)
+          if (lastWord) {
+            lastWords.splice(0, 0, lastWord)
+          }
+          if (!this.isCurrentPageOverflowing()) {
+            stop = true
+          }
+        }
+
+        if (lastWords.length) {
+          let $splittedNodeClone = $(lastCutNode).clone()
+          $splittedNodeClone.html(lastWords.join(' '))
+          lastNodes.splice(0, 0, $splittedNodeClone[0])
+        }
       }
-    }
 
-    if (lastNodes.length) {
-      let nextPage = this.getNextPage() || await this.appendNewPage()
-      let editor = nextPage.getBody().editor
-      let $ = editor.$
-      console.info(`prepend ${lastNodes.length} last cut nodes in page ${nextPage.pageNumber}`, lastNodes)
-      $(editor.getBody()).prepend($(lastNodes))
-    }
+      if (lastNodes.length) {
+        let nextPage = this.getNextPage() || await this.appendNewPage()
+        let editor = nextPage.getBody().editor
+        let $ = editor.$
+        console.info(`prepend ${lastNodes.length} last cut nodes in page ${nextPage.pageNumber}`, lastNodes)
+        $(editor.getBody()).prepend($(lastNodes))
+      }
 
-    // re-enable page height checking (y-overflow)
-    this.fixPagesOverflowEnabled = true
+      // re-enable page height checking (y-overflow)
+      this.fixPagesOverflowEnabled = true
+    }
   }
 
   /**
