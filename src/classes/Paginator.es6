@@ -104,7 +104,7 @@ export default class Paginator {
     if (this.shouldItFixPagesOverflow()) {
       console.debug('Fixing Pages Overflow...')
       let editor = this.currentPage.currentSection.editor
-      let lastNodes = []
+      let overflowingNodes = []
       let $ = editor.$
       let $body = $(editor.getBody())
       this.enableFixPagesOverflow(false)
@@ -113,35 +113,35 @@ export default class Paginator {
       // cut overflowing nodes
       while (this.isCurrentPageOverflowing()) {
         let lastNode = cutLastNode($, editor.getBody())
-        lastNode && lastNodes.unshift(lastNode)
+        lastNode && overflowingNodes.unshift(lastNode)
       }
 
       // 1. clone the last cut node,
       // 2. move the overflowing words from the original to the clone,
       // 3. re-append the original to the overflowing page
       // 4. prepend the clone to the next page
-      if (lastNodes.length) {
-        let lastWords = []
-        let lastCutNode = lastNodes.shift()
+      if (overflowingNodes.length) {
+        let overflowingWords = []
+        let lastCutNode = overflowingNodes.shift()
         $body.append($(lastCutNode))
         while (this.isCurrentPageOverflowing()) {
           let lastWord = cutLastWord($, lastCutNode)
-          lastWord && lastWords.unshift(lastWord)
+          lastWord && overflowingWords.unshift(lastWord)
         }
 
-        if (lastWords.length) {
+        if (overflowingWords.length) {
           let $splittedNodeClone = $(lastCutNode).clone()
-          $splittedNodeClone.html(lastWords.join(' '))
-          lastNodes.unshift($splittedNodeClone[0])
+          $splittedNodeClone.html(overflowingWords.join(' '))
+          overflowingNodes.unshift($splittedNodeClone[0])
         }
       }
 
-      if (lastNodes.length) {
+      if (overflowingNodes.length) {
         let nextPage = this.getNextPage() || await this.appendNewPage()
         let editor = nextPage.getBody().editor
         let $ = editor.$
-        console.debug(`prepend ${lastNodes.length} last cut nodes in page ${nextPage.pageNumber}`, lastNodes)
-        $(editor.getBody()).prepend($(lastNodes))
+        console.debug(`prepend ${overflowingNodes.length} last cut nodes in page ${nextPage.pageNumber}`, overflowingNodes)
+        $(editor.getBody()).prepend($(overflowingNodes))
       }
 
       // re-enable page height checking (y-overflow)
