@@ -71,11 +71,10 @@ export default class PaginatorPage {
       : null
   }
 
-  getSectionContentHeight () {
-    let body = this.currentSection.editor.getBody()
-    if (body) {
-      return body.scrollHeight
-    }
+  getSectionContentHeight (section) {
+    return section && section.editor && section.editor.getBody()
+      ? section.editor.getBody().scrollHeight
+      : null
   }
 
   isEmpty () {
