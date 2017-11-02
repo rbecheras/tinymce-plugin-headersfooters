@@ -55,15 +55,6 @@ export default class Paginator {
     }
   }
 
-  /**
-   * Tells if the current page is overflowing or not
-   * @returns {boolean} true if the current page is overflowing
-   */
-  isCurrentPageOverflowing () {
-    const p = this.currentPage
-    return p && p.currentSection && p.currentSection.isBody() && p.isOverflowing()
-  }
-
   shouldItFixPagesOverflow () {
     return this.fixPagesOverflowEnabled
   }
