@@ -97,7 +97,7 @@ export default class Paginator {
       this.enableFixPagesOverflow(false)
 
       // cut overflowing nodes
-      for (let i = 1; i <= this.getNumberOfPages(); i++) {
+      for (let i = this.getCurrentPage().pageNumber; i <= this.getNumberOfPages(); i++) {
         let page = this.getPage(i)
         let editor = page.getBody().editor
         let overflowingNodes = []
