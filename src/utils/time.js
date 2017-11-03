@@ -1,9 +1,5 @@
 'use strict'
 
-module.exports = {
-  timestamp: timestamp
-}
-
-function timestamp () {
+export function timestamp () {
   return Date.now()
 }
