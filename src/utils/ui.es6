@@ -132,9 +132,28 @@ export function getElementHeight (element, win, isBorderBox) {
   }
 }
 
-export function cutLastNode ($, bodyElement) {
-  let last = $(bodyElement).children().last()
-  $(last).remove()
+/**
+ * Cut the last node of a given Node and returns it back
+ * @param {object} $ jQuery instance matching the given node
+ * @param {Node} parentNode the parent node to cut its last child node
+ * @returns {Node} the last child node
+ * @throws {TypeError} if the second argument is not a Node instance
+ */
+export function cutLastNode ($, parentNode) {
+  if (!isNodeInstance(parentNode)) throw new TypeError('second argument must be a Node instance')
+  let last
+  if (parentNode.childNodes.length) {
+    last = parentNode.childNodes[parentNode.childNodes.length - 1]
+  } else {
+    console.error({parentNode})
+    throw new Error('parentNode has no childNodes')
+  }
+  if (last) {
+    $(last).remove()
+  } else {
+    console.error({last})
+    throw new Error('impossible to remove "last" child element')
+  }
   return last
 }
 
