@@ -7,7 +7,7 @@
  * @description A module to provide a function to create all of the menu items for the plugin
  */
 
-import MenuItem from '../classes/MenuItem'
+import MenuItem from '../classes/core/MenuItem'
 import { timestamp } from '../utils/time'
 import { resetMenuItemState } from '../utils/ui'
 

@@ -1,13 +1,13 @@
 'use strict'
 
-import Paginator from './Paginator'
-import Format from './Format'
-import createMenuItems from '../components/menu-items'
-import editFormatOpenMainWin from '../components/edit-format-window'
-import * as units from '../utils/units'
-import * as uiUtils from '../utils/ui'
-import { autoBindImplementedEventCallbacks } from '../utils/events'
-import { eventHandlers, debugEventHandlers } from '../event-handlers'
+import Paginator from '../paginate/Paginator'
+import Format from '../format/Format'
+import createMenuItems from '../../components/menu-items'
+import editFormatOpenMainWin from '../../components/edit-format-window'
+import * as units from '../../utils/units'
+import * as uiUtils from '../../utils/ui'
+import { autoBindImplementedEventCallbacks } from '../../utils/events'
+import { eventHandlers, debugEventHandlers } from '../../event-handlers'
 
 const tinymce = window.tinymce
 

@@ -23,7 +23,7 @@
  * @license GNU GPL-v2 http://www.tinymce.com/license
  */
 
-import HeadersFootersPlugin from './classes/HeadersFootersPlugin'
+import HeadersFootersPlugin from './classes/core/HeadersFootersPlugin'
 
 const tinymce = window.tinymce
 

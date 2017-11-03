@@ -1,7 +1,7 @@
 'use strict'
 
-import {getValueInPxFromAnyUnit} from '../utils/units'
-import {jQuery as $} from '../utils/ui'
+import {getValueInPxFromAnyUnit} from '../../utils/units'
+import {jQuery as $} from '../../utils/ui'
 
 /**
  * Class Format

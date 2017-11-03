@@ -1,8 +1,8 @@
 'use strict'
 
 import PaginatorPage from './PaginatorPage'
-import {jQuery as $, cutLastNode, cutLastWord} from '../utils/ui'
-import {getClosestNotBookmarkParent} from '../utils/dom'
+import {jQuery as $, cutLastNode, cutLastWord} from '../../utils/ui'
+import {getClosestNotBookmarkParent} from '../../utils/dom'
 
 /**
  * Class Paginator
