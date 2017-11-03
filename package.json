@@ -34,7 +34,7 @@
     "build": "yarn run build:clear && yarn run build:babel && grunt build && yarn run build:esdoc",
     "test": "echo \"WARNING: NO TEST AVAILABLE\" && exit 1",
     "build:esdoc": "./node_modules/.bin/esdoc",
-    "serve:esdoc": "./node_modules/.bin/http-server -p 6060 docs/api",
+    "serve:esdoc": "./node_modules/.bin/http-server -p 6060 build/docs/esdoc",
     "release-patch": "node ./scripts/release.js patch",
     "release-minor": "node ./scripts/release.js minor",
     "release-major": "node ./scripts/release.js major",
