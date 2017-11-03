@@ -195,9 +195,9 @@ export function getNodeWindow (node) {
  */
 export function isNodeInstance (object) {
   let rv = false
-  window.document.getElementsByTagName('iframe')
+  Array.from(window.document.getElementsByTagName('iframe'))
   .forEach(iframe => {
-    if (object instanceof iframe.conentWindow.Node) rv = true
+    if (object instanceof iframe.contentWindow.Node) rv = true
   })
   return rv
 }
