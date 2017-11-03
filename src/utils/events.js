@@ -7,8 +7,8 @@
  * @param {Array<function>} eventHandlers An array of event handlers (callback functions) to bind each one on editor object
  */
 export function autoBindImplementedEventCallbacks (editor, eventHandlers) {
-  for (var eventName in eventHandlers) {
-    for (var callbackName in eventHandlers[eventName]) {
+  for (let eventName in eventHandlers) {
+    for (let callbackName in eventHandlers[eventName]) {
       editor.on(eventName, eventHandlers[eventName][callbackName].bind(this))
     }
   }
