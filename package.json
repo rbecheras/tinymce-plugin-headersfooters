@@ -32,7 +32,7 @@
     "build:babel": "./node_modules/.bin/babel --plugins transform-runtime src --out-dir build/lib --source-maps",
     "build": "yarn run build:clear && yarn run build:babel && grunt build && yarn run build:esdoc",
     "test": "echo \"WARNING: NO TEST AVAILABLE\" && exit 1",
-    "build:esdoc": "./node_modules/.bin/esdoc",
+    "build:esdoc": "./node_modules/.bin/esdoc -c esdoc.json",
     "serve:esdoc": "./node_modules/.bin/http-server -p 6060 build/docs/esdoc",
     "release-patch": "node ./scripts/release.js patch",
     "release-minor": "node ./scripts/release.js minor",
