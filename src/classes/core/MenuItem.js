@@ -4,9 +4,6 @@ import { timestamp } from '../../utils/time'
 
 const $ = window.jQuery
 
-/**
- * MenuItem Class
- */
 export default class MenuItem {
   /**
    * @param {String} name The item name
@@ -25,7 +22,7 @@ export default class MenuItem {
   constructor (name, options) {
     this.name = name
     setUIControlPromise.call(this)
-    for (var key in options) {
+    for (let key in options) {
       if (key !== 'visible' && key !== 'disabled') {
         this[key] = options[key]
       }
@@ -41,14 +38,11 @@ export default class MenuItem {
    * Returns the menu item UI control as a jquery object
    * @returns {Promise} A promise resolved by the jquery wrapper of the menu item's node element
    * @example
-   * var menuElement = ui.menuItems.insertHeader.getUIControl()
+   * let menuElement = ui.menuItems.insertHeader.getUIControl()
    * menuElement.css('color','red')
    */
   getUIControl () {
-    var that = this
-    return this._renderingPromise.then(function () {
-      return $('#' + that.id)
-    })
+    return this._renderingPromise.then(() => $('#' + this.id))
   }
 
   /**
@@ -57,9 +51,9 @@ export default class MenuItem {
    * @returns {undefined}
    * @example
    * // to override this placehoder callback, juste assign a new one
-   * var menuItem = new MenuItem('my menu item', options)
-   * menuItem.onclick = function () {
-   * => implement your own
+   * let menuItem = new MenuItem('my menu item', options)
+   * menuItem.onclick = () => {
+   *   => implement your own
    * }
    */
   onclick () {
@@ -70,14 +64,15 @@ export default class MenuItem {
    * Show the menu item UI control and returns it to allow chainable behavior.
    * @returns {Promise} A promise resolved by the menu item
    * @example
-   * var menuItem = new MenuItem('my menu item', options)
-   * menuItem.show().then(function (menuItem) {
+   * let menuItem = new MenuItem('my menu item', options)
+   * menuItem.show().then(menuItem => {
    *   // the menuItem is given as first argument
    *   menuItem.disable() // now the menu item is shown but disabled
    * })
    */
   show () {
-    return this.getUIControl().then(function (uiControl) {
+    return this.getUIControl()
+    .then(uiControl => {
       uiControl.show()
       return uiControl
     })
@@ -88,7 +83,8 @@ export default class MenuItem {
    * @returns {Promise} A promise resolved by the menu item
    */
   hide () {
-    return this.getUIControl().then(function (uiControl) {
+    return this.getUIControl()
+    .then(uiControl => {
       uiControl.hide()
       return uiControl
     })
@@ -98,20 +94,21 @@ export default class MenuItem {
    * Disable the menu item and returns it to allow chainable behavior.
    * @returns {Promise} A promise resolved by the menu item
    * @example
-   * var menuItem = new MenuItem('my menu item', options)
-   * menuItem.show().then(function (menuItem) {
+   * let menuItem = new MenuItem('my menu item', options)
+   * menuItem.show().then((menuItem) => {
    *   // the menuItem is given as first argument
-   *   menuItem.disable().then(function (menuItem) {
+   *   menuItem.disable().then((menuItem) => {
    *     // now the menu item is shown but disabled
    *     // the menuItem is again given as first argument
-   *     setTimeout(function () {
+   *     setTimeout(() => {
    *       menuItem.enable() // enable the menu item 2sec after it has been disabled
    *     },2000)
    *   })
    * })
    */
   disable () {
-    return this.getUIControl().then(function (uiControl) {
+    return this.getUIControl()
+    .then(uiControl => {
       uiControl.addClass('mce-disabled')
       return uiControl
     })
@@ -121,15 +118,16 @@ export default class MenuItem {
    * Enable the menu item and returns it to allow chainable behavior.
    * @returns {Promise} A promise resolved by the menu item
    * @example
-   * var menuItem = new MenuItem('my menu item', options)
-   * menuItem.enable().then(function (menuItem) {
-   *   setTimeout(function () {
+   * let menuItem = new MenuItem('my menu item', options)
+   * menuItem.enable().then(menuItem => {
+   *   setTimeout(() => {
    *     menuItem.disable() // disable the menu item 2sec after it has been enabled
    *   },2000)
    * })
    */
   enable () {
-    return this.getUIControl().then(function (uiControl) {
+    return this.getUIControl()
+    .then(uiControl => {
       uiControl.removeClass('mce-disabled')
       return uiControl
     })
@@ -175,8 +173,8 @@ function setUIControlPromise () {
  * @memberof MenuItem
  * @param {String} inputStr The input string to dasherize
  * @example
- * var camelCasedString = 'helloWorld'
- * var dashedString = camel2Dash(s)
+ * let camelCasedString = 'helloWorld'
+ * let dashedString = camel2Dash(s)
  * console.log(dashedString)
  * // -> hello-world
  */
