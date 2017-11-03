@@ -315,3 +315,63 @@ export default class Paginator {
     page.focusOnBody()
   }
 }
+
+/**
+ * Remove the overflowing content of an overflowing element and returns the rest as a clone of the given element containing only the overflowing content.
+ * Caution: this is not a pure function! parentElement will be altered: the content oveflowing the page will be removed.
+ * @param {PaginatorPage} page the page containing the parent element, currently overflowing it
+ * @param {HTMLElement} parentElement the parent element currently overflowing that should be splitted/cloned between the given page (the overflowing page) and the next page
+ * @returns {HTMLElement} a clone of `parentElement` containing
+ */
+function fixOverflowAndGetAsClonedNode (page, parentElement) {
+  let editor = page.getBody().editor
+  let $ = editor.$
+  let splittedNode
+  let splittedNodeClone
+  let overflowingNodes = []
+  let overflowingWords = []
+
+  let $parentElement = $(parentElement)
+  let parentElementChildren = $parentElement.children()
+  let $parentElementClone = $parentElement.clone().empty()
+
+  if (parentElementChildren.length) {
+    let resume = 0
+    while (page.isOverflowing() && resume < 100) {
+      let lastNode = cutLastNode($, parentElement)
+      if (lastNode) {
+        overflowingNodes.unshift(lastNode)
+      }
+      resume++
+    }
+    if (resume === 999) {
+      console.error('cutLastNode loop reached out 100 iteration !')
+    }
+
+    if (overflowingNodes.length) {
+      splittedNode = overflowingNodes.shift()
+      $parentElement.append(splittedNode)
+      splittedNodeClone = fixOverflowAndGetAsClonedNode(page, splittedNode)
+      overflowingNodes.unshift(splittedNodeClone)
+      $parentElementClone.append(overflowingNodes)
+    }
+  } else {
+    let resume = 0
+    while (page.isOverflowing() && resume < 100) {
+      let lastWord = cutLastWord($, parentElement)
+      if (lastWord) {
+        overflowingWords.unshift(lastWord)
+      }
+      resume++
+    }
+    if (resume === 999) {
+      console.error('cutLastNode loop reached out 100 iteration !')
+    }
+
+    if (overflowingWords.length) {
+      $parentElementClone.text(overflowingWords.join(' '))
+    }
+  }
+
+  return $parentElementClone
+}
