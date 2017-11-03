@@ -1,6 +1,5 @@
 'use strict'
 
-import q from 'q'
 import { timestamp } from '../../utils/time'
 
 const $ = window.jQuery
@@ -144,7 +143,7 @@ export default class MenuItem {
  * @memberof MenuItem
  * @private
  * @param {MenuItem} that The context for the private method
- * @returns void
+ * @returns {Promise} resolve menuItems DOM elements
  * @example
  * function MenuItem (name, options) {
  *   this.name = name
@@ -153,21 +152,20 @@ export default class MenuItem {
  * }
  */
 function setUIControlPromise () {
-  var that = this
-  var d = q.defer()
-  var $body = $('body')
+  const $body = $('body')
 
-  // resolve menuItems DOM elements
-  $body.on('menusController:mceMenuRendered', function (evt, menu) {
-    $('.mce-menu-item', menu).each(function (i, item) {
-      if ($(item).attr('id') === that.id) d.resolve(item)
+  this._renderingPromise = new Promise((resolve, reject) => {
+    $body.on('menusController:mceMenuRendered', (evt, menu) => {
+      $('.mce-menu-item', menu).each((i, item) => {
+        const itemId = $(item).attr('id')
+        if (itemId === this.id) {
+          resolve(item)
+        }
+      })
     })
   })
-  // $body.on('menusController:mceMenuItemRendered', function (evt, itemID) {
-  //   console.info('menusController:mceMenuItemRendered', itemID)
-  //   if (itemID === that.id) d.resolve()
-  // })
-  this._renderingPromise = d.promise
+
+  return this._renderingPromise
 }
 
 /**
