@@ -66,7 +66,7 @@ export function createDpiTestElements () {
 /**
  * Converts a quantity of inches to a quantity of milimeters
  * 1 in = 25.4 mm
- * @param {Number} qPx The quantity of inches to convert to milimeters
+ * @param {Number} qIn The quantity of inches to convert to milimeters
  * @returns {Number} qMm The resulting length in milimeters
  */
 export function in2mm (qIn) {
@@ -76,7 +76,7 @@ export function in2mm (qIn) {
 /**
  * Converts milimeters (mm) to inches (in)
  * 1 in = 25.4 mm
- * @param {number} mm Number of milimeters to convert to inches
+ * @param {number} qmm Number of milimeters to convert to inches
  * @returns {number} - Resulting number of inches (in)
  */
 export function mm2in (qmm) {
@@ -101,7 +101,7 @@ export function px2in (px) {
  * => px = in * dpi
  * @method
  * @static
- * @param {number} in Number of inches to convert to pixels
+ * @param {number} qin Number of inches to convert to pixels
  * @returns {number} - Resulting number of pixels (px)
  */
 export function in2px (qin) {
@@ -133,11 +133,11 @@ export function mm2px (qmm) {
 /**
  * Converts inches (in) to points (pt)
  * 72 = pt / in -> pt = 72 * in
- * @param {number} inches Number of inches (in) to convet to points (pt)
+ * @param {number} qinches Number of inches (in) to convet to points (pt)
  * @returns {number} - Resulting number of points (pt)
  */
-export function in2pt (inches) {
-  return Number(inches) * 72
+export function in2pt (qinches) {
+  return Number(qinches) * 72
 }
 
 /**
@@ -145,7 +145,7 @@ export function in2pt (inches) {
  * 72 = pt / in -> in = pt / 72
  * @method
  * @static
- * @param {number} inches Number of inches (in) to convet to points (pt)
+ * @param {number} qpt Number of inches (in) to convet to points (pt)
  * @returns {number} - Resulting number of points (pt)
  */
 export function pt2in (qpt) {
@@ -155,42 +155,55 @@ export function pt2in (qpt) {
 /**
  * Converts pixels (px) to points (pt)
  * px2in -> in2pt
- * @param {number} px Number of pixels to convert to points
+ * @param {number} qpx Number of pixels to convert to points
  * @returns {number} - Resulting number of points (pt)
  */
-export function px2pt (px) {
-  var inches = px2in(px)
+export function px2pt (qpx) {
+  var inches = px2in(qpx)
   return in2pt(inches)
 }
 
 /**
  * Converts point (pt) to pixels (px)
  * pt2in -> in2px
- * @param {number} pt Number of points to convert to pixels
+ * @param {number} qpt Number of points to convert to pixels
  * @returns {number} - Resulting number of pixels (px)
  */
 export function pt2px (qpt) {
   return in2px(pt2in(qpt))
 }
 
+/**
+ * Converts centimeters (cm) to milimeters (mm)
+ * qmm = qcm*10
+ * @param {number} qcm Number of centimeters to convert to milimeters
+ * @returns {number} - Resulting number of milimeters (mm)
+ */
 export function cm2mm (qcm) {
   return Number(qcm) * 10
 }
 
+/**
+ * Converts milimeters (mm) to centimeters (cm)
+ * qcm = qmm/10
+ * @param {number} qmm Number of milimeters to convert to centimeters
+ * @returns {number} - Resulting number of centimeters (cm)
+ */
 export function mm2cm (qmm) {
   return Number(qmm) / 10
 }
 
 /**
- * Converts things like:
- * - Xmm -> Ypx
- * - Xpt -> Ypx
- * - Xin -> Ypx
- * - Xpx -> Xpx
- * - Xcm -> Ypx
- * @param {String} valueWithUnit ex: "3mm"
- * @throws Error
- * @returns {Number}
+ * Converts any value with unit to a quantity of pixels (value without unit in output)
+ * @example
+ * - Xmm -> Y(px)
+ * - Xpt -> Y(px)
+ * - Xin -> Y(px)
+ * - Xpx -> X(px)
+ * - Xcm -> Y(px)
+ * @param {String} valueWithUnit ex: "3mm", "6in", "12pt"
+ * @throws {Error}
+ * @returns {Number} the resulting number of pixels (a number, thus without the 'px' unit suffix)
  */
 export function getValueInPxFromAnyUnit (valueWithUnit) {
   let value = getValueFromStyle(valueWithUnit)

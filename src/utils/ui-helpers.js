@@ -81,9 +81,12 @@ export function createSelectBox (label, inputName, values, maxWidth, minWidth) {
 }
 
 /**
- * @function
- * @param
- * @returns {object}
+ * Create a tab
+ * @param {String} title the tab title
+ * @param {Array<tinymce.ui.Fieldset>} fieldsets the fieldsets to inject in the tab
+ * @param {String} direction the orientation in ['portrait', 'landscape'] (default: 'landscape')
+ * @param {Number} columns the number of columns to set in the tab
+ * @returns {tinymce.ui.Tab} the new tab
  */
 export function createTab (title, fieldsets, direction, columns) {
   return {
@@ -104,11 +107,11 @@ export function createTab (title, fieldsets, direction, columns) {
 
 /**
  * Create a field set
- * @method
  * @param {string} title The field set title
  * @param {array<object>} items The field items to put in the field set
  * @param {number} [maxWidth=null] The maximum with for the fieldset, in pixels
- * @returns {Fieldset} fieldset The new field set
+ * @param {number} [minWidth=null] The minimum with for the fieldset, in pixels
+ * @returns {tinymce.ui.Fieldset} fieldset The new field set
  */
 export function createFieldset (title, items, maxWidth, minWidth) {
   const fieldset = {
@@ -122,8 +125,9 @@ export function createFieldset (title, items, maxWidth, minWidth) {
 }
 
 /**
- * @function
- * @param
+ * Create a form
+ * @param {array<object>} items the list of items to inject in the form
+ * @param {Number} columns the number of columns to set in the form
  * @returns {object}
  */
 export function createForm (items, columns) {
@@ -183,9 +187,11 @@ export function createListBoxItem (text, value) {
 /**
  * Create a color picker
  * @method
- * @param {string} label The label for the color picker
- * @param {string} name The name to identify the color picker in the form set
- * @returns {ColorPicker} colorPicker The new color picker
+ * @static
+ * @param {String} label The label for the color picker
+ * @param {String} name The name to identify the color picker in the form set
+ * @param {Function} callback the colorpicker callback (once color selected)
+ * @returns {ColorPicker} The new color picker
  */
 export function createColorPicker (label, name, callback) {
   return {

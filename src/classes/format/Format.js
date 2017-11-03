@@ -304,10 +304,10 @@ export default class Format {
 
   /**
    * Caluculate the document Body height depending the Format propeties
-   * @param {Editor}
+   * @param {Editor} editor the editor instance matching with the target body
    * @returns {String} the body height (in mm for now)
    * @fires HeadersFooters:Error:NegativeBodyHeight
-   * @TODO support other size units (cm, pt)
+   * @todo support other size units (cm, pt)
    */
   calculateBodyHeight (editor) {
     let ret

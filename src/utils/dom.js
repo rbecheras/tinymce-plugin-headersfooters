@@ -26,7 +26,8 @@ export function elementIsEmpty (element, contextWindow) {
  * If the element itself is not a bookmark, it is returned as its own parent.
  * @method
  * @static
- * @param {jQuery} $bookmarkElement the bookmark (or not) element.
+ * @param {jQuery} $ the jQuery instance
+ * @param {HTMLElement} bookmarkElement the bookmark (or not) element.
  * @returns {HTMLElement} the closest parent beeing not a bookmark or itself
  */
 export function getClosestNotBookmarkParent ($, bookmarkElement) {

@@ -140,7 +140,7 @@ export default class MenuItem {
  * It returns nothing and it must be called on top of the MenuItem constructor
  * @memberof MenuItem
  * @private
- * @param {MenuItem} that The context for the private method
+ * @this MenuItem
  * @returns {Promise} resolve menuItems DOM elements
  * @example
  * function MenuItem (name, options) {
