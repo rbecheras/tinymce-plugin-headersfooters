@@ -5,7 +5,7 @@ import Format from '../format/Format'
 import createMenuItems from '../../components/menu-items'
 import editFormatOpenMainWin from '../../components/edit-format-window'
 import * as units from '../../utils/units'
-import * as uiUtils from '../../utils/ui'
+import { autoAddMenuItems } from '../../utils/ui'
 import { autoBindImplementedEventCallbacks } from '../../utils/events'
 import { eventHandlers, debugEventHandlers } from '../../event-handlers'
 
@@ -67,7 +67,7 @@ export default class HeadersFootersPlugin {
     _setAvailableFormats.call(this)
 
     this.menuItemsList = createMenuItems(editor)
-    uiUtils.autoAddMenuItems.call(this)
+    autoAddMenuItems.call(this)
 
     editor.addCommand('insertPageNumberCmd', () => { editor.insertContent('{{page}}') })
     editor.addCommand('insertNumberOfPagesCmd', () => { editor.insertContent('{{pages}}') })

@@ -1,5 +1,11 @@
 'use strict'
 
+import * as units from './units'
+
+const $ = window.jQuery
+
+export {$ as jQuery}
+
 /**
  * Tells if an element is empty (pure JS)
  * i.e. if:

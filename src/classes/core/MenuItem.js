@@ -1,8 +1,7 @@
 'use strict'
 
 import { timestamp } from '../../utils/time'
-
-const $ = window.jQuery
+import {jQuery as $} from '../../utils/dom'
 
 export default class MenuItem {
   /**

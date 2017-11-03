@@ -1,7 +1,6 @@
 'use strict'
 
-import {getElementHeight} from '../../utils/ui'
-import {focusToBottom} from '../../utils/dom'
+import {focusToBottom, getElementHeight} from '../../utils/dom'
 import {getValueFromStyle} from '../../utils/units'
 
 export default class PaginatorPage {

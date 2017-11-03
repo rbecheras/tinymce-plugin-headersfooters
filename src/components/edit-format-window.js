@@ -2,7 +2,6 @@
 
 import Format from '../classes/format/Format'
 import * as editFormatTabs from './edit-format-tabs'
-// import * as units from '../units'
 
 /**
  * Make the openMainWin function as a closure

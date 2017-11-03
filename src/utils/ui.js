@@ -7,11 +7,7 @@
  * @description A module to provide configured ui elements to the plugin
  */
 
-import * as units from './units'
-
-const $ = window.jQuery
-
-export {$ as jQuery}
+import {jQuery as $} from './dom'
 
 /**
  * Lock a node

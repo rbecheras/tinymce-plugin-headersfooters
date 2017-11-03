@@ -1,6 +1,7 @@
 'use strict'
 
-const $ = window.jQuery
+import {jQuery as $} from './dom'
+
 const tinymce = window.tinymce
 
 /**

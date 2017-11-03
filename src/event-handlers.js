@@ -7,9 +7,9 @@
  */
 
 import {mapPageLayoutElements, mapMceLayoutElements} from './utils/ui'
+import {jQuery as $} from './utils/dom'
 
 const tinymce = window.tinymce
-const $ = window.jQuery
 
 export const eventHandlers = {
   'Init': { setBodies, setStackedLayout, setPageLayout, reloadMenuItems, firesNewPageAppendedEvent },
