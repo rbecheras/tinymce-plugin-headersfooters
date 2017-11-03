@@ -26,6 +26,7 @@
     "standard": "^10.0.3"
   },
   "scripts": {
+    "build:clear": "rm -rf ./build",
     "build:babel": "./node_modules/.bin/babel --plugins transform-runtime src --out-dir build --source-maps",
     "build": "npm run build:babel && grunt build",
     "test": "echo \"Error: no test specified\" && exit 1",
