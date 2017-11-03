@@ -91,55 +91,34 @@ export default class Paginator {
     this.saveLastSelectionsEnabled = !!bool
   }
 
+  /**
+   * Fix all overflowing pages starting at the current active page to the last.
+   * Loop recursively over the nested overflowing nodes to split and clone it and past overflowing content to the next page.
+   * @see {@link https://github.com/zenorocha/clipboard.js/issues/250}
+   */
   async fixPagesOverflow () {
     if (this.shouldItFixPagesOverflow()) {
       console.debug('Fixing Pages Overflow...')
       this.enableFixPagesOverflow(false)
-
-      // cut overflowing nodes
       for (let i = this.getCurrentPage().pageNumber; i <= this.getNumberOfPages(); i++) {
         let page = this.getPage(i)
-        let editor = page.getBody().editor
-        let overflowingNodes = []
-        let $ = editor.$
-        let $body = $(editor.getBody())
+        if (page.isOverflowing()) {
+          let section = page.getBody()
+          let editor = section.editor
+          let overflowingBodyClone = fixOverflowAndGetAsClonedNode(page, editor.getBody())
+          let overflowingNodes = editor.$(overflowingBodyClone).children()
 
-        while (page.isOverflowing()) {
-          let lastNode = cutLastNode($, editor.getBody())
-          lastNode && overflowingNodes.unshift(lastNode)
-        }
-
-        // 1. clone the last cut node,
-        // 2. move the overflowing words from the original to the clone,
-        // 3. re-append the original to the overflowing page
-        // 4. prepend the clone to the next page
-        if (overflowingNodes.length) {
-          let overflowingWords = []
-          let lastCutNode = overflowingNodes.shift()
-          $body.append($(lastCutNode))
-          while (page.isOverflowing()) {
-            let lastWord = cutLastWord($, lastCutNode)
-            lastWord && overflowingWords.unshift(lastWord)
+          if (overflowingNodes.length) {
+            let nextPage = this.getNextPage(page) || await this.appendNewPage()
+            let editor = nextPage.getBody().editor
+            let $ = editor.$
+            console.debug(`prepend ${overflowingNodes.length} last cut nodes in page ${nextPage.pageNumber}`, overflowingNodes)
+            $(editor.getBody()).prepend(overflowingNodes)
           }
-
-          if (overflowingWords.length) {
-            let $splittedNodeClone = $(lastCutNode).clone()
-            $splittedNodeClone.html(overflowingWords.join(' '))
-            overflowingNodes.unshift($splittedNodeClone[0])
-          }
-        }
-
-        if (overflowingNodes.length) {
-          let nextPage = this.getNextPage(page) || await this.appendNewPage()
-          let editor = nextPage.getBody().editor
-          let $ = editor.$
-          console.debug(`prepend ${overflowingNodes.length} last cut nodes in page ${nextPage.pageNumber}`, overflowingNodes)
-          $(editor.getBody()).prepend($(overflowingNodes))
         }
       }
-
       // re-enable page height checking (y-overflow)
-      this.fixPagesOverflowEnabled = true
+      this.enableFixPagesOverflow(true)
     }
   }
 
