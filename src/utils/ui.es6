@@ -186,3 +186,22 @@ export function getNodeWindow (node) {
     throw new TypeError('first argument seems not to be a Node element in any context window')
   }
 }
+
+/**
+ * Tells if an object is a Node instance (from any window instance).
+ * If you want to know what is the context window where the Node constructor was used (window.Node), use the function `getNodeWindow(node)`
+ * @param {object} object any object to test
+ * @returns {boolean} true if the object is a Node instance
+ */
+export function isNodeInstance (object) {
+  let rv = false
+  try {
+    let windowInstance = getNodeWindow(object)
+    rv = object instanceof windowInstance.Node
+  } catch (err) {
+    if (!(err instanceof TypeError)) {
+      throw err
+    }
+  }
+  return rv
+}
