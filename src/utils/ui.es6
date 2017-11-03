@@ -157,11 +157,17 @@ export function cutLastNode ($, parentNode) {
   return last
 }
 
-export function cutLastWord ($, element) {
-  let $el = $(element)
+/**
+ * Cut the last word of a given textNode and returns it back
+ * @param {object} $ jQuery instance matching the given textNode
+ * @param {Node} textNode the text node to cut its last child node
+ * @throws {TypeError} if the second argument is not a Node instance
+ */
+export function cutLastWord ($, textNode) {
+  if (!isNodeInstance(textNode)) throw new TypeError('second argument must be a Node instance')
+  let $el = $(textNode)
   let words = $el.text().split(' ')
-  // let words = $el.html().split(' ')
   let lastWord = words.pop()
-  $el.html(words.join(' '))
+  $el.text(words.join(' '))
   return lastWord
 }
