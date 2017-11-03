@@ -171,3 +171,18 @@ export function cutLastWord ($, textNode) {
   $el.text(words.join(' '))
   return lastWord
 }
+
+/**
+ * Get the window from which a node has been instanciated from the constructor window.Node or window.Element
+ * @param {Node} node
+ * @throws {TypeError} if the node is not a Node instance
+ * @returns {Window} the window context for the given node
+ */
+export function getNodeWindow (node) {
+  if (node === undefined) throw new TypeError('first argument is undefined but must be an instance of Node')
+  if (node && node.ownerDocument && node.ownerDocument.defaultView) {
+    return node.ownerDocument.defaultView
+  } else {
+    throw new TypeError('first argument seems not to be a Node element in any context window')
+  }
+}
