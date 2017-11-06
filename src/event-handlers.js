@@ -67,12 +67,13 @@ function setPageLayout (evt) {
 }
 
 function enterHeadFoot (evt) {
+  this.enableEditorUI()
   this.paginator.pages.forEach(page => {
     page.iterateOnSections((section) => {
       if (this.type === section.type) {
-        section.enable()
+        section.enableEditableArea()
       } else {
-        section.disable()
+        section.disableEditableArea()
       }
     })
   })
@@ -84,14 +85,19 @@ function enterHeadFoot (evt) {
  * @param evt
  */
 function leaveHeadFoot (evt) {
+  this.disableEditorUI()
   this.paginator.pages.forEach(page => {
     setTimeout(() => {
       let atLeastOneEnabled = false
       this.page.iterateOnSections((section) => {
-        !this.isBody() && this.type === section.type && section.disable()
+        !this.isBody() && this.type === section.type && section.disableEditableArea()
         section.enabled && (atLeastOneEnabled = true)
       })
-      !atLeastOneEnabled && this.page.getBody().enable()
+      if (!atLeastOneEnabled) {
+        let bodySection = this.page.getBody()
+        bodySection.enableEditableArea()
+        bodySection.enableEditorUI()
+      }
     }, 50)
   })
 }

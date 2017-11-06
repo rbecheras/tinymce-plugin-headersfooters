@@ -107,7 +107,6 @@ export default class HeadersFootersPlugin {
    * @param {boolean} withFocus set it to true if you want to enable the editor and focus on it.
    */
   enableEditableArea (withFocus) {
-    console.log(`enable ${this.type} ${this.page.pageNumber}`)
     this.enabled = true
     this.disabled = false
     this.editor.$('body').css({opacity: 1})
