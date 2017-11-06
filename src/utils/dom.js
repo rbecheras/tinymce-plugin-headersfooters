@@ -70,9 +70,7 @@ export function focusToBottom (editor) {
 }
 
 export function getTextNodes (node, nodeType, result) {
-  if (!node || !node.ownerDocument || !node.ownerDocument.defaultView || !node.ownerDocument.defaultView.Node || !(node instanceof node.ownerDocument.defaultView.Node)) {
-    throw new TypeError('first arg must be a node')
-  }
+  if (!isInstanceOf(node, 'Node')) throw new TypeError('first argument must be a Node instance')
 
   let children = node.childNodes
   nodeType = nodeType || 3
@@ -120,7 +118,7 @@ export function getElementHeight (element, win, isBorderBox) {
  * @throws {TypeError} if the second argument is not a Node instance
  */
 export function cutLastNode ($, parentNode) {
-  if (!isNodeInstance(parentNode)) throw new TypeError('second argument must be a Node instance')
+  if (!isInstanceOf(parentNode, 'Node')) throw new TypeError('second argument must be a Node instance')
   let last
   if (parentNode.childNodes.length) {
     last = parentNode.childNodes[parentNode.childNodes.length - 1]
@@ -144,7 +142,7 @@ export function cutLastNode ($, parentNode) {
  * @throws {TypeError} if the second argument is not a Node instance
  */
 export function cutLastWord ($, textNode) {
-  if (!isNodeInstance(textNode)) throw new TypeError('second argument must be a Node instance')
+  if (!isInstanceOf(textNode, 'Node')) throw new TypeError('second argument must be a Node instance')
   let $el = $(textNode)
   let words = $el.text().split(' ')
   let lastWord = words.pop()
@@ -173,11 +171,17 @@ export function getNodeWindow (node) {
  * @param {object} object any object to test
  * @returns {boolean} true if the object is a Node instance
  */
-export function isNodeInstance (object) {
-  let rv = false
-  Array.from(window.document.getElementsByTagName('iframe'))
-  .forEach(iframe => {
-    if (object instanceof iframe.contentWindow.Node) rv = true
-  })
+export function isInstanceOf (object, className) {
+  if (typeof object !== 'object') throw new TypeError('first argument must be an object')
+  let rv
+  let _proto = object
+  do {
+    _proto = Reflect.getPrototypeOf(_proto)
+    if (_proto && _proto.constructor && _proto.constructor.name) {
+      if (_proto.constructor.name === className) {
+        rv = true
+      }
+    }
+  } while (_proto)
   return rv
 }
