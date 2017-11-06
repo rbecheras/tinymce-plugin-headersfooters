@@ -9,40 +9,100 @@ import UIUtils from '../utils/UIUtils'
 import EventsUtils from '../utils/EventsUtils'
 import { eventHandlers, debugEventHandlers } from '../../event-handlers'
 
+/**
+ * Tinymce global namespace reference
+ * @type {object}
+ */
 const tinymce = window.tinymce
 
 /**
  * Tinymce headers/footers plugin class
+ * @example
+ * import HeadersFootersPlugin from 'tinymce-plugin-headersfooters/build/lib/classes/core/HeadersFootersPlugin.js'
+ * window.tinymce.PluginManager.add('headersfooters', HeadersFootersPlugin)
  */
 export default class HeadersFootersPlugin {
   /**
    * @param {tinymce.Editor} editor - The injected tinymce editor.
    */
   constructor (editor, url) {
+    /**
+     * Tells if the plugin is enabled or not.
+     * The value is sync with !HeadersFootersPlugin#disabled
+     * @see {@link HeadersFootersPlugin#disabled}
+     * @type {Boolean}
+     */
     this.enabled = false
+
+    /**
+     * Tells if the plugin is disabled or not.
+     * The value is sync with !HeadersFootersPlugin#enabled
+     * @see {@link HeadersFootersPlugin#enabled}
+     * @type {Boolean}
+     */
     this.disabled = true
 
+    /**
+     * The editor which has instanciated this plugin
+     * @see {@link https://www.tinymce.com/docs/api/tinymce/tinymce.editor API tinymce/Editor}
+     * @type {tinymce.Editor}
+     */
     this.editor = editor
 
+    /**
+     * The section type in ['header', 'body', 'footer'] defined in the plugin's settings
+     * @type {String}
+     */
     this.type = editor.settings.headersfooters_type
+    /**
+     * The CSS class set on the editor template element
+     * @type {String}
+     */
     this.bodyClass = editor.settings.body_class
 
     const hfPluginClass = tinymce.PluginManager.lookup.headersfooters
     hfPluginClass.paginator = hfPluginClass.paginator || new Paginator()
+
+    /**
+     * A reference to the paginator singleton used for all pages and all sections
+     * @type {Paginator}
+     */
     this.paginator = hfPluginClass.paginator
     this.paginator.setRawPages(editor.settings.headersfooters_rawPaginator)
 
+    /**
+     * The page for which 3 editors and 3 plugins has been both instancied for its 3 sections
+     * @type {PaginatorPage}
+     */
     this.page = this.paginator.initPage(this, editor.settings.headersfooters_pageNumber)
 
     if (window.env === 'development') {
       window.mceHF = hfPluginClass
     }
 
+    /**
+     * A factory to help handle header the 3 pages's sections
+     * @type {HeaderFooterFactory}
+     */
     this.headerFooterFactory = null
 
+    /**
+     * A reference to the UnitsUtils to export it as a plugin public member,
+     * for example for other plugins
+     * @type {UnitsUtils}
+     */
     this.UnitsUtils = UnitsUtils
 
+    /**
+     * The document body for this section
+     * @type {HTMLBodyElement}
+     */
     this.documentBody = null
+
+    /**
+     * A hash that keeps the references of document bodies of the other sections
+     * @type {object}
+     */
     this.documentBodies = {
       app: null,
       mce: {
@@ -51,6 +111,11 @@ export default class HeadersFootersPlugin {
         footer: null
       }
     }
+
+    /**
+     * A hash of references for the templates layers wrapping the section's editor
+     * @type {object<String, HTMLElement>}
+     */
     this.stackedLayout = {
       root: null,
       wrapper: null,
@@ -61,14 +126,42 @@ export default class HeadersFootersPlugin {
       statusbar: null
     }
 
+    /**
+     * A hash of the available formats
+     * @type {object<String, Format>}
+     */
     this.availableFormats = {}
+
+    /**
+     * A list of the used formats
+     * @type {Array<Format>}
+     */
     this.formats = []
+
+    /**
+     * A list of the custom formats
+     * @type {Array<Format>}
+     */
     this.customFormats = []
+
+    /**
+     * The default format
+     * @type {Format}
+     */
     this.defaultFormat = null
+
+    /**
+     * The format currently applied to the document
+     * @type {Format}
+     */
     this.paginator.currentFormat = null
 
-    _setAvailableFormats.call(this)
+    setAvailableFormats.call(this)
 
+    /**
+     * The list of all menu items created by the plugin
+     * @type {Array<MenuItem>}
+     */
     this.menuItemsList = createMenuItems(editor)
     UIUtils.autoAddMenuItems.call(this)
 
@@ -85,6 +178,10 @@ export default class HeadersFootersPlugin {
     }
   }
 
+  /**
+   * Enable the editor's UI elements (top bar, menu bar, tools bar, status bar...)
+   * @returns {undefined}
+   */
   enableEditorUI () {
     this.stackedLayout.menubar.show()
     this.stackedLayout.toolbar.show()
@@ -96,6 +193,10 @@ export default class HeadersFootersPlugin {
     this.stackedLayout.statusbar.wrapper.css({left: 0, right: 0, zIndex: 9999})
   }
 
+  /**
+   * Disable the editor's UI elements (top bar, menu bar, tools bar, status bar...)
+   * @returns {undefined}
+   */
   disableEditorUI () {
     this.stackedLayout.menubar.hide()
     this.stackedLayout.toolbar.hide()
@@ -108,6 +209,7 @@ export default class HeadersFootersPlugin {
   /**
    * Enable an editor instance (so a page section)
    * @param {boolean} withFocus set it to true if you want to enable the editor and focus on it.
+   * @returns {undefined}
    */
   enableEditableArea (withFocus) {
     this.enabled = true
@@ -116,6 +218,10 @@ export default class HeadersFootersPlugin {
     withFocus && this.editor.focus()
   }
 
+  /**
+   * Disable an editor instance (a page section)
+   * @returns {undefined}
+   */
   disableEditableArea () {
     this.enabled = false
     this.disabled = true
@@ -126,13 +232,18 @@ export default class HeadersFootersPlugin {
     this.editor.$('body').css({opacity: 0.25})
   }
 
+  /**
+   * Set the current format for all pages
+   * @param {Format} format the format instance to set as current format
+   * @returns {undefined}
+   */
   setFormat (format) {
     this.paginator.currentFormat = this.paginator.currentFormat || new Format(format.name, format)
     this.editor.fire('HeadersFooters:SetFormat')
   }
 
   /**
-   * Helper function. Do the reload of headers and footers
+   * Reloads all custom menu items created by the plugin
    * @returns {undefined}
    */
   reloadMenuItems () {
@@ -154,46 +265,61 @@ export default class HeadersFootersPlugin {
     }
   }
 
+  /**
+   * Tells if the plugin extends an editor set as a header section
+   * @returns {Boolean}
+   */
   isHeader () {
     return this.type === 'header'
   }
 
+  /**
+   * Tells if the plugin extends an editor set as a body section
+   * @returns {Boolean}
+   */
   isBody () {
     return this.type === 'body'
   }
 
+  /**
+   * Tells if the plugin extends an editor set as a footer section
+   * @returns {Boolean}
+   */
   isFooter () {
     return this.type === 'footer'
   }
 
+  /**
+   * The editor set as a body section is called the master plugin, or master section.
+   * This method get the plugin extending the editor set as the master section, so as the body section.
+   * @returns {HeadersFootersPlugin}
+   */
   getMaster () {
     return this.page && this.page.getBody() ? this.page.getBody() : null
   }
 
+  /**
+   * Tells if the plugin is set as the master section or not
+   * @returns {Boolean}
+   */
   isMaster () {
     return this.isBody()
-  }
-
-  parseParamList (paramValue) {
-    if (paramValue === undefined) {
-      return []
-    }
-    if (typeof paramValue !== 'string') {
-      throw new TypeError('paramValue must be a String, ' + typeof paramValue + ' given.')
-    }
-    return paramValue.split(' ')
   }
 }
 
 /**
+ * Set the available page formats.
+ * This method is a setter but it doesn't take any argument because it use
+ * the plugin settings to get the list of formats to set available.
  * @method
  * @private
+ * @returns {void}
  */
-function _setAvailableFormats () {
+function setAvailableFormats () {
   const settings = this.editor.settings
 
   // set enabled default formats
-  const userEnabledDefaultFormats = this.parseParamList(settings.headersfooters_formats)
+  const userEnabledDefaultFormats = parseParamList(settings.headersfooters_formats)
   .map(formatName => Format.defaults[formatName])
   .filter(v => !!v)
 
@@ -225,4 +351,24 @@ function _setAvailableFormats () {
   this.defaultFormat = this.availableFormats[settings.headersfooters_default_format] || this.formats[0] || this.customFormats[0]
 
   // current format is set on editor init callback
+}
+
+/**
+ * This method help to parse a list of string parameters in the plugin settings
+ * @inner
+ * @param {String} paramValue the parameter value
+ * @example
+ * let paramValues = null // @type {Array}
+ * expect(plugin.settings.param1).eq(['value1 value2 value3 value4'])
+ * paramValues = parseParamList(plugin.settings.param1)
+ * @returns {Array}
+ */
+function parseParamList (paramValue) {
+  if (paramValue === undefined) {
+    return []
+  }
+  if (typeof paramValue !== 'string') {
+    throw new TypeError('paramValue must be a String, ' + typeof paramValue + ' given.')
+  }
+  return paramValue.split(' ')
 }

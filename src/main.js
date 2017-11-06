@@ -13,8 +13,7 @@
 /**
  * plugin.js Tinymce plugin headersfooters
  * @file plugin.js
- * @module
- * @name tinycmce-plugin-headersfooters
+ * @name tinymce-plugin-headersfooters
  * @description
  * A plugin for tinymce WYSIWYG HTML editor that allow to insert headers and footers
  * @see https://github.com/sirap-group/tinymce-plugin-headersfooters
@@ -25,6 +24,11 @@
 
 import HeadersFootersPlugin from './classes/core/HeadersFootersPlugin'
 
+/**
+ * Tinymce global API namespace
+ * @type {object}
+ * @see {@link https://www.tinymce.com/docs/api Tinymce API Reference}
+ */
 const tinymce = window.tinymce
 
 // Add the plugin to the tinymce PluginManager
