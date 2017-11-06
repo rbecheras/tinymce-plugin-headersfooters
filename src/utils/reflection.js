@@ -14,22 +14,15 @@ export function getParentsConstructorsNames (object) {
 }
 
 /**
- * Tells if an object is a Node instance (from any window instance).
- * If you want to know what is the context window where the Node constructor was used (window.Node), use the function `getNodeWindow(node)`
+ * Tells if an object is an instance of the given class name (from any window instance).
  * @param {object} object any object to test
- * @returns {boolean} true if the object is a Node instance
+ * @param {string} className the class name to check
+ * @returns {boolean} true if the object is an instance of the given class name
  */
 export function isInstanceOf (object, className) {
-  if (typeof object !== 'object') throw new TypeError('first argument must be an object')
-  let rv
-  let _proto = object
-  do {
-    _proto = Reflect.getPrototypeOf(_proto)
-    if (_proto && _proto.constructor && _proto.constructor.name) {
-      if (_proto.constructor.name === className) {
-        rv = true
-      }
-    }
-  } while (_proto)
+  let rv = false
+  getParentsConstructorsNames(object).forEach(constructorName => {
+    if (constructorName === className) rv = true
+  })
   return rv
 }
