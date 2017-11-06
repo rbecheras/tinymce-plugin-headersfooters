@@ -1,3 +1,14 @@
+export function getParentsConstructors (object) {
+  if (typeof object !== 'object') throw new TypeError('first argument must be an object')
+  const constructors = []
+  let _proto = object
+  do {
+    _proto = Reflect.getPrototypeOf(_proto)
+    _proto && constructors.push(_proto)
+  } while (_proto)
+  return constructors
+}
+
 /**
  * Tells if an object is a Node instance (from any window instance).
  * If you want to know what is the context window where the Node constructor was used (window.Node), use the function `getNodeWindow(node)`
