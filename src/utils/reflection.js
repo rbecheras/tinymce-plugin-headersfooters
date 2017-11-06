@@ -4,7 +4,7 @@ export function getParentsConstructors (object) {
   let _proto = object
   do {
     _proto = Reflect.getPrototypeOf(_proto)
-    _proto && constructors.push(_proto)
+    _proto && constructors.push(_proto.constructor)
   } while (_proto)
   return constructors
 }
