@@ -9,6 +9,10 @@ export function getParentsConstructors (object) {
   return constructors
 }
 
+export function getParentsConstructorsNames (object) {
+  return getParentsConstructors(object).map(constructor => constructor.name)
+}
+
 /**
  * Tells if an object is a Node instance (from any window instance).
  * If you want to know what is the context window where the Node constructor was used (window.Node), use the function `getNodeWindow(node)`
