@@ -96,7 +96,7 @@ export default class Paginator {
    * @see {@link https://github.com/zenorocha/clipboard.js/issues/250}
    */
   async fixPagesOverflow () {
-    if (this.shouldItFixPagesOverflow()) {
+    if (this.shouldItFixPagesOverflow() && this.getCurrentPage()) {
       console.debug('Fixing Pages Overflow...')
       this.enableFixPagesOverflow(false)
       for (let i = this.getCurrentPage().pageNumber; i <= this.getNumberOfPages(); i++) {
