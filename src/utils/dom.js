@@ -1,6 +1,7 @@
 'use strict'
 
 import * as units from './units'
+import { isInstanceOf } from './reflection'
 
 const $ = window.jQuery
 
