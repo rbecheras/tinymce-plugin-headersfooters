@@ -19,6 +19,9 @@ export default class HeadersFootersPlugin {
    * @param {tinymce.Editor} editor - The injected tinymce editor.
    */
   constructor (editor, url) {
+    this.enabled = false
+    this.disabled = true
+
     this.editor = editor
 
     this.type = editor.settings.headersfooters_type
