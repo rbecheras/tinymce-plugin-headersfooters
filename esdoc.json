@@ -3,6 +3,13 @@
   "destination": "./build/docs/esdoc",
   "plugins": [
     {"name": "esdoc-standard-plugin"},
-    {"name": "esdoc-ecmascript-proposal-plugin", "option": {"all": true}}
+    {"name": "esdoc-ecmascript-proposal-plugin", "option": {"all": true}},
+    {
+      "name": "esdoc-importpath-plugin",
+      "option": {
+        "stripPackageName": false,
+        "replaces": [ {"from": "^src/", "to": "build/lib/"} ]
+      }
+    }
   ]
 }

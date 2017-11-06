@@ -13,6 +13,7 @@
     "commander": "^2.9.0",
     "esdoc": "^1.0.3",
     "esdoc-ecmascript-proposal-plugin": "^1.0.0",
+    "esdoc-importpath-plugin": "^1.0.1",
     "esdoc-standard-plugin": "^1.0.0",
     "eslint": "^4.8.0",
     "grunt": "^0.4.5",
