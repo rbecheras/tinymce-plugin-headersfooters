@@ -1,7 +1,9 @@
 'use strict'
 
 import PaginatorPage from './PaginatorPage'
-import {jQuery as $, cutLastNode, cutLastWord, getClosestNotBookmarkParent} from '../../utils/dom'
+import DomUtils from '../utils/DomUtils'
+
+const $ = DomUtils.jQuery
 
 /**
  * Class Paginator
@@ -187,7 +189,7 @@ export default class Paginator {
         if (section) {
           let editor = section.editor
           if (editor) {
-            let node = getClosestNotBookmarkParent(editor.$, editor.selection.getNode())
+            let node = DomUtils.getClosestNotBookmarkParent(editor.$, editor.selection.getNode())
             // @todo: préciser la sélection avec le range
             // - soit le range du bookmark selectionné dans le noeud non bookmark parent
             // - soit le range du curseur dans le noeud non bookmark parent
@@ -316,7 +318,7 @@ function fixOverflowAndGetAsClonedNode (page, parentElement) {
   if (parentElementChildren.length) {
     let resume = 0
     while (page.isOverflowing() && resume < 100) {
-      let lastNode = cutLastNode($, parentElement)
+      let lastNode = DomUtils.cutLastNode($, parentElement)
       if (lastNode) {
         overflowingNodes.unshift(lastNode)
       }
@@ -336,7 +338,7 @@ function fixOverflowAndGetAsClonedNode (page, parentElement) {
   } else {
     let resume = 0
     while (page.isOverflowing() && resume < 100) {
-      let lastWord = cutLastWord($, parentElement)
+      let lastWord = DomUtils.cutLastWord($, parentElement)
       if (lastWord) {
         overflowingWords.unshift(lastWord)
       }

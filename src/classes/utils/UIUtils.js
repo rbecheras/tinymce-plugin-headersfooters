@@ -1,6 +1,8 @@
 'use strict'
 
-import {jQuery as $} from './dom'
+import DomUtils from './DomUtils'
+
+const $ = DomUtils.jQuery
 
 /**
  * This static class exports some useful UI functions

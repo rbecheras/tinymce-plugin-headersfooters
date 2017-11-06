@@ -1,11 +1,7 @@
 'use strict'
 
-import * as units from './units'
-import { isInstanceOf } from './reflection'
-
-const $ = window.jQuery
-
-export {$ as jQuery}
+import UnitsUtils from './UnitsUtils'
+import ReflectionUtils from './ReflectionUtils'
 
 /**
  * This static class exports utilities to inspect or manupulate the DOM.
@@ -77,7 +73,7 @@ export default class DomUtils {
   }
 
   static getTextNodes (node, nodeType, result) {
-    if (!isInstanceOf(node, 'Node')) throw new TypeError('first argument must be a Node instance')
+    if (!ReflectionUtils.isInstanceOf(node, 'Node')) throw new TypeError('first argument must be a Node instance')
 
     let children = node.childNodes
     nodeType = nodeType || 3
@@ -113,7 +109,7 @@ export default class DomUtils {
     return height
 
     function px (style) {
-      return Number(units.getValueFromStyle(style))
+      return Number(UnitsUtils.getValueFromStyle(style))
     }
   }
 
@@ -125,7 +121,7 @@ export default class DomUtils {
    * @throws {TypeError} if the second argument is not a Node instance
    */
   static cutLastNode ($, parentNode) {
-    if (!isInstanceOf(parentNode, 'Node')) throw new TypeError('second argument must be a Node instance')
+    if (!ReflectionUtils.isInstanceOf(parentNode, 'Node')) throw new TypeError('second argument must be a Node instance')
     let last
     if (parentNode.childNodes.length) {
       last = parentNode.childNodes[parentNode.childNodes.length - 1]
@@ -149,7 +145,7 @@ export default class DomUtils {
    * @throws {TypeError} if the second argument is not a Node instance
    */
   static cutLastWord ($, textNode) {
-    if (!isInstanceOf(textNode, 'Node')) throw new TypeError('second argument must be a Node instance')
+    if (!ReflectionUtils.isInstanceOf(textNode, 'Node')) throw new TypeError('second argument must be a Node instance')
     let $el = $(textNode)
     let words = $el.text().split(' ')
     let lastWord = words.pop()
@@ -172,3 +168,5 @@ export default class DomUtils {
     }
   }
 }
+
+DomUtils.jQuery = window.jQuery

@@ -1,8 +1,9 @@
 'use strict'
 
-import {jQuery as $} from './dom'
+import DomUtils from '../utils/DomUtils'
 
 const tinymce = window.tinymce
+const $ = DomUtils.jQuery
 
 /**
  * Abstract class to inherit Header and Footer sub classes from.

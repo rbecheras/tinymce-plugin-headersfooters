@@ -1,7 +1,7 @@
 'use strict'
 
-import {focusToBottom, getElementHeight} from '../../utils/dom'
-import {getValueFromStyle} from '../../utils/units'
+import DomUtils from '../utils/DomUtils'
+import UnitsUtils from '../utils/UnitsUtils'
 
 export default class PaginatorPage {
   constructor (paginator, pageNumber) {
@@ -66,7 +66,7 @@ export default class PaginatorPage {
 
   getSectionHeight (section) {
     return section && section.editor
-      ? getElementHeight(section.editor.getBody(), section.editor.getWin(), false)
+      ? DomUtils.getElementHeight(section.editor.getBody(), section.editor.getWin(), false)
       : null
   }
 
@@ -119,7 +119,7 @@ export default class PaginatorPage {
     const bodySection = this.getBody()
     if (bodySection) {
       const contentHeight = this.getSectionContentHeight(bodySection)
-      const maxBodyHeight = getValueFromStyle(this.getFormat().calculateBodyHeight())
+      const maxBodyHeight = UnitsUtils.getValueFromStyle(this.getFormat().calculateBodyHeight())
       overflowing = contentHeight > maxBodyHeight
       if (overflowing) console.debug(`Page N°${this.pageNumber} Overflows !`)
     }
@@ -140,7 +140,7 @@ export default class PaginatorPage {
 
   focusOnSection (section) {
     section.editor.focus()
-    focusToBottom(section.editor)
+    DomUtils.focusToBottom(section.editor)
   }
 
   isAvailable () {

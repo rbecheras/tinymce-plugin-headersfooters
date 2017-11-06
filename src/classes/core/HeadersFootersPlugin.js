@@ -2,11 +2,11 @@
 
 import Paginator from '../paginate/Paginator'
 import Format from '../format/Format'
+import UnitsUtils from '../utils/UnitsUtils'
 import createMenuItems from '../../components/menu-items'
 import editFormatOpenMainWin from '../../components/edit-format-window'
-import * as units from '../../utils/units'
-import { autoAddMenuItems } from '../../utils/ui'
-import { autoBindImplementedEventCallbacks } from '../../utils/events'
+import UIUtils from '../utils/UIUtils'
+import EventsUtils from '../utils/EventsUtils'
 import { eventHandlers, debugEventHandlers } from '../../event-handlers'
 
 const tinymce = window.tinymce
@@ -37,7 +37,7 @@ export default class HeadersFootersPlugin {
 
     this.headerFooterFactory = null
 
-    this.units = units
+    this.UnitsUtils = UnitsUtils
 
     this.documentBody = null
     this.documentBodies = {
@@ -67,7 +67,7 @@ export default class HeadersFootersPlugin {
     _setAvailableFormats.call(this)
 
     this.menuItemsList = createMenuItems(editor)
-    autoAddMenuItems.call(this)
+    UIUtils.autoAddMenuItems.call(this)
 
     editor.addCommand('insertPageNumberCmd', () => { editor.insertContent('{{page}}') })
     editor.addCommand('insertNumberOfPagesCmd', () => { editor.insertContent('{{pages}}') })
@@ -76,9 +76,9 @@ export default class HeadersFootersPlugin {
       openWindow(this.paginator.currentFormat)
     })
 
-    autoBindImplementedEventCallbacks.call(this, editor, eventHandlers)
+    EventsUtils.autoBindImplementedEventCallbacks.call(this, editor, eventHandlers)
     if (window.debugEventHandlers) {
-      autoBindImplementedEventCallbacks.call(this, editor, debugEventHandlers)
+      EventsUtils.autoBindImplementedEventCallbacks.call(this, editor, debugEventHandlers)
     }
   }
 

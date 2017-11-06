@@ -1,7 +1,9 @@
 'use strict'
 
-import { timestamp } from '../../utils/time'
-import {jQuery as $} from '../../utils/dom'
+import TimeUtils from '../utils/TimeUtils'
+import DomUtils from '../utils/DomUtils'
+
+const $ = DomUtils.jQuery
 
 export default class MenuItem {
   /**
@@ -27,7 +29,7 @@ export default class MenuItem {
       }
     }
     if (!options.id) {
-      this.id = 'mce-plugin-headersfooters-' + camel2Dash(name) + timestamp()
+      this.id = 'mce-plugin-headersfooters-' + camel2Dash(name) + TimeUtils.timestamp()
     }
     if (options.visible === false) this.hide()
     if (options.disabled) this.disable()

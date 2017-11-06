@@ -8,8 +8,8 @@
  */
 
 import MenuItem from '../classes/core/MenuItem'
-import { timestamp } from '../utils/time'
-import { resetMenuItemState } from '../utils/ui'
+import TimeUtils from '../classes/utils/TimeUtils'
+import UIUtils from '../classes/utils/UIUtils'
 
 /**
  * A selector to select the header and the footer but not the body
@@ -48,11 +48,11 @@ function _createInsertHeaderMenuItem (editor) {
   return new MenuItem('insertHeader', {
     text: 'Insérer une entête',
     icon: 'template',
-    id: 'plugin-headersfooters-menuitem-insert-header' + timestamp(),
+    id: 'plugin-headersfooters-menuitem-insert-header' + TimeUtils.timestamp(),
     context: 'document',
     onPostRender: function () {
-      resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
-      editor.on('NodeChange', resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+      UIUtils.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', UIUtils.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
     },
     onclick: function () {
       var master = editor.plugins.headersfooters.getMaster()
@@ -77,11 +77,11 @@ function _createRemoveHeaderMenuItem (editor) {
   return new MenuItem('removeHeader', {
     text: "Supprimer l'entête",
     icon: 'undo',
-    id: 'plugin-headersfooters-menuitem-remove-header' + timestamp(),
+    id: 'plugin-headersfooters-menuitem-remove-header' + TimeUtils.timestamp(),
     context: 'document',
     onPostRender: function () {
-      resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
-      editor.on('NodeChange', resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+      UIUtils.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', UIUtils.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
     },
     onclick: function () {
       var master = editor.plugins.headersfooters.getMaster()
@@ -108,8 +108,8 @@ function _createInsertFooterMenuItem (editor) {
     icon: 'template',
     context: 'document',
     onPostRender: function () {
-      resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
-      editor.on('NodeChange', resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+      UIUtils.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', UIUtils.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
     },
     onclick: function () {
       var master = editor.plugins.headersfooters.getMaster()
@@ -136,8 +136,8 @@ function _createRemoveFooterMenuItem (editor) {
     icon: 'undo',
     context: 'document',
     onPostRender: function () {
-      resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
-      editor.on('NodeChange', resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+      UIUtils.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', UIUtils.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
     },
     onclick: function () {
       var master = editor.plugins.headersfooters.getMaster()
@@ -163,8 +163,8 @@ function _createInsertPageNumberMenuItem (editor) {
     text: 'Insérer le numéro de page',
     context: 'document',
     onPostRender: function () {
-      resetMenuItemState.call(this, editor, HEADER_FOOTER_ONLY_SELECTOR)
-      editor.on('NodeChange', resetMenuItemState.bind(this, editor, HEADER_FOOTER_ONLY_SELECTOR))
+      UIUtils.resetMenuItemState.call(this, editor, HEADER_FOOTER_ONLY_SELECTOR)
+      editor.on('NodeChange', UIUtils.resetMenuItemState.bind(this, editor, HEADER_FOOTER_ONLY_SELECTOR))
     },
     cmd: 'insertPageNumberCmd'
   })
@@ -182,8 +182,8 @@ function _createinsertNumberOfPagesMenuItem (editor) {
     // icon: 'text',
     context: 'document',
     onPostRender: function () {
-      resetMenuItemState.call(this, editor, HEADER_FOOTER_ONLY_SELECTOR)
-      editor.on('NodeChange', resetMenuItemState.bind(this, editor, HEADER_FOOTER_ONLY_SELECTOR))
+      UIUtils.resetMenuItemState.call(this, editor, HEADER_FOOTER_ONLY_SELECTOR)
+      editor.on('NodeChange', UIUtils.resetMenuItemState.bind(this, editor, HEADER_FOOTER_ONLY_SELECTOR))
     },
     cmd: 'insertNumberOfPagesCmd'
   })
@@ -201,8 +201,8 @@ function _createEditFormatMenuItem (editor) {
     icon: 'newdocument',
     context: 'document',
     onPostRender: function () {
-      resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
-      editor.on('NodeChange', resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
+      UIUtils.resetMenuItemState.call(this, editor, BODY_ONLY_SELECTOR)
+      editor.on('NodeChange', UIUtils.resetMenuItemState.bind(this, editor, BODY_ONLY_SELECTOR))
     },
     cmd: 'editFormatCmd'
   })

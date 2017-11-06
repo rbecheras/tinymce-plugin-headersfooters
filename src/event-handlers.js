@@ -6,8 +6,10 @@
  * @name eventHandlers
  */
 
-import {mapPageLayoutElements, mapMceLayoutElements} from './utils/ui'
-import {jQuery as $} from './utils/dom'
+import UIUtils from './classes/utils/UIUtils'
+import DomUtils from './classes/utils/DomUtils'
+
+const $ = DomUtils.jQuery
 
 const tinymce = window.tinymce
 
@@ -59,11 +61,11 @@ function setBodies (evt) {
 }
 
 function setStackedLayout (evt) {
-  mapMceLayoutElements(this.bodyClass, this.stackedLayout)
+  UIUtils.mapMceLayoutElements(this.bodyClass, this.stackedLayout)
 }
 
 function setPageLayout (evt) {
-  this.isMaster() && mapPageLayoutElements(this.page.pageLayout)
+  this.isMaster() && UIUtils.mapPageLayoutElements(this.page.pageLayout)
 }
 
 function enterHeadFoot (evt) {

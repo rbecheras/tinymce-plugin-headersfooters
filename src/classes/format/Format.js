@@ -1,7 +1,9 @@
 'use strict'
 
-import {getValueInPxFromAnyUnit} from '../../utils/units'
-import {jQuery as $} from '../../utils/dom'
+import UnitsUtils from '../utils/UnitsUtils'
+import DomUtils from '../utils/DomUtils'
+
+const $ = DomUtils.jQuery
 
 /**
  * Class Format
@@ -311,13 +313,13 @@ export default class Format {
    */
   calculateBodyHeight (editor) {
     let ret
-    let height = getValueInPxFromAnyUnit(this.height)
-    let marginTop = getValueInPxFromAnyUnit(this.margins.top)
-    let marginBottom = getValueInPxFromAnyUnit(this.margins.bottom)
-    let headerHeight = getValueInPxFromAnyUnit(this.header.height)
-    let headerMarginBottom = getValueInPxFromAnyUnit(this.header.margins.bottom)
-    let footerHeight = getValueInPxFromAnyUnit(this.footer.height)
-    let footerMarginTop = getValueInPxFromAnyUnit(this.footer.margins.top)
+    let height = UnitsUtils.getValueInPxFromAnyUnit(this.height)
+    let marginTop = UnitsUtils.getValueInPxFromAnyUnit(this.margins.top)
+    let marginBottom = UnitsUtils.getValueInPxFromAnyUnit(this.margins.bottom)
+    let headerHeight = UnitsUtils.getValueInPxFromAnyUnit(this.header.height)
+    let headerMarginBottom = UnitsUtils.getValueInPxFromAnyUnit(this.header.margins.bottom)
+    let footerHeight = UnitsUtils.getValueInPxFromAnyUnit(this.footer.height)
+    let footerMarginTop = UnitsUtils.getValueInPxFromAnyUnit(this.footer.margins.top)
 
     let value = height - marginTop - marginBottom -
       headerHeight - headerMarginBottom -
