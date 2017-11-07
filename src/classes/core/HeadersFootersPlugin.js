@@ -314,6 +314,10 @@ export default class HeadersFootersPlugin {
     return this.isBody()
   }
 
+  /**
+   * Tells if the plugin's editor has the focus or not.
+   * @returns {Boolean} True if the editor has the focus, else false.
+   */
   hasFocus () {
     return this.editor && this.editor.getDoc() && this.editor.getDoc().hasFocus()
   }
