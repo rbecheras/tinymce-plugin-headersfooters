@@ -270,7 +270,7 @@ export default class HeadersFootersPlugin {
    * @returns {Boolean}
    */
   isHeader () {
-    return this.type === 'header'
+    return this.isOfType('header')
   }
 
   /**
@@ -278,7 +278,7 @@ export default class HeadersFootersPlugin {
    * @returns {Boolean}
    */
   isBody () {
-    return this.type === 'body'
+    return this.isOfType('body')
   }
 
   /**
@@ -286,7 +286,15 @@ export default class HeadersFootersPlugin {
    * @returns {Boolean}
    */
   isFooter () {
-    return this.type === 'footer'
+    return this.isOfType('footer')
+  }
+
+  /**
+   * Tells if the plugin extends an editor set as a section of the same type as the given type
+   * @returns {Boolean}
+   */
+  isOfType (type) {
+    return this.type === type
   }
 
   /**
@@ -304,6 +312,10 @@ export default class HeadersFootersPlugin {
    */
   isMaster () {
     return this.isBody()
+  }
+
+  hasFocus () {
+    return this.editor && this.editor.getDoc() && this.editor.getDoc().hasFocus()
   }
 }
 

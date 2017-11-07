@@ -10,6 +10,12 @@ import DomUtils from '../utils/DomUtils'
 const $ = DomUtils.jQuery
 
 /**
+ * Tinymce global namespace
+ * @type {external:tinymce}
+ */
+const tinymce = window.tinymce
+
+/**
  * The class Paginator is instanciated as a singleton to instantiate all pages, store each one in a collection and provide all the methods to handle the pagination.
  * @listens `HeadersFooters:NewPageAppended` on window.body element
  * @fires `HeadersFooters:NewPageAppending` on window.body element
@@ -440,6 +446,22 @@ export default class Paginator {
       })
       setTimeout(() => this.enableSyncHeadFootContent(true), 100)
     }
+  }
+
+  /**
+   * Get the active section
+   * @returns {HeadersFootersPlugin|null} The active section
+   */
+  getActiveSection () {
+    let activeSection = null
+    this.pages.forEach(page => {
+      page.iterateOnSections(section => {
+        if (section.editor && section.editor === tinymce.activeEditor) {
+          activeSection = section
+        }
+      })
+    })
+    return activeSection
   }
 }
 

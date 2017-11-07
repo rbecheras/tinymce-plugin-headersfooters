@@ -127,21 +127,31 @@ function enterHeadFoot (evt) {
  * @returns {void}
  */
 function leaveHeadFoot (evt) {
-  this.disableEditorUI()
-  this.paginator.pages.forEach(page => {
+  if (this.paginator) {
     setTimeout(() => {
-      let atLeastOneEnabled = false
-      this.page.iterateOnSections((section) => {
-        !this.isBody() && this.type === section.type && section.disableEditableArea()
-        section.enabled && (atLeastOneEnabled = true)
-      })
-      if (!atLeastOneEnabled) {
-        let bodySection = this.page.getBody()
-        bodySection.enableEditableArea()
-        bodySection.enableEditorUI()
+      // Is the active section focused (after 50ms ?)
+      let activeSection = this.paginator.getActiveSection()
+      if (activeSection.hasFocus()) {
+        // disable all sections of a different type
+        let typeOfSectionsToEnable = activeSection.type
+        this.paginator.pages.forEach(page => {
+          page.iterateOnSections(section => {
+            if (!section.isOfType(typeOfSectionsToEnable)) {
+              section.disableEditableArea()
+              section.disableEditorUI()
+            }
+          })
+        })
+      } else {
+        // enable all body sections
+        this.paginator.pages.forEach(page => page.getBody().enableEditableArea())
+        // enable the editor UI of the body on the blured page
+        this.page.getBody().enableEditorUI()
+        // and focus on the body on the blured page
+        this.page.getBody().editor.focus()
       }
     }, 50)
-  })
+  }
 }
 
 /**
