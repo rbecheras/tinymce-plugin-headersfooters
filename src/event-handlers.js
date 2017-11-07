@@ -25,7 +25,7 @@ const tinymce = window.tinymce
  * @ignore
  */
 export const eventHandlers = {
-  'Init': { setBodies, setStackedLayout, setPageLayout, reloadMenuItems, firesNewPageAppendedEvent },
+  'Init': { setBodies, setStackedLayout, setPageLayout, reloadMenuItems, firesNewPageAppendedEvent, initHeadFootContent },
   'NodeChange': { checkPageOverflow },
   'Change': { syncHeadFoot },
   'SetContent': {},
@@ -296,6 +296,20 @@ function syncHeadFoot (evt) {
   if (this.paginator && this.paginator.shouldItSyncHeadFootContent()) {
     if (this.isHeader() || this.isFooter()) {
       this.paginator.syncHeadFootContent(this)
+    }
+  }
+}
+
+/**
+ * Initialize the content of the header or the footer on editor Init
+ * @param {Event} evt The Init event object
+ * @returns {void}
+ */
+function initHeadFootContent (evt) {
+  if (this.isHeader() || this.isFooter()) {
+    if (this.paginator) {
+      let firstPage = this.paginator.getPage(1)
+      this.editor.setContent(firstPage.getSection(this.type).editor.getContent())
     }
   }
 }
