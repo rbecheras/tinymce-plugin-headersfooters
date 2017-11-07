@@ -226,7 +226,7 @@ export default class HeadersFootersPlugin {
     this.enabled = false
     this.disabled = true
 
-    if (!this.editor.selection.isCollapsed()) {
+    if (this.editor.selection && !this.editor.selection.isCollapsed()) {
       this.editor.selection.collapse()
     }
     this.editor.$('body').css({opacity: 0.25})
