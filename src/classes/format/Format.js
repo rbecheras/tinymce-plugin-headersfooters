@@ -3,27 +3,93 @@
 import UnitsUtils from '../utils/UnitsUtils'
 import DomUtils from '../utils/DomUtils'
 
+/**
+ * The global jQuery instance
+ * @type {jQuery}
+ */
 const $ = DomUtils.jQuery
 
 /**
- * Class Format
+ * The class Format is used to define paper size, page dimensions like margins, headers and footers, borders, etc...
+ * All the required methods are implemented to calculate and apply the CSS design of the page and section on which it is binded, required by the given dimensions.
  */
 export default class Format {
   /**
-   * @param {string} name
-   * @param {object} config
+   * @param {string} name The name of the format used to declare it in plugin settings
+   * @param {object} config The detailed paper and page dimensions to set all Format properties
    */
   constructor (name, config) {
+    /**
+     * The name of the format used to declare it in plugin settings
+     * @type {String}
+     * @example 'customInsertMenuItem'
+     * @example 'custom-insert'
+     * @example 'custominsert'
+     */
     this.name = name
+
+    /**
+     * The pager orientation (portrait or landscape)
+     * @type {String}
+     * @example 'portrait'
+     */
     this.orientation = (config.height > config.width) ? 'portrait' : 'paysage'
+
+    /**
+     * The paper width in a given unit
+     * @type {String}
+     * @example '21cm'
+     */
     this.width = config.width
+
+    /**
+     * The paper height in a given unit
+     * @type {String}
+     * @example '29.7cm'
+     */
     this.height = config.height
+
+    /**
+     * The page margins
+     * @type {Object<String, String>}
+     * @property {String} top The page margin top
+     * @property {String} right The page margin right
+     * @property {String} bottom The page margin bottom
+     * @property {String} left The page margin left
+     * @example
+     * let marginsConfig = {
+     *   top: '1cm',
+     *   right: '1cm',
+     *   bottom: '1cm',
+     *   left: '2cm'
+     * }
+     */
     this.margins = {
       top: config.margins ? config.margins.top : '0',
       right: config.margins ? config.margins.right : '0',
       bottom: config.margins ? config.margins.bottom : '0',
       left: config.margins ? config.margins.left : '0'
     }
+
+    /**
+     * The page header format
+     * @type {object<String, *>}
+     * @property {String} height The page header height
+     * @property {Object} margins The header margins
+     * @property {String} margins.right The header right margins
+     * @property {String} margins.bottom The header bottom margins
+     * @property {String} margins.left The header left margins
+     * @property {Object} border The header borders
+     * @property {String} border.color The header border color
+     * @property {String} border.style The header border style
+     * @property {String} border.width The header border width
+     * @example
+     * let headerConfig = {
+     *   height: '35mm',
+     *   margins: { top: '1cm', right: '1cm', bottom: '1cm', left: '2cm' },
+     *   borders: { color: 'blue', style: 'dashed', width: '2pt' }
+     * }
+     */
     this.header = {
       height: config.header ? config.header.height : '0',
       margins: {
@@ -37,6 +103,26 @@ export default class Format {
         width: config.header && config.header.border ? config.header.border.width : '0'
       }
     }
+
+    /**
+     * The page footer format
+     * @type {object<String, *>}
+     * @property {String} height The page footer height
+     * @property {Object} margins The footer margins
+     * @property {String} margins.top The footer top margins
+     * @property {String} margins.right The footer right margins
+     * @property {String} margins.left The footer left margins
+     * @property {Object} border The footer borders
+     * @property {String} border.color The footer border color
+     * @property {String} border.style The footer border style
+     * @property {String} border.width The footer border width
+     * @example
+     * let footerConfig = {
+     *   height: '20mm',
+     *   margins: { top: '1cm', right: '1cm', bottom: '1cm', left: '2cm' },
+     *   borders: { color: 'blue', style: 'dashed', width: '2pt' }
+     * }
+     */
     this.footer = {
       height: config.footer ? config.footer.height : '0',
       margins: {
@@ -50,6 +136,23 @@ export default class Format {
         width: config.footer && config.footer.border ? config.footer.border.width : '0'
       }
     }
+
+    /**
+     * The page body format
+     * @type {object<String, *>}
+     * @property {Object} border The body borders
+     * @property {String} border.color The body border color
+     * @property {String} border.style The body border style
+     * @property {String} border.width The body border width
+     * @example
+     * let bodyConfig = {
+     *   borders: {
+     *     color: 'blue',
+     *     style: 'dashed',
+     *     width: '2pt'
+     *   }
+     * }
+     */
     this.body = {
       border: {
         color: config.body && config.body.border ? config.body.border.color : 'black',
@@ -57,6 +160,11 @@ export default class Format {
         width: config.body && config.body.border ? config.body.border.width : '0'
       }
     }
+
+    /**
+     * Tells if the alert to notice a format error should be displayed
+     * @type {Boolean}
+     */
     this.showAlert = true
   }
 
@@ -64,7 +172,7 @@ export default class Format {
    * Apply the current format to the DOM and fires the `AppliedToBody` event to
    * permit the main app to bind the format object definition to the document
    * object to be saved with.
-   * @param {HeadersFooters} plugin The current HeaderFooters plugin instance
+   * @param {HeadersFootersPlugin} plugin The current HeaderFooters plugin instance
    * @fires `HeadersFooters:Format:AppliedToBody`
    * @returns {void}
    */
@@ -306,7 +414,7 @@ export default class Format {
 
   /**
    * Caluculate the document Body height depending the Format propeties
-   * @param {Editor} editor the editor instance matching with the target body
+   * @param {external:tinymce.Editor} editor the editor instance matching with the target body
    * @returns {String} the body height (in mm for now)
    * @fires HeadersFooters:Error:NegativeBodyHeight
    * @todo support other size units (cm, pt)
@@ -345,18 +453,34 @@ export default class Format {
     return ret
   }
 
+  /**
+   * Tells if the format contains a header
+   * @returns {Boolean} True if the header dimensions are not null
+   */
   hasHeader () {
     return !this.header || (this.header.height && this.header.height !== '0')
   }
 
+  /**
+   * Tells if the format contains a footer
+   * @returns {Boolean} True if the footer dimensions are not null
+   */
   hasFooter () {
     return !this.footer || (this.footer.height && this.footer.height !== '0')
   }
 
+  /**
+   * Tells if the format contains a header's border
+   * @returns {Boolean} True if the header and header's borders dimensions are not null
+   */
   hasHeaderBorder () {
     return !this.hasHeader() || (this.header.border.width && this.header.border.width !== '0')
   }
 
+  /**
+   * Tells if the format contains a footer's border
+   * @returns {Boolean} True if the footer and footer's borders dimensions are not null
+   */
   hasFooterBorder () {
     return !this.hasFooter() || (this.footer.border.width && this.footer.border.width !== '0')
   }

@@ -1,5 +1,9 @@
 'use strict'
 
+/**
+ * Tinymce global namespace
+ * @type {external:tinymce}
+ */
 const tinymce = window.tinymce
 
 /**
@@ -57,6 +61,15 @@ export default class UIHelpersUtils {
     }
   }
 
+  /**
+   * Create a generic select box
+   * @param {string} label - A label to be displayed next to the input to the the form.
+   * @param {string} inputName - A name to identify the input in the form.
+   * @param {array} [values] - The values to set as select options.
+   * @param {number} [maxWidth=55] - The maximum width for th input.
+   * @param {number} [minWidth=55] - The minimum width for th input.
+   * @returns {SelectBox} The new select box.
+   */
   static createSelectBox (label, inputName, values, maxWidth, minWidth) {
     return new tinymce.ui.ListBox({
       label: label,
@@ -138,8 +151,7 @@ export default class UIHelpersUtils {
   }
 
   /**
-   * @method
-   * @static
+   * Create a generic list box
    * @param {string} label The label for the list box
    * @param {string} name The name of the list box to identify it in the form
    * @param {array<ListBoxItem>} values An array of list box items

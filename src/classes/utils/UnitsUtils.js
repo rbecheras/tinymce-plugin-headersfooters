@@ -1,5 +1,9 @@
 'use strict'
 
+/**
+ * The main document
+ * @type {HTMLDocument}
+ */
 const document = window.document
 
 /**
@@ -40,6 +44,11 @@ export default class UnitsUtils {
     return document.getElementById('dpi-test').offsetHeight
   }
 
+  /**
+   * Create a DPI-Test element
+   * @returns {void}
+   * @todo add an example
+   */
   static createDpiTestElements () {
     const getDpiHtmlStyle = 'data-dpi-test { height: 1in; left: -100%; position: absolute; top: -100%; width: 1in; }'
 

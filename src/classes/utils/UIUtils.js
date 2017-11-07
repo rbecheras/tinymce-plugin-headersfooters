@@ -2,6 +2,10 @@
 
 import DomUtils from './DomUtils'
 
+/**
+ * The jQuery global namespace
+ * @type {external:jQuery}
+ */
 const $ = DomUtils.jQuery
 
 /**
@@ -66,6 +70,13 @@ export default class UIUtils {
     }
   }
 
+  /**
+   * Map the tinymce templates's layout elements
+   * @param {String} bodyClass The class set to the body
+   * @param {Object} stackedLayout The document paginator's stacked layout
+   * @returns {void}
+   * @todo Improve esdoc with examples and definition of "page layout", "mce layout", "stacked layout"
+   */
   static mapMceLayoutElements (bodyClass, stackedLayout) {
     stackedLayout.root = $('.' + bodyClass)
     stackedLayout.wrapper = stackedLayout.root.children('.mce-tinymce')
@@ -82,6 +93,12 @@ export default class UIUtils {
     stackedLayout.statusbar.resizehandle = stackedLayout.layout.children('.mce-resizehandle')
   }
 
+  /**
+   * Map the page layout elements
+   * @param {Object} pageLayout The page's layout object
+   * @returns {void}
+   * @todo Improve esdoc with examples and definition of "page layout", "mce layout", "stacked layout"
+   */
   static mapPageLayoutElements (pageLayout) {
     pageLayout.pageWrapper = $('.page-wrapper')
     pageLayout.pagePanel = $('.page-panel')

@@ -2,22 +2,39 @@
 
 import DomUtils from '../utils/DomUtils'
 
+/**
+ * The global tinymce instance
+ * @type {external:tinymce}
+ */
 const tinymce = window.tinymce
+
+/**
+ * The global jQuery instance
+ * @type {external:jQuery}
+ */
 const $ = DomUtils.jQuery
 
 /**
- * Abstract class to inherit Header and Footer sub classes from.
+ * This abstract class allow to manipulate the sections of a page.
  * @abstract
  */
 export default class HeadFoot {
   /**
-   * @param {Editor} editor The current editor
-   * @param {HTMLElement} nodeElement The node element that define the section
+   * @param {external:Editor} editor The current editor
+   * @param {external:HTMLElement} nodeElement The node element that define the section
    */
   constructor (editor, nodeElement) {
+    /**
+     * The template's element on which the editor is attached and the Head/Body/Foot object is instancied
+     * @type {external:HTMLElement}
+     */
     this.node = nodeElement
   }
 
+  /**
+   * Set a place holder in the head/body/foot instance
+   * @returns {void}
+   */
   setPlaceholder () {
     let translatedLabel = tinymce.i18n.translate('Double-click to edit this content')
     let $p = this.initParagraph().html(translatedLabel)
@@ -25,6 +42,10 @@ export default class HeadFoot {
     this.pristine(true)
   }
 
+  /**
+   * Initialize the first paragraph in the head/body/foot instance
+   * @returns {void}
+   */
   initParagraph () {
     let $span = $('<span>').css({ 'font-family': 'calibri', 'font-size': '12pt' })
     let $p = $('<p>').append($span)
@@ -36,7 +57,7 @@ export default class HeadFoot {
   /**
    * [Getter/Setter] Get or set the pristine state of the headfoot node
    * @param {Boolean} [b] If defined, the value to set
-   * @returns {Boolean|undefined} - The pristine value if no argument is given.
+   * @returns {Boolean|void} - The pristine value if no argument is given.
    * @throws {Error} - if this.node is unset an error is thrown
    */
   pristine (b) {

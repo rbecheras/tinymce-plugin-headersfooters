@@ -3,33 +3,82 @@
 import PaginatorPage from './PaginatorPage'
 import DomUtils from '../utils/DomUtils'
 
+/**
+ * The global jQuery instance
+ * @type {external:jQuery}
+ */
 const $ = DomUtils.jQuery
 
 /**
- * Class Paginator
- * @property {array<PaginatorPage>} pages the list of paginated pages
- * @property {PaginatorPage} currentPage the current selected page (the user is working on it)
- * @property {boolean} fixPagesOverflowEnabled the action of the method fixPagesOverflow() is disabled (do nothing) if this property is on false
- * @property {boolean} saveLastSelectionsEnabled the action of the method saveLastSelections() is disabled (do nothing) if this property is on false
- * @property {object} currentSelection the current selection (saved by saveLastSelections())
- * @property {object} previousSelection the previous selection (saved by saveLastSelections())
- * @property {object} appendingNewPages a hash of promises resolved by the appended page number when the page is appended
- * @listens `HeadersFooters:NewPageAppended`
- * @fires `HeadersFooters:NewPageAppending`
- * @fires `HeadersFooters:PageRemoving`
- * @fires `HeadersFooters:PageRemoved`
+ * The class Paginator is instanciated as a singleton to instantiate all pages, store each one in a collection and provide all the methods to handle the pagination.
+ * @listens `HeadersFooters:NewPageAppended` on window.body element
+ * @fires `HeadersFooters:NewPageAppending` on window.body element
+ * @fires `HeadersFooters:PageRemoving` on window.body element
+ * @fires `HeadersFooters:PageRemoved` on window.body element
  */
 export default class Paginator {
+  /**
+   * Create a new paginator instance
+   * @returns {void}
+   * @example
+   * let paginator = new Paginator()
+   */
   constructor () {
+    /**
+     * The document's pages collection
+     * @type {Array<PaginatorPage>}
+     */
     this.pages = []
+
+    /**
+     * The document's raw pages collection
+     * @type {Array<Object>}
+     */
+    this.rawPages = []
+
+    /**
+     * The current selected page (the user is working on it)
+     * @type {PaginatorPage}
+     */
     this.currentPage = null
+
+    /**
+     * The action of the method fixPagesOverflow() is disabled (do nothing) if this property is on false
+     * @type {Boolean}
+     */
     this.fixPagesOverflowEnabled = true
+
+    /**
+     * The action of the method saveLastSelections() is disabled (do nothing) if this property is on false
+     * @type {Boolean}
+     */
     this.saveLastSelectionsEnabled = true
+
+    /**
+     * The current selection (saved by saveLastSelections())
+     * @type {Object}
+     */
     this.currentSelection = {}
+
+    /**
+     * The previous selection (saved by saveLastSelections())
+     * @type {Object}
+     */
     this.previousSelection = {}
+
+    /**
+     * A hash of promises resolved by the appended page number when the page is appended
+     * @type {Object}
+     */
     this.appendingNewPages = {}
   }
 
+  /**
+   * Initialize a new page given a plugin instance and a page number.
+   * @param {HeadersFootersPlugin} plugin The headersfooters plugin instance
+   * @param {Number} pageNumber The page number
+   * @returns {PaginatorPage} The initialized page
+   */
   initPage (plugin, pageNumber) {
     let page = this.getPage(pageNumber)
     if (!page) {
@@ -41,14 +90,30 @@ export default class Paginator {
     return page
   }
 
+  /**
+   * Add a new page to the paginator.
+   * @param {PaginatorPage} page The page to add to the paginator
+   * @returns {void}
+   */
   addPage (page) {
     this.pages.push(page)
   }
 
+  /**
+   * Get a page reference by its page number.
+   * @param {Number} pageNumber The wanted page number.
+   * @returns {PaginatorPage} The wanted page having the `pageNumber` page number.
+   */
   getPage (pageNumber) {
     return this.pages[pageNumber - 1]
   }
 
+  /**
+   * Select a given page as the new current page and set the current section following the given `type`.
+   * @param {PaginatorPage} page The page to select as the current page.
+   * @param {String} type The section type to set as the current section.
+   * @returns {void}
+   */
   selectCurrentPage (page, type) {
     if (page && page.pageNumber) {
       this.currentPage = page
@@ -56,14 +121,27 @@ export default class Paginator {
     }
   }
 
+  /**
+   * Tells if it shoult fix the pages overflow or not.
+   * @returns {Boolean} True if it should fix the pages overflow, else false.
+   */
   shouldItFixPagesOverflow () {
     return this.fixPagesOverflowEnabled
   }
 
+  /**
+   * Tells if it should save the lasts selections or not.
+   * @returns {Boolean} True if it shoud save it, else false.
+   */
   shouldItSaveLastSelections () {
     return this.saveLastSelectionsEnabled
   }
 
+  /**
+   * Set the raw pages list: the input data provided as initial pages content on editors init.
+   * @param {Object} param0 An object containing a `pages` property.
+   * @param {Array<Object>} param0.pages The list of raw pages to init in paginator.
+   */
   setRawPages ({pages}) {
     if (!Array.isArray(pages)) {
       throw new Error('Raw "pages" must be an array')
@@ -96,6 +174,7 @@ export default class Paginator {
    * Fix all overflowing pages starting at the current active page to the last.
    * Loop recursively over the nested overflowing nodes to split and clone it and past overflowing content to the next page.
    * @see {@link https://github.com/zenorocha/clipboard.js/issues/250}
+   * @returns {void}
    */
   async fixPagesOverflow () {
     if (this.shouldItFixPagesOverflow() && this.getCurrentPage()) {
@@ -152,6 +231,11 @@ export default class Paginator {
     return this.appendingNewPages[pageNumber]
   }
 
+  /**
+   * Get the next page after the given page if given or after the current page if exists, else null
+   * @param {PaginatorPage|null} page The wanted next page.
+   * @returns {void}
+   */
   getNextPage (page) {
     let nextPage = null
     page = page || this.currentPage
@@ -161,14 +245,26 @@ export default class Paginator {
     return nextPage
   }
 
+  /**
+   * Get the size of the paginator, so the number of pages
+   * @returns {Number}
+   */
   getNumberOfPages () {
     return this.pages.length
   }
 
+  /**
+   * Get the last page
+   * @returns {PaginatorPage}
+   */
   getLastPage () {
     return this.pages[this.getNumberOfPages() - 1]
   }
 
+  /**
+   * Get the current page
+   * @returns {PaginatorPage}
+   */
   getCurrentPage () {
     return this.currentPage
   }
@@ -233,6 +329,11 @@ export default class Paginator {
     return false
   }
 
+  /**
+   * Removes the page given its page number.
+   * @param {Number} pageNumber The page number of the page to remove
+   * @returns {void}
+   */
   removePageByNumber (pageNumber) {
     return this.removePage(this.getPage(pageNumber))
   }
@@ -289,6 +390,11 @@ export default class Paginator {
     })
   }
 
+  /**
+   * Go to a given page
+   * @param {PaginatorPage} page The page to go to.
+   * @returns {void}
+   */
   goToPage (page) {
     console.error(`Goto page ${page.pageNumber}`)
     this.selectCurrentPage(page, 'body')

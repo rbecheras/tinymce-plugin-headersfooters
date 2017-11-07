@@ -2,6 +2,10 @@
 
 import UIHelpersUtils from '../classes/utils/UIHelpersUtils'
 
+/**
+ * Tinypce global namespace
+ * @type {external:tinymce}
+ */
 const tinymce = window.tinymce
 
 /**
@@ -280,6 +284,11 @@ export function createFooterTab (format) {
   return tab
 }
 
+/**
+ * Create the body tab
+ * @param {Format} format The current format
+ * @returns {void}
+ */
 export function createBodyTab (format) {
   // body borders
   let borderWidthTextBox = UIHelpersUtils.createTextBox('Border width', 'bodyBorderWidth', 65)

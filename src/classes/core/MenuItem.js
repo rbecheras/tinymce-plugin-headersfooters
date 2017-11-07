@@ -3,8 +3,15 @@
 import TimeUtils from '../utils/TimeUtils'
 import DomUtils from '../utils/DomUtils'
 
+/**
+ * The global jQuery instance
+ * @type {jQuery}
+ */
 const $ = DomUtils.jQuery
 
+/**
+ * The MenuItem class is used to create custom menu items to be appended to any tinymce menu bar.
+ */
 export default class MenuItem {
   /**
    * @param {String} name The item name
@@ -21,14 +28,22 @@ export default class MenuItem {
    * }))
    */
   constructor (name, options) {
+    /**
+     * The menu item name.
+     * It will not be visible in the UI but it is used
+     * to include the item in a menu
+     * @type {String}
+     */
     this.name = name
+
     setUIControlPromise.call(this)
-    for (let key in options) {
-      if (key !== 'visible' && key !== 'disabled') {
-        this[key] = options[key]
-      }
-    }
+    Object.assign(this, options)
+
     if (!options.id) {
+      /**
+       * The HTML ID attribute
+       * @type {String}
+       */
       this.id = 'mce-plugin-headersfooters-' + camel2Dash(name) + TimeUtils.timestamp()
     }
     if (options.visible === false) this.hide()

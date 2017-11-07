@@ -22,6 +22,21 @@
  * @license GNU GPL-v2 http://www.tinymce.com/license
  */
 
+/**
+ * The tinymce global namespace
+ * @external {tinymce} https://www.tinymce.com/docs/api
+ */
+
+/**
+ * The tinymce Editor class
+ * @external {Editor} https://www.tinymce.com/docs/api/tinymce/tinymce.editor
+ */
+
+/**
+ * The jQuery global namespace.
+ * @external {jQuery} http://api.jquery.com
+ */
+
 import HeadersFootersPlugin from './classes/core/HeadersFootersPlugin'
 
 /**

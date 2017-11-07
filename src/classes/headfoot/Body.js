@@ -3,6 +3,6 @@
 import HeadFoot from './HeadFoot'
 
 /**
- * Body class
+ * This class allow to manipulate the Body sections of a page
  */
 export default class Body extends HeadFoot {}

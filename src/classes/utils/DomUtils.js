@@ -47,6 +47,11 @@ export default class DomUtils {
     return parents.length ? parents[0] : null
   }
 
+  /**
+   * Focus to bottom given an editor reference
+   * @param {external:Editor} editor The given editor to focus on its bottom
+   * @returns {void}
+   */
   static focusToBottom (editor) {
     // get all Textnodes from lastchild, calc length
     const $ = editor.$
@@ -72,6 +77,13 @@ export default class DomUtils {
     editor.selection.setCursorLocation(cursorLocation, cursorLocationOffset)
   }
 
+  /**
+   * Get the text nodes of a given parent node
+   * @param {Node} node Theh given parent node to get it child nodes
+   * @param {Number} [nodeType=3] An optional node type other that 3 (text node)
+   * @param {Array} result The result array to fill.
+   * @see https://developer.mozilla.org/fr/docs/Web/API/Node/nodeType
+   */
   static getTextNodes (node, nodeType, result) {
     if (!ReflectionUtils.isInstanceOf(node, 'Node')) throw new TypeError('first argument must be a Node instance')
 
@@ -90,10 +102,8 @@ export default class DomUtils {
   /**
    * Provides the real height of an element in function of its border-box property, without the unit digits.
    * @example
-   * ```js
    * getElementHeight(document.body, window)
    * // => `12` but not `12px`
-   * ```
    * @todo complete implementation in function of `isBorderBox`
    * @param {HTMLElement} element
    * @param {Window} win

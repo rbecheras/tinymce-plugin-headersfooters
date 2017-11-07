@@ -3,9 +3,6 @@
 import HeadFoot from './HeadFoot'
 
 /**
- * Footer class
- * @property {Editor} _editor The current editor
- * @property {DOMElement}  _documentBody The body element of the current document
- * @property {DOMNode} node The header/footer's node element
+ * This class allow to manipulate the Footer sections of a page
  */
 export default class Footer extends HeadFoot {}

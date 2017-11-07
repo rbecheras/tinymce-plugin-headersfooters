@@ -9,10 +9,21 @@
 import UIUtils from './classes/utils/UIUtils'
 import DomUtils from './classes/utils/DomUtils'
 
+/**
+ * jQuery global namespace
+ * @type {external:jQuery}
+ */
 const $ = DomUtils.jQuery
 
+/**
+ * Tinymce global namespace
+ * @type {external:tinymce}
+ */
 const tinymce = window.tinymce
 
+/**
+ * @ignore
+ */
 export const eventHandlers = {
   'Init': { setBodies, setStackedLayout, setPageLayout, reloadMenuItems, firesNewPageAppendedEvent },
   'NodeChange': { checkPageOverflow },
@@ -25,11 +36,17 @@ export const eventHandlers = {
   'HeadersFooters:Error:NegativeBodyHeight': { alertErrorNegativeBodyHeight }
 }
 
+/**
+ * @ignore
+ */
 export const debugEventHandlers = {
   'KeyDown KeyPress KeyUp': { logKeyPress },
   'ExecCommand': { logExecCommand }
 }
 
+/**
+ * @ignore
+ */
 export const mainBodyEventHandlers = {
   'HeadersFooters:NewPageAppending': {},
   'HeadersFooters:NewPageAppended': {}
@@ -41,6 +58,7 @@ export {eventHandlers as default}
  * Fires the `HeadersFooters:NewPageAppended` event to the main body on the main frame of the whole app, not to an editor iframe.
  * @param evt {Event}
  * @fires `HeadersFooters:NewPageAppended`
+ * @returns {void}
  */
 function firesNewPageAppendedEvent (evt) {
   if (this.editor.settings.headersfooters_type === 'body') {
@@ -51,6 +69,11 @@ function firesNewPageAppendedEvent (evt) {
   }
 }
 
+/**
+ * Set document bodies on editor init
+ * @param {Event} evt the Init event
+ * @returns {void}
+ */
 function setBodies (evt) {
   const editor = evt.target
   this.documentBodies.mce[this.type] = editor.getBody()
@@ -60,14 +83,29 @@ function setBodies (evt) {
   this.documentBody = editor.getBody()
 }
 
+/**
+ * Set the stacked layout on editor init
+ * @param {Event} evt the Init event
+ * @returns {void}
+ */
 function setStackedLayout (evt) {
   UIUtils.mapMceLayoutElements(this.bodyClass, this.stackedLayout)
 }
 
+/**
+ * Set the page layout on editor init
+ * @param {Event} evt the Init event
+ * @returns {void}
+ */
 function setPageLayout (evt) {
   this.isMaster() && UIUtils.mapPageLayoutElements(this.page.pageLayout)
 }
 
+/**
+ * Enter into the section (header, body or footer) on Focus
+ * @param {Event} evt The Focus event
+ * @returns {void}
+ */
 function enterHeadFoot (evt) {
   this.enableEditorUI()
   this.paginator.pages.forEach(page => {
@@ -82,9 +120,10 @@ function enterHeadFoot (evt) {
 }
 
 /**
- * Leave the current HeadFoot instance unless it is a body section
+ * Leave the current HeadFoot instance on editor Blur unless it is a body section
  * NB: here, `this` is the plugin instance
- * @param evt
+ * @param {Event} evt The Blur event
+ * @returns {void}
  */
 function leaveHeadFoot (evt) {
   this.disableEditorUI()
@@ -104,6 +143,12 @@ function leaveHeadFoot (evt) {
   })
 }
 
+/**
+ * Apply the current format:
+ * - on editor Focus Blur Paste SetContent NodeChange
+ * - and on HeadersFooters:SetFormat
+ * @param {Event} evt The event object
+ */
 function applyCurrentFormat (evt) {
   const {plugin, paginator} = _getActiveContext()
   if (plugin && paginator && paginator.currentFormat) {
@@ -131,6 +176,13 @@ function alertErrorNegativeBodyHeight (evt) {
   }
 }
 
+/**
+ * Set document bodies:
+ * - on editor Init, Focus, Blur, Paste, SetContent, NodeChange
+ * - and on window.body HeadersFooters:SetFormat
+ * @param {Event} evt the Init event
+ * @returns {void}
+ */
 function reloadMenuItems (evt) {
   const {plugin} = _getActiveContext()
   if (plugin) {
@@ -138,6 +190,11 @@ function reloadMenuItems (evt) {
   }
 }
 
+/**
+ * Select the current page and reload the menu items of the matching editor on editor Focus
+ * @param {Event} evt The Focus event
+ * @returns {void}
+ */
 function selectCurrentPage (evt) {
   const {paginator, page, plugin} = _getActiveContext()
   if (plugin && paginator && page) {
@@ -146,6 +203,11 @@ function selectCurrentPage (evt) {
   }
 }
 
+/**
+ * Check page overflow on NodeChange
+ * @param {Event} evt the NodeChange event
+ * @returns {void}
+ */
 function checkPageOverflow (evt) {
   const {paginator, page} = _getActiveContext()
   if (paginator && page && paginator.shouldItFixPagesOverflow()) {
@@ -155,6 +217,10 @@ function checkPageOverflow (evt) {
   }
 }
 
+/**
+ * Remove a page on KeyDown if it is empty and if it is not the first (and if the KeyDown is backspace)
+ * @param {Event} evt The KeyDown event
+ */
 function removePageIfEmptyAndNotFirst (evt) {
   const {key, keyCode, altKey, ctrlKey} = evt
   if (key === 'Backspace' && keyCode === 8 && !altKey && !ctrlKey) {
@@ -171,6 +237,11 @@ function removePageIfEmptyAndNotFirst (evt) {
   }
 }
 
+/**
+ * Move the cursor to the needed page on keydown
+ * @param {Event} evt The KeyDown event
+ * @returns {void}
+ */
 function moveCursorToNeededPage (evt) {
   const {key, keyCode, altKey, ctrlKey} = evt
   if (key === 'ArrowDown' && keyCode === 40 && !altKey && !ctrlKey) {
@@ -181,18 +252,28 @@ function moveCursorToNeededPage (evt) {
   }
 }
 
+/**
+ * Logs the KeyPress event in debug mode
+ * @param {Event} evt The KeyPress event
+ * @param {Object} data The event data
+ * @returns {void}
+ */
 function logKeyPress (evt, data) {
   console.log(`Keyboard pressed (${evt.type})`, evt, data)
 }
 
+/**
+ * Logs the ExecCommand event in debug mode
+ * @param {Event} evt The ExecCommand event
+ * @param {Object} data The event data
+ * @returns {void}
+ */
 function logExecCommand (evt, data) {
   console.log(`Command executing (${evt.command})`, evt, data)
 }
 
 /**
  * Get back a hash of useful object references depending of the active editor's context.
- * @function
- * @inner
  * @returns {object} a hash filled with the following references: `{editor, plugin, paginator, page, currentPage, section}`
  */
 function _getActiveContext () {
