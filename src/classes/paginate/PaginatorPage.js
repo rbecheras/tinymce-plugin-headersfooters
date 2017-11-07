@@ -163,11 +163,18 @@ export default class PaginatorPage {
   }
 
   /**
-   * Tells if the page is empty or not
+   * Tells if the page is empty or not (the body section)
    * @returns {Boolean} True if the page is empty, else false
    */
   isEmpty () {
-    const section = this.currentSection
+    return this.isSectionEmpty(this.getBody())
+  }
+
+  /**
+   * Tells if the section is empty or not
+   * @returns {Boolean} True if the section is empty, else false
+   */
+  isSectionEmpty (section) {
     const editor = section.editor
     const body = editor.getBody()
     const $ = editor.$

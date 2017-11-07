@@ -55,6 +55,12 @@ export default class Paginator {
     this.saveLastSelectionsEnabled = true
 
     /**
+     * The action of the method syncHeadFoot() is disabled (do nothing) if this property is on false
+     * @type {Boolean}
+     */
+    this.syncHeadContentFootEnabled = true
+
+    /**
      * The current selection (saved by saveLastSelections())
      * @type {Object}
      */
@@ -138,6 +144,14 @@ export default class Paginator {
   }
 
   /**
+   * Tells if it should sync the headers/footers in function of the last updated or not.
+   * @returns {Boolean} True if it shoud sync, else false.
+   */
+  shouldItSyncHeadFootContent () {
+    return this.syncHeadContentFootEnabled
+  }
+
+  /**
    * Set the raw pages list: the input data provided as initial pages content on editors init.
    * @param {Object} param0 An object containing a `pages` property.
    * @param {Array<Object>} param0.pages The list of raw pages to init in paginator.
@@ -168,6 +182,16 @@ export default class Paginator {
   enableSaveLastSelections (bool) {
     if (typeof bool !== 'boolean') throw new TypeError('first argument must be a boolean to enable or disable the feature')
     this.saveLastSelectionsEnabled = !!bool
+  }
+
+  /**
+   * Enable or disable the action of paginator.syncHeadFoot()
+   * @param {boolean} bool pass true to enable and false to disable
+   * @returns {void}
+   */
+  enableSyncHeadFootContent (bool) {
+    if (typeof bool !== 'boolean') throw new TypeError('first argument must be a boolean to enable or disable the feature')
+    this.syncHeadContentFootEnabled = !!bool
   }
 
   /**
@@ -399,6 +423,23 @@ export default class Paginator {
     console.error(`Goto page ${page.pageNumber}`)
     this.selectCurrentPage(page, 'body')
     page.focusOnBody()
+  }
+
+  /**
+   * Sync all the headers or all the footers on each pages from a given updated section.
+   * @param {HeadersFootersPlugin} updatedSection The just modified section
+   * @returns {void}
+   */
+  syncHeadFootContent (updatedSection) {
+    if (this.shouldItSyncHeadFootContent() && !updatedSection.page.isSectionEmpty(updatedSection)) {
+      this.enableSyncHeadFootContent(false)
+      this.pages.forEach(page => {
+        if (!updatedSection.page.equals(page)) {
+          page.getSection(updatedSection.type).editor.setContent(updatedSection.editor.getContent())
+        }
+      })
+      setTimeout(() => this.enableSyncHeadFootContent(true), 100)
+    }
   }
 }
 

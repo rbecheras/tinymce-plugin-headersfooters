@@ -27,6 +27,7 @@ const tinymce = window.tinymce
 export const eventHandlers = {
   'Init': { setBodies, setStackedLayout, setPageLayout, reloadMenuItems, firesNewPageAppendedEvent },
   'NodeChange': { checkPageOverflow },
+  'Change': { syncHeadFoot },
   'SetContent': {},
   'BeforeSetContent': {},
   'Focus': { enterHeadFoot, selectCurrentPage },
@@ -284,4 +285,17 @@ function _getActiveContext () {
   const currentPage = paginator ? paginator.currentPage : null
   const section = page ? page.currentSection : null
   return {editor, plugin, paginator, page, currentPage, section}
+}
+
+/**
+ * Sync all the headers or all the footers on each pages on Change event.
+ * @param {Event} evt The Change event
+ * @returns {void}
+ */
+function syncHeadFoot (evt) {
+  if (this.paginator && this.paginator.shouldItSyncHeadFootContent()) {
+    if (this.isHeader() || this.isFooter()) {
+      this.paginator.syncHeadFootContent(this)
+    }
+  }
 }
