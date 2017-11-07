@@ -66,7 +66,7 @@ export default class Format {
    * object to be saved with.
    * @param {HeadersFooters} plugin The current HeaderFooters plugin instance
    * @fires `HeadersFooters:Format:AppliedToBody`
-   * @returns {undefined}
+   * @returns {void}
    */
   applyToPlugin (plugin) {
     let that = this

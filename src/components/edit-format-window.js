@@ -15,7 +15,7 @@ export default function openMainWinFactory (editor) {
    * Open the main paragraph properties window
    * @function
    * @inner
-   * @returns {undefined}
+   * @returns {void}
    */
   function openMainWin (format) {
     const formatTab = editFormatTabs.createFormatTab(format)

@@ -180,7 +180,7 @@ export default class HeadersFootersPlugin {
 
   /**
    * Enable the editor's UI elements (top bar, menu bar, tools bar, status bar...)
-   * @returns {undefined}
+   * @returns {void}
    */
   enableEditorUI () {
     this.stackedLayout.menubar.show()
@@ -195,7 +195,7 @@ export default class HeadersFootersPlugin {
 
   /**
    * Disable the editor's UI elements (top bar, menu bar, tools bar, status bar...)
-   * @returns {undefined}
+   * @returns {void}
    */
   disableEditorUI () {
     this.stackedLayout.menubar.hide()
@@ -209,7 +209,7 @@ export default class HeadersFootersPlugin {
   /**
    * Enable an editor instance (so a page section)
    * @param {boolean} withFocus set it to true if you want to enable the editor and focus on it.
-   * @returns {undefined}
+   * @returns {void}
    */
   enableEditableArea (withFocus) {
     this.enabled = true
@@ -220,7 +220,7 @@ export default class HeadersFootersPlugin {
 
   /**
    * Disable an editor instance (a page section)
-   * @returns {undefined}
+   * @returns {void}
    */
   disableEditableArea () {
     this.enabled = false
@@ -235,7 +235,7 @@ export default class HeadersFootersPlugin {
   /**
    * Set the current format for all pages
    * @param {Format} format the format instance to set as current format
-   * @returns {undefined}
+   * @returns {void}
    */
   setFormat (format) {
     this.paginator.currentFormat = this.paginator.currentFormat || new Format(format.name, format)
@@ -244,7 +244,7 @@ export default class HeadersFootersPlugin {
 
   /**
    * Reloads all custom menu items created by the plugin
-   * @returns {undefined}
+   * @returns {void}
    */
   reloadMenuItems () {
     if (this.paginator.currentFormat) {

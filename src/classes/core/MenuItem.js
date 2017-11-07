@@ -49,7 +49,7 @@ export default class MenuItem {
   /**
    * By default on click, the menu item logs on console it has been clicked and returns it to allow chainable behavior.
    * This method should be overriden after instanciation (see example).
-   * @returns {undefined}
+   * @returns {void}
    * @example
    * // to override this placehoder callback, juste assign a new one
    * let menuItem = new MenuItem('my menu item', options)

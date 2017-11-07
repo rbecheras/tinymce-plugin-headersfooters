@@ -151,7 +151,7 @@ export default class PaginatorPage {
    * Iterate on all exinsting page sections in [header, body, footer]
    * @param {function} func the function to iterate on each section
    * @param thisArg if the func function should be binded to a this argument
-   * @returns {undefined}
+   * @returns {void}
    */
   iterateOnSections (func, thisArg) {
     let sections = []

@@ -12,7 +12,7 @@ export default class UIUtils {
   /**
    * Lock a node
    * @mixin
-   * @returns {undefined}
+   * @returns {void}
    */
   static lockNode () {
     let $this = $(this)
@@ -23,7 +23,7 @@ export default class UIUtils {
   /**
    * Unlock a node
    * @mixin
-   * @returns {undefined}
+   * @returns {void}
    */
   static unlockNode () {
     let $this = $(this)
@@ -35,7 +35,7 @@ export default class UIUtils {
   /**
    * Create and apply the unselectable CSS class to the active document
    * @param {Editor} editor The tinymce active editor
-   * @returns {undefined}
+   * @returns {void}
    */
   static addUnselectableCSSClass (editor) {
     const unselectableCSSRules = '.unselectable { -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }'

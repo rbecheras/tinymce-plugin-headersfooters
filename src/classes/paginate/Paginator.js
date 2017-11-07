@@ -75,7 +75,7 @@ export default class Paginator {
   /**
    * Enable or disable the action of paginator.fixPagesOverflow()
    * @param {boolean} bool pass true to enable and false to disable
-   * @returns {undefined}
+   * @returns {void}
    */
   enableFixPagesOverflow (bool) {
     if (typeof bool !== 'boolean') throw new TypeError('first argument must be a boolean to enable or disable the feature')
@@ -85,7 +85,7 @@ export default class Paginator {
   /**
    * Enable or disable the action of paginator.saveLastSelection()
    * @param {boolean} bool pass true to enable and false to disable
-   * @returns {undefined}
+   * @returns {void}
    */
   enableSaveLastSelections (bool) {
     if (typeof bool !== 'boolean') throw new TypeError('first argument must be a boolean to enable or disable the feature')
