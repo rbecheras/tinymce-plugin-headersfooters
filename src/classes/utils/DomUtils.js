@@ -177,6 +177,33 @@ export default class DomUtils {
       throw new TypeError('first argument seems not to be a Node element in any context window')
     }
   }
+
+  /**
+   * Create a new transaction on a given editor, but given an async callback
+   * @async
+   * @param {external:Editor} editor The working editor instance
+   * @param {function} asyncCallback An async callback
+   * @returns {Promise} a promise resolved once the transaction is done
+   * @example A
+   * await editorTransactAsync(editor, async () => {
+   *   foo = await bar()
+   *   foobar = foo()
+   * })
+   * @example B
+   * async function myAsyncCallback () {
+   *   return bar().then(foo => foobar = foo())
+   * }
+   * await editorTransactAsync(editor, myAsyncCallback)
+   */
+  static async editorTransactAsync (editor, asyncCallback) {
+    return new Promise((resolve, reject) => {
+      editor.undoManager.transact(() => {
+        asyncCallback()
+        .then(result => resolve(result))
+        .catch(e => reject(e))
+      })
+    })
+  }
 }
 
 DomUtils.jQuery = window.jQuery
