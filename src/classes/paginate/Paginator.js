@@ -476,40 +476,43 @@ function fixOverflowAndGetAsClonedNode (page, parentElement) {
   let overflowingWords = []
 
   let $parentElement = $(parentElement)
-  let parentElementChildren = $parentElement.children()
   let $parentElementClone = $parentElement.clone().empty()
 
-  if (parentElementChildren.length) {
-    let resume = 0
-    while (page.isOverflowing() && resume < 100) {
+  if ($parentElement.children().length) {
+    let loopCount = 0
+    const maxLoopCount = 100
+    while (page.isOverflowing() && loopCount < maxLoopCount) {
       let lastNode = DomUtils.cutLastNode($, parentElement)
       if (lastNode) {
         overflowingNodes.unshift(lastNode)
       }
-      resume++
+      loopCount++
     }
-    if (resume === 999) {
-      console.error('cutLastNode loop reached out 100 iteration !')
+
+    if (loopCount === maxLoopCount) {
+      console.error(`cutLastNode loop reached out ${maxLoopCount} iteration !`)
     }
 
     if (overflowingNodes.length) {
       splittedNode = overflowingNodes.shift()
       $parentElement.append(splittedNode)
-      splittedNodeClone = fixOverflowAndGetAsClonedNode(page, splittedNode)
+      splittedNodeClone = await fixOverflowAndGetAsClonedNode(page, splittedNode)
       overflowingNodes.unshift(splittedNodeClone)
       $parentElementClone.append(overflowingNodes)
     }
   } else {
-    let resume = 0
-    while (page.isOverflowing() && resume < 100) {
+    let loopCount = 0
+    const maxLoopCount = 1000
+    while (page.isOverflowing() && loopCount < maxLoopCount) {
       let lastWord = DomUtils.cutLastWord($, parentElement)
       if (lastWord) {
         overflowingWords.unshift(lastWord)
       }
-      resume++
+      loopCount++
     }
-    if (resume === 999) {
-      console.error('cutLastNode loop reached out 100 iteration !')
+
+    if (loopCount === maxLoopCount) {
+      console.error(`cutLastWord loop reached out ${maxLoopCount} iteration !`)
     }
 
     if (overflowingWords.length) {
