@@ -291,16 +291,14 @@ export default class Paginator {
 
   /**
    * Get the next page after the given page if given or after the current page if exists, else null
-   * @param {PaginatorPage|null} page The wanted next page.
-   * @returns {void}
+   * @param {PaginatorPage} [page=this.currentPage] The wanted next page. If undefined, the current page is used as the given page.
+   * @returns {PaginatorPage|null}
    */
   getNextPage (page) {
-    let nextPage = null
     page = page || this.currentPage
-    if (this.pages.length >= page.pageNumber) {
-      nextPage = this.pages[page.pageNumber]
-    }
-    return nextPage
+    return this.hasNextPage()
+      ? this.pages[page.pageNumber]
+      : null
   }
 
   /**
