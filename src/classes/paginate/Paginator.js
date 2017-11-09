@@ -376,7 +376,6 @@ export default class Paginator {
    * @fires `HeadersFooters:PageRemoved`
    */
   async removePage (removingPage) {
-    console.error(`Remove Page ${removingPage.pageNumber}`)
     let shouldRestoreSelection = false
     const removingPageNumber = removingPage.pageNumber
     const pageIndex = removingPageNumber - 1
@@ -384,24 +383,20 @@ export default class Paginator {
 
     $('body').trigger('HeadersFooters:PageRemoving', {pageNumber: removingPageNumber})
 
-    return new Promise((resolve, reject) => {
-      let h = removingPage.getHeader().editor
-      let b = removingPage.getBody().editor
-      let f = removingPage.getFooter().editor
-      h.on('remove', () => {
-        h.destroy()
-        b.on('remove', () => {
-          b.destroy()
-          f.on('remove', () => {
-            f.destroy()
-            resolve()
-          })
-          f.remove()
+    return Promise.all([
+      removingPage.getBody(),
+      removingPage.getHeader(),
+      removingPage.getFooter()
+    ].map(section => {
+      section.disableEditorUI()
+      return new Promise(resolve => {
+        section.editor.on('remove', () => {
+          section.editor.destroy()
+          resolve()
         })
-        b.remove()
+        section.editor.remove()
       })
-      h.remove()
-    })
+    }))
     .then(() => {
       ;[this.rawPages, this.pages].forEach(pagesArray => {
         pagesArray.splice(pageIndex, 1)
