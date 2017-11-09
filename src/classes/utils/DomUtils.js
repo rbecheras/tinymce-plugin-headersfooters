@@ -124,6 +124,27 @@ export default class DomUtils {
   }
 
   /**
+   * Cut the first node of a given Node and returns it back
+   * @param {object} $ jQuery instance matching the given node
+   * @param {Node} parentNode the parent node to cut its first child node
+   * @returns {Node} the first child node
+   * @throws {TypeError} if the second argument is not a Node instance
+   */
+  static cutFirstNode ($, parentNode) {
+    if (!ReflectionUtils.isInstanceOf(parentNode, 'Node')) throw new TypeError('second argument must be a Node instance')
+    let firstNode
+    if (parentNode.childNodes.length) {
+      firstNode = parentNode.childNodes[0]
+      firstNode && $(firstNode).remove()
+    } else {
+      console.error({parentNode})
+      throw new Error('parentNode has no childNodes')
+    }
+
+    return firstNode
+  }
+
+  /**
    * Cut the last node of a given Node and returns it back
    * @param {object} $ jQuery instance matching the given node
    * @param {Node} parentNode the parent node to cut its last child node
