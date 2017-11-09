@@ -239,7 +239,6 @@ export default class Paginator {
    * @returns {Promise} Paginator#appendingNewPages[pageNumber]
    */
   async appendNewPage () {
-    const paginator = this
     const pageNumber = this.getNumberOfPages() + 1
     const $body = window.$('body')
 
@@ -247,11 +246,19 @@ export default class Paginator {
       let handler = (evt, data) => {
         $body.unbind('HeadersFooters:NewPageAppended', handler)
         // resolve the new created page
-        resolve(paginator.getPage(data.pageNumber))
+        let newPage = this.getPage(data.pageNumber)
+        newPage.iterateOnSections(section => section.disableEditorUI())
+        // fires NodeChange on activeEditor to update the view add display the new created page
+        setTimeout(() => tinymce.activeEditor.nodeChanged(), 200)
+        resolve(newPage)
       }
+
       $body.bind('HeadersFooters:NewPageAppended', handler)
       $body.trigger('HeadersFooters:NewPageAppending', { pageNumber })
 
+      // append a new raw empty page
+      // and let the attached editor init event
+      // triggers the 'HeadersFooters:NewPageAppended' plugin event
       try {
         this.rawPages.push({})
       } catch (e) {
