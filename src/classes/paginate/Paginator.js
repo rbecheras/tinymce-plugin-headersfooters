@@ -208,25 +208,36 @@ export default class Paginator {
    */
   async fixPagesOverflow () {
     if (this.shouldItFixPagesOverflow() && this.getCurrentPage()) {
-      console.debug('Fixing Pages Overflow...')
+      console.group()
+      console.log('Fixing Pages Overflow...')
       this.enableFixPagesOverflow(false)
       for (let i = this.getCurrentPage().pageNumber; i <= this.getNumberOfPages(); i++) {
         let page = this.getPage(i)
         if (page.isOverflowing()) {
           let section = page.getBody()
           let editor = section.editor
-          let overflowingBodyClone = fixOverflowAndGetAsClonedNode(page, editor.getBody())
-          let overflowingNodes = editor.$(overflowingBodyClone).children()
+          let overflowingBodyClone = null
+          let overflowingNodes = null
+
+          await DomUtils.editorTransactAsync(editor, async () => {
+            overflowingBodyClone = await fixOverflowAndGetAsClonedNode(page, editor.getBody())
+            console.log({overflowingBodyClone})
+            overflowingNodes = editor.$(overflowingBodyClone).children()
+          })
 
           if (overflowingNodes.length) {
             let nextPage = this.getNextPage(page) || await this.appendNewPage()
             let editor = nextPage.getBody().editor
             let $ = editor.$
-            console.debug(`prepend ${overflowingNodes.length} last cut nodes in page ${nextPage.pageNumber}`, overflowingNodes)
-            $(editor.getBody()).prepend(overflowingNodes)
+            editor.undoManager.transact(() => {
+              console.log(`Prepend ${overflowingNodes.length} last cut nodes in page ${nextPage.pageNumber}`, overflowingNodes)
+              $(editor.getBody()).prepend(overflowingNodes)
+              editor.nodeChanged()
+            })
           }
         }
       }
+      console.groupEnd()
       // re-enable page height checking (y-overflow)
       this.enableFixPagesOverflow(true)
     }
@@ -428,7 +439,7 @@ export default class Paginator {
    * @returns {void}
    */
   goToPage (page) {
-    console.error(`Goto page ${page.pageNumber}`)
+    console.log(`Goto page ${page.pageNumber}`)
     this.selectCurrentPage(page, 'body')
     page.focusOnBody()
   }
