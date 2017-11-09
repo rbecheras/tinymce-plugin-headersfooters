@@ -280,6 +280,16 @@ export default class Paginator {
   }
 
   /**
+   * Tells if there is a next page after a given page
+   * @param {PaginatorPage} [page=this.currentPage] The given page. If undefined, the current page is used as the given page.
+   * @returns {boolean} True if there is a page following the given one, else false.
+   */
+  hasNextPage (page) {
+    page = page || this.currentPage
+    return this.pages.length >= page.pageNumber
+  }
+
+  /**
    * Get the next page after the given page if given or after the current page if exists, else null
    * @param {PaginatorPage|null} page The wanted next page.
    * @returns {void}
