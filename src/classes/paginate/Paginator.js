@@ -474,7 +474,7 @@ export default class Paginator {
  * @param {HTMLElement} parentElement the parent element currently overflowing that should be splitted/cloned between the given page (the overflowing page) and the next page
  * @returns {HTMLElement} a clone of `parentElement` containing
  */
-function fixOverflowAndGetAsClonedNode (page, parentElement) {
+async function fixOverflowAndGetAsClonedNode (page, parentElement) {
   let editor = page.getBody().editor
   let $ = editor.$
   let splittedNode
