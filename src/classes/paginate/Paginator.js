@@ -213,9 +213,9 @@ export default class Paginator {
       this.enableFixPagesOverflow(false)
       for (let i = this.getCurrentPage().pageNumber; i <= this.getNumberOfPages(); i++) {
         let page = this.getPage(i)
+        let section = page.getBody()
+        let editor = section.editor
         if (page.isOverflowing()) {
-          let section = page.getBody()
-          let editor = section.editor
           let overflowingBodyClone = null
           let overflowingNodes = null
 
@@ -235,6 +235,17 @@ export default class Paginator {
               editor.nodeChanged()
             })
           }
+        } else if (this.hasNextPage(page)) {
+          let nextPage = this.getNextPage(page)
+          let nextPageEditor = nextPage.getBody().editor
+          let nextPageBody = nextPageEditor.getBody()
+          while (!page.isOverflowing() && !nextPage.isEmpty()) {
+            let firstNode = DomUtils.cutFirstNode(nextPageEditor.$, nextPageBody)
+            if (firstNode) {
+              $(nextPageBody).append(firstNode)
+            }
+          }
+          setTimeout(() => editor.nodeChanged())
         }
       }
       console.groupEnd()
