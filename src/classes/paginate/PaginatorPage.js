@@ -223,16 +223,19 @@ export default class PaginatorPage {
 
   /**
    * Tells if the page is overflowing, i.e. if its content overflows the height specified in the current format.
-   * @returns {Boolean} True if the page is overflowing
+   * @returns {Boolean} True if the page is overflowing, else false
    */
   isOverflowing () {
-    let overflowing
+    let overflowing = false
     const bodySection = this.getBody()
     if (bodySection) {
       const contentHeight = this.getSectionContentHeight(bodySection)
-      const maxBodyHeight = UnitsUtils.getValueFromStyle(this.getFormat().calculateBodyHeight())
-      overflowing = contentHeight > maxBodyHeight
-      if (overflowing) console.debug(`Page N°${this.pageNumber} Overflows !`)
+      const format = this.getFormat()
+      if (format) {
+        const maxBodyHeight = UnitsUtils.getValueFromStyle(format.calculateBodyHeight())
+        overflowing = contentHeight > maxBodyHeight
+        if (overflowing) console.debug(`Page N°${this.pageNumber} Overflows !`)
+      }
     }
     return overflowing
   }
