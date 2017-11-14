@@ -7,6 +7,7 @@ import createMenuItems from '../../components/menu-items'
 import editFormatOpenMainWin from '../../components/edit-format-window'
 import UIUtils from '../utils/UIUtils'
 import EventsUtils from '../utils/EventsUtils'
+import DomUtils from '../utils/DomUtils'
 import { eventHandlers, debugEventHandlers } from '../../event-handlers'
 
 /**
@@ -214,7 +215,11 @@ export default class HeadersFootersPlugin {
   enableEditableArea (withFocus) {
     this.enabled = true
     this.disabled = false
-    this.editor.$('body').css({opacity: 1})
+
+    let bodyElement = this.editor.getBody()
+    if (DomUtils.getElementOpacity(bodyElement) === 0.25) {
+      DomUtils.jQuery(bodyElement).fadeTo(250, 1, () => this.editor.$(bodyElement).css({opacity: 1}))
+    }
     withFocus && this.editor.focus()
   }
 
@@ -226,6 +231,10 @@ export default class HeadersFootersPlugin {
     this.enabled = false
     this.disabled = true
 
+    let bodyElement = this.editor.getBody()
+    if (DomUtils.getElementOpacity(bodyElement) === 1) {
+      DomUtils.jQuery(bodyElement).fadeTo(250, 0.25, () => this.editor.$(bodyElement).css({opacity: 0.25}))
+    }
     this.unselectContent()
   }
 
