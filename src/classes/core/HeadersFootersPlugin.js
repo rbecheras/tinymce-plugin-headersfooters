@@ -226,10 +226,17 @@ export default class HeadersFootersPlugin {
     this.enabled = false
     this.disabled = true
 
+    this.unselectContent()
+  }
+
+  /**
+   * Unselect the section's editor content
+   * @returns {void}
+   */
+  unselectContent () {
     if (this.editor.selection && !this.editor.selection.isCollapsed()) {
       this.editor.selection.collapse()
     }
-    this.editor.$('body').css({opacity: 0.25})
   }
 
   /**
