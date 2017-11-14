@@ -202,81 +202,89 @@ export default class Paginator {
   }
 
   /**
-   * Fix all overflowing pages starting at the current active page to the last.
+   * Fix all overflowing pages and empty spaces starting at the current active page to the last.
    * Loop recursively over the nested overflowing nodes to split and clone it and past overflowing content to the next page.
+   * @param {boolean} onlyOverflow Set it to true to check only page overflows, not empty spaces
    * @see {@link https://github.com/zenorocha/clipboard.js/issues/250}
    * @returns {void}
    */
-  async fixPagesOverflow () {
+  async fixPagesOverflow (onlyOverflow) {
     if (this.shouldItFixPagesOverflow() && this.getCurrentPage()) {
       this.enableFixPagesOverflow(false)
       let currentPage = this.getCurrentPage()
       let currentSection = currentPage.getBody()
-      let currentEditor = currentSection.editor
-      // let selectedRange = currentEditor.selection.getRng()
+      let currentEditor
+      if (currentSection) {
+        currentEditor = currentSection.editor
+        if (currentEditor) {
+          if (currentPage.isOverflowing()) {
+            for (let i = currentPage.pageNumber; i <= this.getNumberOfPages(); i++) {
+              let page = this.getPage(i)
+              let section = page.getBody()
+              let editor = section.editor
 
-      if (currentPage.isOverflowing()) {
-        for (let i = currentPage.pageNumber; i <= this.getNumberOfPages(); i++) {
-          let page = this.getPage(i)
-          let section = page.getBody()
-          let editor = section.editor
+              if (page.isOverflowing()) {
+                let overflowingBodyClone = null
+                let overflowingNodes = null
 
-          if (page.isOverflowing()) {
-            let overflowingBodyClone = null
-            let overflowingNodes = null
+                await DomUtils.editorTransactAsync(editor, async () => {
+                  overflowingBodyClone = await fixOverflowAndGetAsClonedNode(page, editor.getBody())
+                  // console.log(`Cloned/Splitted node between pages ${page.pageNumber} and ${page.pageNumber + 1}`, overflowingBodyClone)
+                  overflowingNodes = editor.$(overflowingBodyClone).children()
+                })
 
-            await DomUtils.editorTransactAsync(editor, async () => {
-              overflowingBodyClone = await fixOverflowAndGetAsClonedNode(page, editor.getBody())
-              // console.log(`Cloned/Splitted node between pages ${page.pageNumber} and ${page.pageNumber + 1}`, overflowingBodyClone)
-              overflowingNodes = editor.$(overflowingBodyClone).children()
-            })
-
-            if (overflowingNodes.length) {
-              let nextPage = this.getNextPage(page) || await this.appendNewPage(true)
-              let editor = nextPage.getBody().editor
-              let $ = editor.$
-              editor.undoManager.transact(() => {
-                // console.log(`Prepend ${overflowingNodes.length} last cut nodes in page ${nextPage.pageNumber}`, overflowingNodes)
-                $(editor.getBody()).prepend(overflowingNodes)
-                editor.nodeChanged()
-              })
-            }
-          }
-        }
-      } else if (currentPage.isEmpty()) {
-        this.removePage(currentPage)
-      } else {
-        for (let i = currentPage.pageNumber; i <= this.getNumberOfPages(); i++) {
-          let page = this.getPage(i)
-          let section = page.getBody()
-          let editor = section.editor
-
-          if (this.hasNextPage(page)) {
-            let nextPage = this.getNextPage(page)
-            let nextPageSection = nextPage.getBody()
-            if (nextPageSection && nextPageSection.editor) {
-              let nextPageEditor = nextPageSection.editor
-              let nextPageBody = nextPageEditor.getBody()
-              while (!page.isOverflowing() && !nextPage.isEmpty()) {
-                let firstNode = DomUtils.cutFirstNode(nextPageEditor.$, nextPageBody)
-                if (firstNode) {
-                  // console.log(`Appending node to page ${page.pageNumber}`, firstNode)
-                  $(editor.getBody()).append(firstNode)
+                if (overflowingNodes.length) {
+                  let nextPage = this.getNextPage(page) || await this.appendNewPage(true)
+                  let editor = nextPage.getBody().editor
+                  let $ = editor.$
+                  editor.undoManager.transact(() => {
+                    // console.log(`Prepend ${overflowingNodes.length} last cut nodes in page ${nextPage.pageNumber}`, overflowingNodes)
+                    $(editor.getBody()).prepend(overflowingNodes)
+                    editor.nodeChanged()
+                  })
                 }
               }
             }
+          } else if (!onlyOverflow) {
+            if (currentPage.isEmpty()) {
+              this.removePage(currentPage)
+            } else {
+              for (let i = currentPage.pageNumber; i <= this.getNumberOfPages(); i++) {
+                let page = this.getPage(i)
+                let section = page.getBody()
+                let editor = section.editor
+
+                if (this.hasNextPage(page)) {
+                  let nextPage = this.getNextPage(page)
+                  let nextPageSection = nextPage.getBody()
+                  if (nextPageSection && nextPageSection.editor) {
+                    let nextPageEditor = nextPageSection.editor
+                    let nextPageBody = nextPageEditor.getBody()
+                    while (!page.isOverflowing() && !nextPage.isEmpty()) {
+                      let firstNode = DomUtils.cutFirstNode(nextPageEditor.$, nextPageBody)
+                      if (firstNode) {
+                        // console.log(`Appending node to page ${page.pageNumber}`, firstNode)
+                        $(editor.getBody()).append(firstNode)
+                      }
+                    }
+                  }
+                }
+              }
+              setTimeout(() => {
+                try {
+                  currentEditor.nodeChanged()
+                  currentSection.enableEditorUI()
+                  currentEditor.focus()
+                } catch (e) {
+                  console.error(e)
+                }
+              }, 100)
+            }
           }
         }
-        setTimeout(() => {
-          try {
-            currentEditor.nodeChanged()
-            currentSection.enableEditorUI()
-            currentEditor.focus()
-          } catch (e) {
-            console.error(e)
-          }
-        }, 100)
       }
+      // let selectedRange = currentEditor.selection.getRng()
+
 
       // console.log({selectedRange})
       // currentEditor.selection.setRng(selectedRange)
