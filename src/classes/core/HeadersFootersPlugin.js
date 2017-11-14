@@ -177,6 +177,18 @@ export default class HeadersFootersPlugin {
     if (window.debugEventHandlers) {
       EventsUtils.autoBindImplementedEventCallbacks.call(this, editor, debugEventHandlers)
     }
+
+    /**
+     * Tells if the editable area is currently fading down or not (opacity falling down)
+     * @type {boolean}
+     */
+    this.isEditableAreaFadingDown = false
+
+    /**
+     * Tells if the editable area is currently fading up or not (opactity growing up)
+     * @type {boolean}
+     */
+    this.isEditableAreaFadingUp = false
   }
 
   /**
