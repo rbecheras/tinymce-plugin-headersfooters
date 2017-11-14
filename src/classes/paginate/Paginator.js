@@ -256,22 +256,32 @@ export default class Paginator {
 
   /**
    * Append a new raw page and return a promise that listen to `HeadersFooters:NewPageAppended` then resolves the appended page number
+   * @param {boolean} [shouldFocusToBottom=false] set it to true if you want the editor's body section should focus to the bottom once the page is appended.
    * @listens `HeadersFooters:NewPageAppended`
    * @fires `HeadersFooters:NewPageAppending`
    * @returns {Promise} Paginator#appendingNewPages[pageNumber]
    */
-  async appendNewPage () {
+  async appendNewPage (shouldFocusToBottom) {
     const pageNumber = this.getNumberOfPages() + 1
     const $body = window.$('body')
+    // console.log(`Appending new page (p${pageNumber})...`)
 
     this.appendingNewPages[pageNumber] = new Promise((resolve, reject) => {
       let handler = (evt, data) => {
+        // console.log(`HeadersFooters:NewPageAppended (page ${data.pageNumber})`)
         $body.unbind('HeadersFooters:NewPageAppended', handler)
+
         // resolve the new created page
         let newPage = this.getPage(data.pageNumber)
         newPage.iterateOnSections(section => section.disableEditorUI())
+
         // fires NodeChange on activeEditor to update the view add display the new created page
         setTimeout(() => tinymce.activeEditor.nodeChanged(), 200)
+
+        // focus if it should
+        if (shouldFocusToBottom) {
+          DomUtils.focusToBottom(newPage.getBody().editor)
+        }
         resolve(newPage)
       }
 
