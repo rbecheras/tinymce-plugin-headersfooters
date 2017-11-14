@@ -423,43 +423,45 @@ export default class Paginator {
    * @fires `HeadersFooters:PageRemoved`
    */
   async removePage (removingPage) {
-    let shouldRestoreSelection = false
-    const removingPageNumber = removingPage.pageNumber
-    const pageIndex = removingPageNumber - 1
-    shouldRestoreSelection = !this.currentPage.equals(removingPage)
+    if (removingPage.pageNumber !== 1) {
+      let shouldRestoreSelection = false
+      const removingPageNumber = removingPage.pageNumber
+      const pageIndex = removingPageNumber - 1
+      shouldRestoreSelection = !this.currentPage.equals(removingPage)
 
-    $('body').trigger('HeadersFooters:PageRemoving', {pageNumber: removingPageNumber})
+      $('body').trigger('HeadersFooters:PageRemoving', {pageNumber: removingPageNumber})
 
-    return Promise.all([
-      removingPage.getBody(),
-      removingPage.getHeader(),
-      removingPage.getFooter()
-    ].map(section => {
-      section.disableEditorUI()
-      return new Promise(resolve => {
-        section.editor.on('remove', () => {
-          section.editor.destroy()
-          resolve()
+      return Promise.all([
+        removingPage.getBody(),
+        removingPage.getHeader(),
+        removingPage.getFooter()
+      ].map(section => {
+        section.disableEditorUI()
+        return new Promise(resolve => {
+          section.editor.on('remove', () => {
+            section.editor.destroy()
+            resolve()
+          })
+          section.editor.remove()
         })
-        section.editor.remove()
-      })
-    }))
-    .then(() => {
-      ;[this.rawPages, this.pages].forEach(pagesArray => {
-        pagesArray.splice(pageIndex, 1)
-        pagesArray.forEach(page => {
-          if (page.pageNumber > removingPageNumber) {
-            page.pageNumber = removingPageNumber - 1
-          }
+      }))
+      .then(() => {
+        ;[this.rawPages, this.pages].forEach(pagesArray => {
+          pagesArray.splice(pageIndex, 1)
+          pagesArray.forEach(page => {
+            if (page.pageNumber > removingPageNumber) {
+              page.pageNumber = removingPageNumber - 1
+            }
+          })
         })
+        if (shouldRestoreSelection) {
+          this.restoreLastSelection()
+        } else {
+          this.goToPage(this.getLastPage())
+        }
+        $('body').trigger('HeadersFooters:PageRemoved', {pageNumber: removingPageNumber})
       })
-      if (shouldRestoreSelection) {
-        this.restoreLastSelection()
-      } else {
-        this.goToPage(this.getLastPage())
-      }
-      $('body').trigger('HeadersFooters:PageRemoved', {pageNumber: removingPageNumber})
-    })
+    }
   }
 
   /**
