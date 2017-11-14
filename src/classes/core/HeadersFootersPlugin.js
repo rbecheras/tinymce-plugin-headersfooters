@@ -229,7 +229,7 @@ export default class HeadersFootersPlugin {
     this.disabled = false
 
     let bodyElement = this.editor.getBody()
-    if (DomUtils.getElementOpacity(bodyElement) === 0.25) {
+    if (!this.isEditableAreaFadingUp && DomUtils.getElementOpacity(bodyElement) !== 1) {
       DomUtils.jQuery(bodyElement).fadeTo(250, 1, () => this.editor.$(bodyElement).css({opacity: 1}))
     }
     withFocus && this.editor.focus()
@@ -244,7 +244,7 @@ export default class HeadersFootersPlugin {
     this.disabled = true
 
     let bodyElement = this.editor.getBody()
-    if (DomUtils.getElementOpacity(bodyElement) === 1) {
+    if (!this.isEditableAreaFadingDown && DomUtils.getElementOpacity(bodyElement) !== 0.25) {
       DomUtils.jQuery(bodyElement).fadeTo(250, 0.25, () => this.editor.$(bodyElement).css({opacity: 0.25}))
     }
     this.unselectContent()
