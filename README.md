@@ -122,6 +122,7 @@ var fOpts = {
 | HeadersFooters:NewPageAppended | Fires when a new page has been appended |
 | HeadersFooters:PageRemoving | Fires when the paginator is removing a page |
 | HeadersFooters:PageRemoved | Fires when a page has been removed |
+| HeadersFooters:Format:AppliedToBody | Fires when the current format is applied |
 
 ### HeadersFootersPlugin events on editor
 
