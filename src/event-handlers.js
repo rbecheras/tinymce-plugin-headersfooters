@@ -112,6 +112,9 @@ function enterHeadFoot (evt) {
     page.iterateOnSections((section) => {
       if (this.type === section.type) {
         section.enableEditableArea()
+        if (!this.page.equals(section.page)) {
+          section.unselectContent()
+        }
       } else {
         section.disableEditableArea()
       }
