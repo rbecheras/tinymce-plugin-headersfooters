@@ -211,17 +211,20 @@ export default class Paginator {
   async fixPagesOverflow (onlyOverflow) {
     if (this.shouldItFixPagesOverflow() && this.getCurrentPage()) {
       this.enableFixPagesOverflow(false)
-      let currentPage = this.getCurrentPage()
-      let currentSection = currentPage.getBody()
-      let currentEditor
-      if (currentSection) {
-        currentEditor = currentSection.editor
-        if (currentEditor) {
+
+      const currentPage = this.getCurrentPage()
+      const currentActiveSection = this.getActiveSection()
+      const currentBodySection = currentPage.getBody()
+
+      if (currentBodySection) {
+        const currentBodyEditor = currentBodySection.editor
+
+        if (currentBodyEditor) {
           if (currentPage.isOverflowing()) {
             for (let i = currentPage.pageNumber; i <= this.getNumberOfPages(); i++) {
-              let page = this.getPage(i)
-              let section = page.getBody()
-              let editor = section.editor
+              const page = this.getPage(i)
+              const section = page.getBody()
+              const editor = section.editor
 
               if (page.isOverflowing()) {
                 let overflowingBodyClone = null
@@ -234,9 +237,9 @@ export default class Paginator {
                 })
 
                 if (overflowingNodes.length) {
-                  let nextPage = this.getNextPage(page) || await this.appendNewPage(true)
-                  let editor = nextPage.getBody().editor
-                  let $ = editor.$
+                  const nextPage = this.getNextPage(page) || await this.appendNewPage(true)
+                  const editor = nextPage.getBody().editor
+                  const $ = editor.$
                   editor.undoManager.transact(() => {
                     // console.log(`Prepend ${overflowingNodes.length} last cut nodes in page ${nextPage.pageNumber}`, overflowingNodes)
                     $(editor.getBody()).prepend(overflowingNodes)
@@ -250,42 +253,40 @@ export default class Paginator {
               this.removePage(currentPage)
             } else {
               for (let i = currentPage.pageNumber; i <= this.getNumberOfPages(); i++) {
-                let page = this.getPage(i)
-                let section = page.getBody()
-                let editor = section.editor
+                const page = this.getPage(i)
+                const section = page.getBody()
+                const editor = section.editor
 
                 if (this.hasNextPage(page)) {
-                  let nextPage = this.getNextPage(page)
-                  let nextPageSection = nextPage.getBody()
+                  const nextPage = this.getNextPage(page)
+                  const nextPageSection = nextPage.getBody()
+
                   if (nextPageSection && nextPageSection.editor) {
-                    let nextPageEditor = nextPageSection.editor
-                    let nextPageBody = nextPageEditor.getBody()
-                    while (!page.isOverflowing() && !nextPage.isEmpty()) {
-                      let firstNode = DomUtils.cutFirstNode(nextPageEditor.$, nextPageBody)
-                      if (firstNode) {
-                        // console.log(`Appending node to page ${page.pageNumber}`, firstNode)
-                        $(editor.getBody()).append(firstNode)
+                    const nextPageEditor = nextPageSection.editor
+                    const nextPageBody = nextPageEditor.getBody()
+
+                    nextPageEditor.undoManager.transact(() => {
+                      while (!page.isOverflowing() && !nextPage.isEmpty()) {
+                        const firstNode = DomUtils.cutFirstNode(nextPageEditor.$, nextPageBody)
+                        if (firstNode) {
+                          // console.log(`Appending node to page ${page.pageNumber}`, firstNode)
+                          $(editor.getBody()).append(firstNode)
+                        }
                       }
-                    }
+                    })
+                    nextPageEditor.nodeChanged()
                   }
                 }
               }
               setTimeout(() => {
-                try {
-                  currentEditor.nodeChanged()
-                  currentSection.enableEditorUI()
-                  currentEditor.focus()
-                } catch (e) {
-                  console.error(e)
-                }
-              }, 100)
+                currentActiveSection.enableEditorUI()
+                currentActiveSection.editor.focus()
+              }, 50)
             }
           }
         }
       }
       // let selectedRange = currentEditor.selection.getRng()
-
-
       // console.log({selectedRange})
       // currentEditor.selection.setRng(selectedRange)
       // currentEditor.focus()
