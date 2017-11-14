@@ -233,13 +233,6 @@ export default class Format {
         overflow: 'hidden'
       })
 
-      // Allow body panel overflow
-      if (plugin.isBody()) {
-        $(body, win).css({
-          overflowY: 'auto'
-        })
-      }
-
       // var bodyHeight = uiUtils.getElementHeight(body, win)
       if (plugin.isBody()) {
         plugin.page.pageLayout.pageWrapper.css({
@@ -330,7 +323,6 @@ export default class Format {
         })
         plugin.page.pageLayout.bodyPanel.css({
           // overflow: 'hidden', // TODO: update model spec
-          overflow: 'auto', // TODO: update for pagination
           borderColor: that.body.border.color,
           borderStyle: that.body.border.style,
           borderWidth: that.body.border.width,
