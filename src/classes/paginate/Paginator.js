@@ -307,7 +307,7 @@ export default class Paginator {
    */
   hasNextPage (page) {
     page = page || this.currentPage
-    return this.pages.length >= page.pageNumber
+    return this.pages.length > page.pageNumber
   }
 
   /**
