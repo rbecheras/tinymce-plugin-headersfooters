@@ -27,7 +27,7 @@ const tinymce = window.tinymce
 export const eventHandlers = {
   'Init': { setBodies, setStackedLayout, setPageLayout, reloadMenuItems, firesNewPageAppendedEvent, initHeadFootContent },
   'Change': { syncHeadFoot, checkPageOverflow },
-  'SetContent': {},
+  'NodeChange': { checkPageOverflowOnNodeChange },
   'BeforeSetContent': {},
   'Focus': { enterHeadFoot, selectCurrentPage },
   'Blur': { leaveHeadFoot },
@@ -217,14 +217,26 @@ function selectCurrentPage (evt) {
 }
 
 /**
- * Check page overflow on NodeChange
- * @param {Event} evt the NodeChange event
+ * Check page overflow on Change
+ * @param {Event} evt the Change event
  * @returns {void}
  */
 function checkPageOverflow (evt) {
   const {paginator, page} = _getActiveContext()
   if (paginator && page && paginator.shouldItFixPagesOverflow()) {
     paginator.fixPagesOverflow()
+  }
+}
+
+/**
+ * Check page overflow on NodeChange but do not check empty spaces `fixPagesOverflow(true)`
+ * @param {Event} evt the NodeChange event
+ * @returns {void}
+ */
+function checkPageOverflowOnNodeChange (evt) {
+  const {paginator, page} = _getActiveContext()
+  if (paginator && page && paginator.shouldItFixPagesOverflow()) {
+    paginator.fixPagesOverflow(true)
   }
 }
 
