@@ -26,8 +26,7 @@ const tinymce = window.tinymce
  */
 export const eventHandlers = {
   'Init': { setBodies, setStackedLayout, setPageLayout, reloadMenuItems, firesNewPageAppendedEvent, initHeadFootContent },
-  'NodeChange': { checkPageOverflow },
-  'Change': { syncHeadFoot },
+  'Change': { syncHeadFoot, checkPageOverflow },
   'SetContent': {},
   'BeforeSetContent': {},
   'Focus': { enterHeadFoot, selectCurrentPage },
@@ -222,9 +221,7 @@ function selectCurrentPage (evt) {
 function checkPageOverflow (evt) {
   const {paginator, page} = _getActiveContext()
   if (paginator && page && paginator.shouldItFixPagesOverflow()) {
-    if (page.isOverflowing()) {
-      paginator.fixPagesOverflow()
-    }
+    paginator.fixPagesOverflow()
   }
 }
 
