@@ -538,9 +538,10 @@ export default class Paginator {
    */
   getActiveSection () {
     let activeSection = null
+    let activeEditor = tinymce.activeEditor
     this.pages.forEach(page => {
       page.iterateOnSections(section => {
-        if (section.editor && section.editor === tinymce.activeEditor) {
+        if (section.editor && section.editor === activeEditor) {
           activeSection = section
         }
       })
