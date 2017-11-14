@@ -229,10 +229,16 @@ export default class HeadersFootersPlugin {
     this.disabled = false
 
     let bodyElement = this.editor.getBody()
-    if (!this.isEditableAreaFadingUp && DomUtils.getElementOpacity(bodyElement) !== 1) {
-      DomUtils.jQuery(bodyElement).fadeTo(250, 1, () => this.editor.$(bodyElement).css({opacity: 1}))
+    if (bodyElement) {
+      if (!this.isEditableAreaFadingUp && DomUtils.getElementOpacity(bodyElement) !== 1) {
+        this.isEditableAreaFadingUp = true
+        DomUtils.jQuery(bodyElement).fadeTo(250, 1, () => {
+          this.editor.$(bodyElement).css({opacity: 1})
+          this.isEditableAreaFadingUp = false
+        })
+      }
+      withFocus && this.editor.focus()
     }
-    withFocus && this.editor.focus()
   }
 
   /**
@@ -244,8 +250,14 @@ export default class HeadersFootersPlugin {
     this.disabled = true
 
     let bodyElement = this.editor.getBody()
-    if (!this.isEditableAreaFadingDown && DomUtils.getElementOpacity(bodyElement) !== 0.25) {
-      DomUtils.jQuery(bodyElement).fadeTo(250, 0.25, () => this.editor.$(bodyElement).css({opacity: 0.25}))
+    if (bodyElement) {
+      if (!this.isEditableAreaFadingDown && DomUtils.getElementOpacity(bodyElement) !== 0.25) {
+        this.isEditableAreaFadingDown = true
+        DomUtils.jQuery(bodyElement).fadeTo(250, 0.25, () => {
+          this.editor.$(bodyElement).css({opacity: 0.25})
+          this.isEditableAreaFadingDown = false
+        })
+      }
     }
     this.unselectContent()
   }
