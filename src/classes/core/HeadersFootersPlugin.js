@@ -255,7 +255,7 @@ export default class HeadersFootersPlugin {
    * @returns {void}
    */
   unselectContent () {
-    if (this.editor.selection && !this.editor.selection.isCollapsed()) {
+    if (this.editor && this.editor.selection && !this.editor.selection.isCollapsed()) {
       this.editor.selection.collapse()
     }
   }
