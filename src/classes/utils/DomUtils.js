@@ -124,6 +124,21 @@ export default class DomUtils {
   }
 
   /**
+   * Provides the real opacity value of an element.
+   * @example
+   * getElementOpacity(document.body, window)
+   * // => `0.75`
+   * @param {HTMLElement} element
+   * @param {Window} win
+   * @returns {Number} the element's opacity
+   */
+  static getElementOpacity (element, win) {
+    win = win || window
+    let style = win.getComputedStyle(element)
+    return Number(style.opacity)
+  }
+
+  /**
    * Cut the first node of a given Node and returns it back
    * @param {object} $ jQuery instance matching the given node
    * @param {Node} parentNode the parent node to cut its first child node
