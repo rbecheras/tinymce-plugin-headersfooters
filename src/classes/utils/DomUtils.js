@@ -225,6 +225,15 @@ export default class DomUtils {
       })
     })
   }
+
+  /**
+   * Get the parent <body> tag for a given node/element
+   * @param {Node} node The given node
+   * @returns {HTMLElement} The node's parent body tag
+   */
+  static getParentBodyElement (node) {
+    return node.ownerDocument.body
+  }
 }
 
 DomUtils.jQuery = window.jQuery
