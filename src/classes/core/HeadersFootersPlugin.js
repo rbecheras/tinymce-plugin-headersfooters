@@ -247,6 +247,10 @@ export default class HeadersFootersPlugin {
       }
       withFocus && this.editor.focus()
     }
+
+    if (['header', 'footer'].includes(this.type)) {
+      this.$setAsDefaultSectionButton.show()
+    }
   }
 
   /**
