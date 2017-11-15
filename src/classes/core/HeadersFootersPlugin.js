@@ -189,6 +189,12 @@ export default class HeadersFootersPlugin {
      * @type {boolean}
      */
     this.isEditableAreaFadingUp = false
+
+    /**
+     * A button element to set the section as the default section for the whole document.
+     * For example, if the section is a header,
+     */
+    this.$setAsDefaultSectionButton = null
   }
 
   /**
