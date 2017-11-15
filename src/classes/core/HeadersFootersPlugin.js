@@ -195,6 +195,8 @@ export default class HeadersFootersPlugin {
      * For example, if the section is a header,
      */
     this.$setAsDefaultSectionButton = null
+
+    this.initSectionButtonBar()
   }
 
   /**
