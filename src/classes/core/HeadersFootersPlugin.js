@@ -367,6 +367,22 @@ export default class HeadersFootersPlugin {
   hasFocus () {
     return this.editor && this.editor.getDoc() && this.editor.getDoc().hasFocus()
   }
+
+  /**
+   * Initialize the section's (header or footer only) button bar
+   * @returns {void}
+   */
+  initSectionButtonBar () {
+    if (['header', 'footer'].includes(this.type) && this.editor) {
+      const $ = DomUtils.jQuery
+      this.$setAsDefaultSectionButton = $('<button>Set default</button>')
+      this.$setAsDefaultSectionButton.css({
+        position: 'absolute',
+        height: '20pt',
+        width: 'auto'
+      })
+    }
+  }
 }
 
 /**
