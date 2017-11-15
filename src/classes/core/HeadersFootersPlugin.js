@@ -383,6 +383,24 @@ export default class HeadersFootersPlugin {
       })
     }
   }
+
+  /**
+   * Configure the header's button bar (append to the DOM, set absolute position)
+   * @returns {void}
+   */
+  configureHeaderButtonBar () {
+    let pageNumber = this.page.pageNumber
+    let headerWrapper = this.page.pageLayout.headerWrapper[pageNumber - 1]
+    let pagePanel = this.page.pageLayout.pagePanel[pageNumber - 1]
+
+    this.$setAsDefaultSectionButton
+    .appendTo(pagePanel)
+    .css({
+      top: String(headerWrapper.offsetTop - UnitsUtils.pt2px(20)).concat('px'),
+      left: String(headerWrapper.offsetLeft).concat('px')
+    })
+    .hide()
+  }
 }
 
 /**
