@@ -333,7 +333,7 @@ export default class Paginator {
       // and let the attached editor init event
       // triggers the 'HeadersFooters:NewPageAppended' plugin event
       try {
-        this.rawPages.push({})
+        this.rawPages.push({pageNumber})
       } catch (e) {
         reject(e)
       }
