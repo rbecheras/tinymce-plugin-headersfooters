@@ -271,6 +271,10 @@ export default class HeadersFootersPlugin {
         })
       }
     }
+
+    if (['header', 'footer'].includes(this.type)) {
+      this.$setAsDefaultSectionButton.hide()
+    }
     this.unselectContent()
   }
 
