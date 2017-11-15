@@ -401,6 +401,24 @@ export default class HeadersFootersPlugin {
     })
     .hide()
   }
+
+  /**
+   * Configure the footer's button bar (append to the DOM, set absolute position)
+   * @returns {void}
+   */
+  configureFooterButtonBar () {
+    let pageNumber = this.page.pageNumber
+    let footerWrapper = this.page.pageLayout.footerWrapper[pageNumber - 1]
+    let pagePanel = this.page.pageLayout.pagePanel[pageNumber - 1]
+
+    this.$setAsDefaultSectionButton
+    .appendTo(pagePanel)
+    .css({
+      top: String(footerWrapper.offsetTop - UnitsUtils.pt2px(20)).concat('px'),
+      left: String(footerWrapper.offsetLeft).concat('px')
+    })
+    .hide()
+  }
 }
 
 /**
