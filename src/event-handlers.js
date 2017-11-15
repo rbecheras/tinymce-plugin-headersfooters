@@ -25,7 +25,7 @@ const tinymce = window.tinymce
  * @ignore
  */
 export const eventHandlers = {
-  'Init': { setBodies, setStackedLayout, setPageLayout, reloadMenuItems, firesNewPageAppendedEvent, initHeadFootContent },
+  'Init': { setBodies, setStackedLayout, setPageLayout, configureSectionButtonBar, reloadMenuItems, firesNewPageAppendedEvent, initHeadFootContent },
   'Change': { syncHeadFoot, checkPageOverflow },
   'NodeChange': { checkPageOverflowOnNodeChange },
   'BeforeSetContent': {},
@@ -99,6 +99,32 @@ function setStackedLayout (evt) {
  */
 function setPageLayout (evt) {
   this.isMaster() && UIUtils.mapPageLayoutElements(this.page.pageLayout)
+}
+
+/**
+ * Configure the section's (header or footer only) button bar on editor init
+ * @param {Event} evt the Init event
+ * @returns {void}
+ */
+function configureSectionButtonBar (evt) {
+  if (this.isHeader()) {
+    setTimeout(() => {
+      try {
+        this.configureHeaderButtonBar()
+      } catch (e) {
+        console.error('Unable to configure the header button bar', e)
+      }
+    }, 3000)
+  }
+  if (this.isFooter()) {
+    setTimeout(() => {
+      try {
+        this.configureFooterButtonBar()
+      } catch (e) {
+        console.error('Unable to configure the footer button bar', e)
+      }
+    }, 3000)
+  }
 }
 
 /**
