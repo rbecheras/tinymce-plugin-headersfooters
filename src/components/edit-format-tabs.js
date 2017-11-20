@@ -1,63 +1,57 @@
 'use strict'
 
-var uiHelpers = require('../utils/ui-helpers')
-// var eventHandlers = require('../event-handlers')
+import UIHelpersUtils from '../classes/utils/UIHelpersUtils'
 
-var tinymce = window.tinymce
-
-module.exports = {
-  createFormatTab: createFormatTab,
-  createMarginsTab: createMarginsTab,
-  createHeaderTab: createHeaderTab,
-  createFooterTab: createFooterTab,
-  createBodyTab: createBodyTab
-}
+/**
+ * Tinypce global namespace
+ * @type {external:tinymce}
+ */
+const tinymce = window.tinymce
 
 /**
  * Create the general tab component that show form inputs for:
  * - paper labeled formats,
  * - paper custom size
- * @method
  * @returns {TabPanel} formatTab
  */
-function createFormatTab (format) {
+export function createFormatTab (format) {
   // format select box
-  var formats = tinymce.activeEditor.plugins.headersfooters.availableFormats
-  var formatValues = []
-  for (var name in formats) {
-    var f = formats[name]
+  let formats = tinymce.activeEditor.plugins.headersfooters.availableFormats
+  let formatValues = []
+  for (let name in formats) {
+    let f = formats[name]
     formatValues.push({
       text: f.name,
       value: f.name
     })
   }
-  var formatSelectBox = uiHelpers.createSelectBox('Format', 'newformat', formatValues, 150)
+  let formatSelectBox = UIHelpersUtils.createSelectBox('Format', 'newformat', formatValues, 150)
 
   // orientation select box
-  var orientationSelectBox = uiHelpers.createSelectBox('Orientation', 'orientation', [
+  let orientationSelectBox = UIHelpersUtils.createSelectBox('Orientation', 'orientation', [
     {text: 'paysage', value: 'paysage'},
     {text: 'portrait', value: 'portrait'}
   ], 150)
 
   // page height form inputs
-  var pageHeightTextBox = uiHelpers.createTextBox('Page height', 'pageHeight', 65)
-  var pageHeightUnitSelect = uiHelpers.createUnitSelectBox('pageHeightUnit', 'mm')
+  let pageHeightTextBox = UIHelpersUtils.createTextBox('Page height', 'pageHeight', 65)
+  let pageHeightUnitSelect = UIHelpersUtils.createUnitSelectBox('pageHeightUnit', 'mm')
 
   // page width form inputs
-  var pageWidthTextBox = uiHelpers.createTextBox('Page width', 'pageWidth', 65)
-  var pageWidthUnitSelect = uiHelpers.createUnitSelectBox('pageWidthUnit', 'mm')
+  let pageWidthTextBox = UIHelpersUtils.createTextBox('Page width', 'pageWidth', 65)
+  let pageWidthUnitSelect = UIHelpersUtils.createUnitSelectBox('pageWidthUnit', 'mm')
 
-  formatSelectBox.on('select', function (e) {
-    var selectValue = e.control.value()
-    var _format = formats[selectValue]
+  formatSelectBox.on('select', e => {
+    let selectValue = e.control.value()
+    let _format = formats[selectValue]
     pageHeightTextBox.value(_format.height.slice(0, -2)) // using raw 'mm' value
     pageWidthTextBox.value(_format.width.slice(0, -2)) // using raw 'mm' value
   })
-  orientationSelectBox.on('select', function (e) {
-    var orientation = orientationSelectBox.value()
-    var height = pageHeightTextBox.value()
-    var width = pageWidthTextBox.value()
-    var max, min
+  orientationSelectBox.on('select', e => {
+    let orientation = orientationSelectBox.value()
+    let height = pageHeightTextBox.value()
+    let width = pageWidthTextBox.value()
+    let max, min
     if (height >= width) {
       max = height
       min = width
@@ -75,25 +69,25 @@ function createFormatTab (format) {
   })
 
   // paperSize fieldset form
-  var formatForm = uiHelpers.createForm([
+  let formatForm = UIHelpersUtils.createForm([
     formatSelectBox,
     orientationSelectBox
   ], 1)
 
   // paperSize fieldset form
-  var paperSizeForm = uiHelpers.createForm([
+  let paperSizeForm = UIHelpersUtils.createForm([
     pageHeightTextBox, pageHeightUnitSelect,
     pageWidthTextBox, pageWidthUnitSelect
   ], 2)
 
   // format fieldset
-  var formatFieldSet = uiHelpers.createFieldset('Format', [formatForm], null, 300)
+  let formatFieldSet = UIHelpersUtils.createFieldset('Format', [formatForm], null, 300)
 
   // format fieldset
-  var paperSizeFieldSet = uiHelpers.createFieldset('Paper Size', [paperSizeForm], 460)
+  let paperSizeFieldSet = UIHelpersUtils.createFieldset('Paper Size', [paperSizeForm], 460)
 
   // tab
-  var tab = uiHelpers.createTab('Paper', [formatFieldSet, paperSizeFieldSet])
+  let tab = UIHelpersUtils.createTab('Paper', [formatFieldSet, paperSizeFieldSet])
 
   return tab
 }
@@ -101,34 +95,33 @@ function createFormatTab (format) {
 /**
  * Create the margins tab component that show form inputs for:
  * - paper margins
- * @method
  * @returns {TabPanel} marginTab
  */
-function createMarginsTab (format) {
-  var marginTopTextBox = uiHelpers.createTextBox('Margin top', 'marginTop', 65)
-  var marginTopUnitSelect = uiHelpers.createUnitSelectBox('marginTopUnit', 'mm')
+export function createMarginsTab (format) {
+  let marginTopTextBox = UIHelpersUtils.createTextBox('Margin top', 'marginTop', 65)
+  let marginTopUnitSelect = UIHelpersUtils.createUnitSelectBox('marginTopUnit', 'mm')
 
-  var marginRightTextBox = uiHelpers.createTextBox('Margin right', 'marginRight', 65)
-  var marginRightUnitSelect = uiHelpers.createUnitSelectBox('marginRightUnit', 'mm')
+  let marginRightTextBox = UIHelpersUtils.createTextBox('Margin right', 'marginRight', 65)
+  let marginRightUnitSelect = UIHelpersUtils.createUnitSelectBox('marginRightUnit', 'mm')
 
-  var marginBottomTextBox = uiHelpers.createTextBox('Margin bottom', 'marginBottom', 65)
-  var marginBottomUnitSelect = uiHelpers.createUnitSelectBox('marginBottomUnit', 'mm')
+  let marginBottomTextBox = UIHelpersUtils.createTextBox('Margin bottom', 'marginBottom', 65)
+  let marginBottomUnitSelect = UIHelpersUtils.createUnitSelectBox('marginBottomUnit', 'mm')
 
-  var marginLeftTextBox = uiHelpers.createTextBox('Margin left', 'marginLeft', 65)
-  var marginLeftUnitSelect = uiHelpers.createUnitSelectBox('marginLeftUnit', 'mm')
+  let marginLeftTextBox = UIHelpersUtils.createTextBox('Margin left', 'marginLeft', 65)
+  let marginLeftUnitSelect = UIHelpersUtils.createUnitSelectBox('marginLeftUnit', 'mm')
 
   // paperSize fieldset form
-  var form = uiHelpers.createForm([
+  let form = UIHelpersUtils.createForm([
     marginTopTextBox, marginTopUnitSelect,
     marginRightTextBox, marginRightUnitSelect,
     marginBottomTextBox, marginBottomUnitSelect,
     marginLeftTextBox, marginLeftUnitSelect
   ], 2)
 
-  var fieldSet = uiHelpers.createFieldset('Margins', [form], 460)
+  let fieldSet = UIHelpersUtils.createFieldset('Margins', [form], 460)
 
   // tab
-  var tab = uiHelpers.createTab('Margin', [fieldSet])
+  let tab = UIHelpersUtils.createTab('Margin', [fieldSet])
 
   return tab
 }
@@ -136,73 +129,77 @@ function createMarginsTab (format) {
 /**
  * Create the margins tab component that show form inputs for:
  * - paper margins
- * @method
  * @returns {TabPanel} marginTab
  */
-function createHeaderTab (format) {
+export function createHeaderTab (format) {
   // header height
-  var heightTextBox = uiHelpers.createTextBox('Height', 'headerHeight', 65)
-  var heightUnitSelect = uiHelpers.createUnitSelectBox('headerHeightUnit', 'mm')
+  let heightTextBox = UIHelpersUtils.createTextBox('Height', 'headerHeight', 65)
+  let heightUnitSelect = UIHelpersUtils.createUnitSelectBox('headerHeightUnit', 'mm')
 
-  var heightForm = uiHelpers.createForm([
+  let heightForm = UIHelpersUtils.createForm([
     heightTextBox, heightUnitSelect
   ], 2)
 
-  var heightFieldSet = uiHelpers.createFieldset('Header dimensions', [heightForm], 460)
+  let heightFieldSet = UIHelpersUtils.createFieldset('Header dimensions', [heightForm], 460)
 
   // header margins
 
-  var marginRightTextBox = uiHelpers.createTextBox('Margin right', 'headerMarginRight', 65)
-  var marginRightUnitSelect = uiHelpers.createUnitSelectBox('headerMarginRightUnit', 'mm')
+  let marginRightTextBox = UIHelpersUtils.createTextBox('Margin right', 'headerMarginRight', 65)
+  let marginRightUnitSelect = UIHelpersUtils.createUnitSelectBox('headerMarginRightUnit', 'mm')
 
-  var marginBottomTextBox = uiHelpers.createTextBox('Margin bottom', 'headerMarginBottom', 65)
-  var marginBottomUnitSelect = uiHelpers.createUnitSelectBox('headerMarginBottomUnit', 'mm')
+  let marginBottomTextBox = UIHelpersUtils.createTextBox('Margin bottom', 'headerMarginBottom', 65)
+  let marginBottomUnitSelect = UIHelpersUtils.createUnitSelectBox('headerMarginBottomUnit', 'mm')
 
-  var marginLeftTextBox = uiHelpers.createTextBox('Margin left', 'headerMarginLeft', 65)
-  var marginLeftUnitSelect = uiHelpers.createUnitSelectBox('headerMarginLeftUnit', 'mm')
+  let marginLeftTextBox = UIHelpersUtils.createTextBox('Margin left', 'headerMarginLeft', 65)
+  let marginLeftUnitSelect = UIHelpersUtils.createUnitSelectBox('headerMarginLeftUnit', 'mm')
 
-  var form = uiHelpers.createForm([
+  let form = UIHelpersUtils.createForm([
     marginRightTextBox, marginRightUnitSelect,
     marginBottomTextBox, marginBottomUnitSelect,
     marginLeftTextBox, marginLeftUnitSelect
   ], 2)
 
-  var marginsFieldSet = uiHelpers.createFieldset('Header margins', [form], 460)
+  let marginsFieldSet = UIHelpersUtils.createFieldset('Header margins', [form], 460)
 
   // header borders
-  var borderWidthTextBox = uiHelpers.createTextBox('Border width', 'headerBorderWidth', 65)
-  var borderWidthUnitSelect = uiHelpers.createUnitSelectBox('headerBorderWidthUnit', 'mm')
+  let borderWidthTextBox = UIHelpersUtils.createTextBox('Border width', 'headerBorderWidth', 65)
+  let borderWidthUnitSelect = UIHelpersUtils.createUnitSelectBox('headerBorderWidthUnit', 'mm')
 
   // border style
-  var borderStyleItemNone = uiHelpers.createListBoxItem('none')
-  var borderStyleItemHidden = uiHelpers.createListBoxItem('hidden')
-  var borderStyleItemDotted = uiHelpers.createListBoxItem('dotted')
-  var borderStyleItemDashed = uiHelpers.createListBoxItem('dashed')
-  var borderStyleItemSolid = uiHelpers.createListBoxItem('solid')
-  var borderStyleItemDouble = uiHelpers.createListBoxItem('double')
-  var borderStyleItemGroove = uiHelpers.createListBoxItem('groove')
-  var borderStyleItemRidge = uiHelpers.createListBoxItem('ridge')
-  var borderStyleItemInset = uiHelpers.createListBoxItem('inset')
-  var borderStyleItemOutset = uiHelpers.createListBoxItem('outset')
-  var borderStyleValues = [
+  let borderStyleItemNone = UIHelpersUtils.createListBoxItem('none')
+  let borderStyleItemHidden = UIHelpersUtils.createListBoxItem('hidden')
+  let borderStyleItemDotted = UIHelpersUtils.createListBoxItem('dotted')
+  let borderStyleItemDashed = UIHelpersUtils.createListBoxItem('dashed')
+  let borderStyleItemSolid = UIHelpersUtils.createListBoxItem('solid')
+  let borderStyleItemDouble = UIHelpersUtils.createListBoxItem('double')
+  let borderStyleItemGroove = UIHelpersUtils.createListBoxItem('groove')
+  let borderStyleItemRidge = UIHelpersUtils.createListBoxItem('ridge')
+  let borderStyleItemInset = UIHelpersUtils.createListBoxItem('inset')
+  let borderStyleItemOutset = UIHelpersUtils.createListBoxItem('outset')
+  let borderStyleValues = [
     borderStyleItemNone, borderStyleItemHidden, borderStyleItemDotted,
     borderStyleItemDashed, borderStyleItemSolid, borderStyleItemDouble,
     borderStyleItemGroove, borderStyleItemRidge, borderStyleItemInset,
     borderStyleItemOutset
   ]
-  var borderStyleListBox = uiHelpers.createListBox('Border style', 'headerBorderStyle', borderStyleValues, borderStyleItemNone, 90)
+  let borderStyleListBox = UIHelpersUtils.createListBox('Border style', 'headerBorderStyle', borderStyleValues, borderStyleItemNone, 90)
 
   // border color picker
-  var borderColorPicker = uiHelpers.createColorPicker('Border color', 'headerBorderColor', function () {})
+  /**
+   * @todo complete implementation
+   */
+  let borderColorPicker = UIHelpersUtils.createColorPicker('Border color', 'headerBorderColor', () => {
+    // implement here
+  })
 
   // create form
-  var borderForm1 = uiHelpers.createForm([ borderWidthTextBox, borderWidthUnitSelect ])
-  var borderForm2 = uiHelpers.createForm([ borderStyleListBox, borderColorPicker ], 1)
+  let borderForm1 = UIHelpersUtils.createForm([ borderWidthTextBox, borderWidthUnitSelect ])
+  let borderForm2 = UIHelpersUtils.createForm([ borderStyleListBox, borderColorPicker ], 1)
   // create field set
-  var borderFieldset = uiHelpers.createFieldset('Header borders', [ borderForm1, borderForm2 ], 460)
+  let borderFieldset = UIHelpersUtils.createFieldset('Header borders', [ borderForm1, borderForm2 ], 460)
 
   // tab
-  var tab = uiHelpers.createTab('Header', [heightFieldSet, marginsFieldSet, borderFieldset])
+  let tab = UIHelpersUtils.createTab('Header', [heightFieldSet, marginsFieldSet, borderFieldset])
 
   return tab
 }
@@ -212,112 +209,126 @@ function createHeaderTab (format) {
  * - footer height
  * - footer margins
  * - footer borders
- * @method
  * @returns {TabPanel} footerTab
  */
-function createFooterTab (format) {
+export function createFooterTab (format) {
   // header height
-  var heightTextBox = uiHelpers.createTextBox('Height', 'footerHeight', 65)
-  var heightUnitSelect = uiHelpers.createUnitSelectBox('footerHeightUnit', 'mm')
+  let heightTextBox = UIHelpersUtils.createTextBox('Height', 'footerHeight', 65)
+  let heightUnitSelect = UIHelpersUtils.createUnitSelectBox('footerHeightUnit', 'mm')
 
-  var heightForm = uiHelpers.createForm([
+  let heightForm = UIHelpersUtils.createForm([
     heightTextBox, heightUnitSelect
   ], 2)
 
-  var heightFieldSet = uiHelpers.createFieldset('Footer dimensions', [heightForm], 460)
+  let heightFieldSet = UIHelpersUtils.createFieldset('Footer dimensions', [heightForm], 460)
 
   // header margins
 
-  var marginTopTextBox = uiHelpers.createTextBox('Margin top', 'footerMarginTop', 65)
-  var marginTopUnitSelect = uiHelpers.createUnitSelectBox('footerMarginTopUnit', 'mm')
+  let marginTopTextBox = UIHelpersUtils.createTextBox('Margin top', 'footerMarginTop', 65)
+  let marginTopUnitSelect = UIHelpersUtils.createUnitSelectBox('footerMarginTopUnit', 'mm')
 
-  var marginRightTextBox = uiHelpers.createTextBox('Margin right', 'footerMarginRight', 65)
-  var marginRightUnitSelect = uiHelpers.createUnitSelectBox('footerMarginRightUnit', 'mm')
+  let marginRightTextBox = UIHelpersUtils.createTextBox('Margin right', 'footerMarginRight', 65)
+  let marginRightUnitSelect = UIHelpersUtils.createUnitSelectBox('footerMarginRightUnit', 'mm')
 
-  var marginLeftTextBox = uiHelpers.createTextBox('Margin left', 'footerMarginLeft', 65)
-  var marginLeftUnitSelect = uiHelpers.createUnitSelectBox('footerMarginLeftUnit', 'mm')
+  let marginLeftTextBox = UIHelpersUtils.createTextBox('Margin left', 'footerMarginLeft', 65)
+  let marginLeftUnitSelect = UIHelpersUtils.createUnitSelectBox('footerMarginLeftUnit', 'mm')
 
-  var form = uiHelpers.createForm([
+  let form = UIHelpersUtils.createForm([
     marginTopTextBox, marginTopUnitSelect,
     marginRightTextBox, marginRightUnitSelect,
     marginLeftTextBox, marginLeftUnitSelect
   ], 2)
 
-  var marginsFieldSet = uiHelpers.createFieldset('Footer margins', [form], 460)
+  let marginsFieldSet = UIHelpersUtils.createFieldset('Footer margins', [form], 460)
 
   // footer borders
-  var borderWidthTextBox = uiHelpers.createTextBox('Border width', 'footerBorderWidth', 65)
-  var borderWidthUnitSelect = uiHelpers.createUnitSelectBox('footerBorderWidthUnit', 'mm')
+  let borderWidthTextBox = UIHelpersUtils.createTextBox('Border width', 'footerBorderWidth', 65)
+  let borderWidthUnitSelect = UIHelpersUtils.createUnitSelectBox('footerBorderWidthUnit', 'mm')
 
   // border style
-  var borderStyleItemNone = uiHelpers.createListBoxItem('none')
-  var borderStyleItemHidden = uiHelpers.createListBoxItem('hidden')
-  var borderStyleItemDotted = uiHelpers.createListBoxItem('dotted')
-  var borderStyleItemDashed = uiHelpers.createListBoxItem('dashed')
-  var borderStyleItemSolid = uiHelpers.createListBoxItem('solid')
-  var borderStyleItemDouble = uiHelpers.createListBoxItem('double')
-  var borderStyleItemGroove = uiHelpers.createListBoxItem('groove')
-  var borderStyleItemRidge = uiHelpers.createListBoxItem('ridge')
-  var borderStyleItemInset = uiHelpers.createListBoxItem('inset')
-  var borderStyleItemOutset = uiHelpers.createListBoxItem('outset')
-  var borderStyleValues = [
+  let borderStyleItemNone = UIHelpersUtils.createListBoxItem('none')
+  let borderStyleItemHidden = UIHelpersUtils.createListBoxItem('hidden')
+  let borderStyleItemDotted = UIHelpersUtils.createListBoxItem('dotted')
+  let borderStyleItemDashed = UIHelpersUtils.createListBoxItem('dashed')
+  let borderStyleItemSolid = UIHelpersUtils.createListBoxItem('solid')
+  let borderStyleItemDouble = UIHelpersUtils.createListBoxItem('double')
+  let borderStyleItemGroove = UIHelpersUtils.createListBoxItem('groove')
+  let borderStyleItemRidge = UIHelpersUtils.createListBoxItem('ridge')
+  let borderStyleItemInset = UIHelpersUtils.createListBoxItem('inset')
+  let borderStyleItemOutset = UIHelpersUtils.createListBoxItem('outset')
+  let borderStyleValues = [
     borderStyleItemNone, borderStyleItemHidden, borderStyleItemDotted,
     borderStyleItemDashed, borderStyleItemSolid, borderStyleItemDouble,
     borderStyleItemGroove, borderStyleItemRidge, borderStyleItemInset,
     borderStyleItemOutset
   ]
-  var borderStyleListBox = uiHelpers.createListBox('Border style', 'footerBorderStyle', borderStyleValues, borderStyleItemNone, 90)
+  let borderStyleListBox = UIHelpersUtils.createListBox('Border style', 'footerBorderStyle', borderStyleValues, borderStyleItemNone, 90)
 
   // border color picker
-  var borderColorPicker = uiHelpers.createColorPicker('Border color', 'footerBorderColor', function () {})
+  /**
+   * @todo complete implementation
+   */
+  let borderColorPicker = UIHelpersUtils.createColorPicker('Border color', 'footerBorderColor', () => {
+    // implement here
+  })
 
   // create form
-  var borderForm1 = uiHelpers.createForm([ borderWidthTextBox, borderWidthUnitSelect ])
-  var borderForm2 = uiHelpers.createForm([ borderStyleListBox, borderColorPicker ], 1)
+  let borderForm1 = UIHelpersUtils.createForm([ borderWidthTextBox, borderWidthUnitSelect ])
+  let borderForm2 = UIHelpersUtils.createForm([ borderStyleListBox, borderColorPicker ], 1)
   // create field set
-  var borderFieldset = uiHelpers.createFieldset('Footer borders', [ borderForm1, borderForm2 ], 460)
+  let borderFieldset = UIHelpersUtils.createFieldset('Footer borders', [ borderForm1, borderForm2 ], 460)
 
   // tab
-  var tab = uiHelpers.createTab('Footer', [heightFieldSet, marginsFieldSet, borderFieldset])
+  let tab = UIHelpersUtils.createTab('Footer', [heightFieldSet, marginsFieldSet, borderFieldset])
 
   return tab
 }
 
-function createBodyTab (format) {
+/**
+ * Create the body tab
+ * @param {Format} format The current format
+ * @returns {void}
+ */
+export function createBodyTab (format) {
   // body borders
-  var borderWidthTextBox = uiHelpers.createTextBox('Border width', 'bodyBorderWidth', 65)
-  var borderWidthUnitSelect = uiHelpers.createUnitSelectBox('bodyBorderWidthUnit', 'mm')
+  let borderWidthTextBox = UIHelpersUtils.createTextBox('Border width', 'bodyBorderWidth', 65)
+  let borderWidthUnitSelect = UIHelpersUtils.createUnitSelectBox('bodyBorderWidthUnit', 'mm')
 
   // border style
-  var borderStyleItemNone = uiHelpers.createListBoxItem('none')
-  var borderStyleItemHidden = uiHelpers.createListBoxItem('hidden')
-  var borderStyleItemDotted = uiHelpers.createListBoxItem('dotted')
-  var borderStyleItemDashed = uiHelpers.createListBoxItem('dashed')
-  var borderStyleItemSolid = uiHelpers.createListBoxItem('solid')
-  var borderStyleItemDouble = uiHelpers.createListBoxItem('double')
-  var borderStyleItemGroove = uiHelpers.createListBoxItem('groove')
-  var borderStyleItemRidge = uiHelpers.createListBoxItem('ridge')
-  var borderStyleItemInset = uiHelpers.createListBoxItem('inset')
-  var borderStyleItemOutset = uiHelpers.createListBoxItem('outset')
-  var borderStyleValues = [
+  let borderStyleItemNone = UIHelpersUtils.createListBoxItem('none')
+  let borderStyleItemHidden = UIHelpersUtils.createListBoxItem('hidden')
+  let borderStyleItemDotted = UIHelpersUtils.createListBoxItem('dotted')
+  let borderStyleItemDashed = UIHelpersUtils.createListBoxItem('dashed')
+  let borderStyleItemSolid = UIHelpersUtils.createListBoxItem('solid')
+  let borderStyleItemDouble = UIHelpersUtils.createListBoxItem('double')
+  let borderStyleItemGroove = UIHelpersUtils.createListBoxItem('groove')
+  let borderStyleItemRidge = UIHelpersUtils.createListBoxItem('ridge')
+  let borderStyleItemInset = UIHelpersUtils.createListBoxItem('inset')
+  let borderStyleItemOutset = UIHelpersUtils.createListBoxItem('outset')
+  let borderStyleValues = [
     borderStyleItemNone, borderStyleItemHidden, borderStyleItemDotted,
     borderStyleItemDashed, borderStyleItemSolid, borderStyleItemDouble,
     borderStyleItemGroove, borderStyleItemRidge, borderStyleItemInset,
     borderStyleItemOutset
   ]
-  var borderStyleListBox = uiHelpers.createListBox('Border style', 'bodyBorderStyle', borderStyleValues, borderStyleItemNone, 90)
+  let borderStyleListBox = UIHelpersUtils.createListBox('Border style', 'bodyBorderStyle', borderStyleValues, borderStyleItemNone, 90)
 
   // border color picker
-  var borderColorPicker = uiHelpers.createColorPicker('Border color', 'bodyBorderColor', function () {})
+  /**
+   * @todo complete implementation
+   */
+  let borderColorPicker = UIHelpersUtils.createColorPicker('Border color', 'bodyBorderColor', () => {
+    // implement here
+  })
 
   // create form
-  var borderForm1 = uiHelpers.createForm([ borderWidthTextBox, borderWidthUnitSelect ])
-  var borderForm2 = uiHelpers.createForm([ borderStyleListBox, borderColorPicker ], 1)
+  let borderForm1 = UIHelpersUtils.createForm([ borderWidthTextBox, borderWidthUnitSelect ])
+  let borderForm2 = UIHelpersUtils.createForm([ borderStyleListBox, borderColorPicker ], 1)
   // create field set
-  var borderFieldset = uiHelpers.createFieldset('Body borders', [ borderForm1, borderForm2 ], 460)
+  let borderFieldset = UIHelpersUtils.createFieldset('Body borders', [ borderForm1, borderForm2 ], 460)
 
   // tab
-  var tab = uiHelpers.createTab('Body', [borderFieldset])
+  let tab = UIHelpersUtils.createTab('Body', [borderFieldset])
 
   return tab
 }

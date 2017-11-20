@@ -1,17 +1,35 @@
 'use strict'
 
-module.exports = NotImplementedError
+/**
+ * An error thrown when a not implemented method/function is called
+ */
+export default class NotImplementedError extends Error {
+  /**
+   * @param {String} functionName The name of the function that is not implemented
+   */
+  constructor (functionName) {
+    super()
 
-NotImplementedError.prototype = Object.create(Error.prototype)
+    /**
+     * The error name
+     * @type {String}
+     */
+    this.name = 'NotImplementedError'
 
-function NotImplementedError (functionName) {
-  var message = this.name.concat(': ', functionName, '() is not yet implemented')
-  Error.prototype.constructor.call(this, this.message)
-  this.name = 'NotImplementedError'
-  this.message = message
-  console.log('NotImplementedError stack trace (1): ', this.stack)
-  this.stack = new Error().stack
-  console.log('NotImplementedError stack trace (2): ', this.stack)
-  console.log('Debugging NotImplementedError:')
-  console.debug(this)
+    /**
+     * The error message
+     * @type {String}
+     */
+    this.message = functionName
+      ? this.name.concat(': ', functionName, '() is not yet implemented')
+      : this.name.concat(': This method is not yet implemented')
+
+    let stackArray = this.stack.split('\n')
+    stackArray.splice(1, 1)
+    /**
+     * The stack trace
+     * @type {String}
+     */
+    this.stack = stackArray.join('\n')
+  }
 }

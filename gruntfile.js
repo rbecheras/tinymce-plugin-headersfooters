@@ -16,6 +16,17 @@ module.exports = function (grunt) {
     uglify: {
       dist: { files: { 'plugin.min.js': ['plugin.js'] } }
     },
+    // watch: {
+    //   gruntfile: {
+    //     options: {reload: true},
+    //     files: 'Gruntfile.js',
+    //     tasks: ['standard:gruntfile']
+    //   },
+    //   js: {
+    //     files: ['src/**/*.js'],
+    //     tasks: ['standard:js', 'browserify', 'jsdoc']
+    //   }
+    // },
     watch: {
       gruntfile: {
         options: {reload: true},
@@ -23,8 +34,8 @@ module.exports = function (grunt) {
         tasks: ['standard:gruntfile']
       },
       js: {
-        files: ['src/**/*.js'],
-        tasks: ['standard:js', 'browserify', 'jsdoc']
+        files: ['build/**/*.js'],
+        tasks: ['browserify']
       }
     },
     bump: {
@@ -51,9 +62,11 @@ module.exports = function (grunt) {
     shell.exec('npm run jsdoc')
   })
 
-  grunt.registerTask('build', ['standard', 'browserify', 'uglify', 'jsdoc'])
+  // grunt.registerTask('build', ['standard', 'browserify', 'uglify', 'jsdoc'])
+  grunt.registerTask('build', ['browserify', 'uglify'])
 
-  grunt.registerTask('dev', ['standard', 'browserify', 'watch'])
+  // grunt.registerTask('dev', ['standard', 'browserify', 'watch'])
+  grunt.registerTask('dev', ['browserify', 'watch'])
 
   grunt.registerTask('default', ['dev'])
 }

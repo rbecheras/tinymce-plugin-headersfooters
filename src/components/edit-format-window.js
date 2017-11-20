@@ -1,32 +1,28 @@
 'use strict'
 
-// var units = require('../units')
-var editFormatTabs = require('./edit-format-tabs')
-var Format = require('../classes/Format')
-
-module.exports = openMainWinFunction
+import Format from '../classes/format/Format'
+import * as editFormatTabs from './edit-format-tabs'
 
 /**
  * Make the openMainWin function as a closure
- * @method
  * @param {Editor} editor The tinymce active editor instance
  * @returns {function} openMainWin The openMainWin closure function
  */
-function openMainWinFunction (editor) {
+export default function openMainWinFactory (editor) {
   return openMainWin
 
   /**
    * Open the main paragraph properties window
    * @function
    * @inner
-   * @returns {undefined}
+   * @returns {void}
    */
   function openMainWin (format) {
-    var formatTab = editFormatTabs.createFormatTab(format)
-    var marginsTab = editFormatTabs.createMarginsTab(format)
-    var headerTab = editFormatTabs.createHeaderTab(format)
-    var footerTab = editFormatTabs.createFooterTab(format)
-    var bodyTab = editFormatTabs.createBodyTab(format)
+    const formatTab = editFormatTabs.createFormatTab(format)
+    const marginsTab = editFormatTabs.createMarginsTab(format)
+    const headerTab = editFormatTabs.createHeaderTab(format)
+    const footerTab = editFormatTabs.createFooterTab(format)
+    const bodyTab = editFormatTabs.createBodyTab(format)
 
     editor.windowManager.open({
       bodyType: 'tabpanel',
@@ -70,8 +66,8 @@ function openMainWinFunction (editor) {
      */
     function onMainWindowSubmit () {
       // handle all forms values in `d` for `data`
-      var d = this.toJSON()
-      var formatToApply = {
+      const d = this.toJSON()
+      let formatToApply = {
         name: 'custom',
         orientation: (d.orientation) ? d.orientation : 'portrait',
         height: (d.pageHeight) ? d.pageHeight + 'mm' : format.height,
@@ -116,8 +112,8 @@ function openMainWinFunction (editor) {
           }
         }
       }
-      editor.plugins.headersfooters.currentFormat = new Format('custom', formatToApply)
-      editor.plugins.headersfooters.currentFormat.applyToPlugin(editor.plugins.headersfooters)
+      editor.plugins.headersfooters.paginator.currentFormat = new Format('custom', formatToApply)
+      editor.plugins.headersfooters.paginator.currentFormat.applyToPlugin(editor.plugins.headersfooters)
     }
   }
 }
